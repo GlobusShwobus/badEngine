@@ -1,9 +1,9 @@
-#pragma once
+ #pragma once
 #include "Vec2.h"
 #include "Rectangle.h"
 
 namespace badEngine {
-	//assumes dir is normalized to unit lenght
+	//dir should be normalized for sweep tests, can be a vector otherwise
 	struct Ray {
 		float2 origin;
 		float2 dir;

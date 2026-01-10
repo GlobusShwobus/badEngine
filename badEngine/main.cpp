@@ -52,32 +52,25 @@ int main() {
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
-        AABB window = AABB(0, 0, 960, 640);
+        AABB gridBounds = AABB(2 * 32, 2 * 32, 22*32,14*32);
         NumberGenerator gen;
         Sequence<AABB> myABBS;
         myABBS.set_capacity(10000);
-        Stopwatch vecT;
         for (int i = 0; i < myABBS.capacity(); i++) {
-            myABBS.emplace_back(gen.random_float(0, 959), gen.random_float(0, 639), gen.random_float(1, 64), gen.random_float(1, 64));
+            myABBS.emplace_back(
+                gen.random_float(gridBounds.x, gridBounds.x+ gridBounds.w-1),
+                gen.random_float(gridBounds.y, gridBounds.y+ gridBounds.h-1),
+                16,
+                16
+            );
         }
-        auto wtf = vecT.dt_nanosec();
-        UniformGrid muhGrid(window, 32.0f, 32.0f);
 
-        Stopwatch time;
+        UniformGrid muhGrid(gridBounds, 32.0f, 32.0f);
         muhGrid.insert(myABBS.begin(), myABBS.end(), 0ll);
-        auto t = time.dt_nanosec();
-
-        muhGrid.clear();
-
-        Stopwatch time2;
-        muhGrid.insert(myABBS.begin(), myABBS.end(), 0ll);
-        auto t2 = time2.dt_nanosec();
-
-        std::cout << t << "\n" << t2 << "\n";
-
-        std::cout << "elements count vec: " << myABBS.size() << "\nelements in grid: " << muhGrid.debug_elements_count() << "\n";
 
 
+        AABB wasdBox = AABB(32, 32, 8, 8);
+        AABB mouseBox = AABB(0, 0, 8, 8);
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -87,8 +80,9 @@ int main() {
         bool GAME_RUNNING = true;
         SDL_Event EVENT;
         //this whole main loop is badly bad but engine class in the future so fuck it for now
-        while (GAME_RUNNING) {
 
+        while (GAME_RUNNING) {
+            Stopwatch fps;
             //CLEAR RENDERING
             renManager.renderer_refresh();
 
@@ -98,41 +92,68 @@ int main() {
                     GAME_RUNNING = false;
                     continue;
                 }
+                //update wasdBox
+                if (EVENT.key.key == SDLK_W) {
+                    wasdBox.y -= 10;
+                }
+                if (EVENT.key.key == SDLK_A) {
+                    wasdBox.x -= 10;
+                }
+                if (EVENT.key.key == SDLK_S) {
+                    wasdBox.y += 10;
+                }
+                if (EVENT.key.key == SDLK_D) {
+                    wasdBox.x += 10;
+                }
+            }
+            //update mouseBox
+            float x, y;
+            SDL_GetMouseState(&x, &y);
+            mouseBox.x = x;
+            mouseBox.y = y;
+            //first draw the whole grid to yellow
+            renManager.render_rectangle(muhGrid.get_grid_bounds(), Colors::Yellow);
+            //draw mouse and wasd box
+            renManager.render_rectangle(mouseBox, Colors::Red);
+            renManager.render_rectangle(wasdBox, Colors::Blue);
+            //create and draw a line segment
+            float2 lineStart = float2(wasdBox.x, wasdBox.y);
+            float2 lineEnd = float2(mouseBox.x, mouseBox.y);
+            renManager.render_line(lineStart,lineEnd, Colors::White);
+            //create a ray
+            Ray ray;
+            ray.origin = lineStart;
+            ray.dir = unit_vector(lineEnd-lineStart);
+            //capture indecies the ray intersects with
+            Sequence<int> cells;
+            muhGrid.query_ray(ray, cells);
+            //draw all the cells captured
+            for (int idx : cells)
+            {
+                //THERE SHOULD BE NO SAFETY HERE BECAUSE WE SHOULD NEVER ACCESS OUTSIDE WTF...
+
+                //if (idx < 0 || idx >= (int)muhGrid.get_grid().size())
+                //    continue;
+
+                int cols = (int)(muhGrid.get_grid_bounds().w / muhGrid.get_cell_width());
+                int gx = idx % cols;
+                int gy = idx / cols;
+
+                float cellW = muhGrid.get_cell_width();
+                float cellH = muhGrid.get_cell_height();
+                const AABB& gridBounds = muhGrid.get_grid_bounds();
+
+                AABB cellBox;
+                cellBox.x = gridBounds.x + gx * cellW;
+                cellBox.y = gridBounds.y + gy * cellH;
+                cellBox.w = cellW;
+                cellBox.h = cellH;
+
+                renManager.render_rectangle(cellBox, Colors::Green);
             }
 
-            struct myObject {
-                float2 pos = float2(100, 100);
-                float2 vec = float2(0, 540);
-            }myObj;
-            float2 myObjEndPoint = myObj.pos + myObj.vec;
-            renManager.render_line(myObj.pos, myObjEndPoint, Colors::Blue);
-            //
-            Ray ray1;
-            ray1.origin = myObj.pos;
-            ray1.dir = unit_vector(myObj.vec);
-
-            float2 mousePos;
-            SDL_GetMouseState(&mousePos.x, &mousePos.y);
-            AABB mouseRect = AABB(
-                mousePos.x - 64 / 2,
-                mousePos.y - 64 / 2,
-                64, 64
-            );
-
-
-            Color mouseCol;
-            Hit hit;
-            sweep(ray1, mouseRect, hit);
-
-            if (sweep_fast(ray1, mouseRect)) {
-                mouseCol = Colors::Red;
-            }
-            else {
-                mouseCol = Colors::Green;
-            }
-
-            renManager.render_rectangle(mouseRect, mouseCol);
             renManager.renderer_present();
+            std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }
     }
     _CrtDumpMemoryLeaks();

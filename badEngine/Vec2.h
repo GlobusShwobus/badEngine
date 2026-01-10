@@ -163,29 +163,25 @@ namespace badEngine {
 
 		return std::acosf(cosAlpha);
 	}
-	//if length of the vector is 0, then returns a vec2d(NAN,NAN)
+	//if length is 0 retruns 0s
 	template <typename T>
 	inline float2 unit_vector(const vec2<T>& v) noexcept {
 
 		const float len = length_vector(v);
 
 		if (len == 0.0f)
-			return float2(NAN, NAN);
+			return float2(0.0f, 0.0f);
 
 		const float invlen = 1.0f / len;
 		return float2(v.x * invlen, v.y * invlen);
 	}
 
+
 	template <typename T>
-	constexpr auto normal_vector(vec2<T> v)noexcept {
-		if (v.x > 0) v.x = 1;
-		else if (v.x < 0) v.x = -1;
-		else v.x = 0;
-
-		if (v.y > 0) v.y = 1;
-		else if (v.y < 0) v.y = -1;
-		else v.y = 0;
-
-		return v;
+	constexpr vec2<T> sign_vector(const vec2<T>& v)noexcept {
+		return vec2<T>(
+			(v.x > 0) - (v.x < 0),
+			(v.y > 0) - (v.y < 0)
+		);
 	}
 }

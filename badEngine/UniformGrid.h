@@ -2,6 +2,7 @@
 
 #include "Sequence.h"
 #include "Rectangle.h"
+#include "Ray.h"
 
 
 //TODO asserts for constructor
@@ -33,6 +34,14 @@ namespace badEngine {
 				cell.set_additive(CELL_ADDATIVE);//actually pretty good in this scenario, massive help for early inserts while not doing potentially wasteful allocations
 			}
 		}
+
+		//empties out all cells, leaves capacity intact
+		void clear()noexcept {
+			for (auto& cell : mCells) {
+				cell.clear();
+			}
+		}
+
 		//insert does not check if box top left is within the range of the grid
 		//if x or y aren't in range they will be inserted to the clamped index at x, y or both x and y axis
 		void insert(int user_index, const AABB& box)noexcept
@@ -80,7 +89,7 @@ namespace badEngine {
 			}
 		}
 		//converts a point to a cell index, returns -1 if point is outside of the grid
-		inline int query_cell_index(const float2& point)const noexcept {
+		inline int query_point(const float2& point)const noexcept {
 			int x = static_cast<int>((point.x - mBounds.x) * invCellW);
 			int y = static_cast<int>((point.y - mBounds.y) * invCellH);
 
@@ -90,9 +99,54 @@ namespace badEngine {
 
 			return y * mColumns + x;
 		}
+		void query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
+		{
+			//1) check if the ray intersects with the grid at all
+			Hit hit;
+			sweep(ray, mBounds, hit);
+			if (hit.t < 0)
+				return; //no hit
 
-		void query_ray() {
+			//2) ray starting cell (with epsilon because a ray can be exactly on the edge and move on an infite plane, which is bad because it would hit a number of cells but never register)
+			float2 entry = ray.origin + ray.dir * (hit.t + 0.0001f);
 
+			//3) Calculate starting cell
+			int cellX = static_cast<int>((entry.x - mBounds.x) * invCellW);
+			int cellY = static_cast<int>((entry.y - mBounds.y) * invCellH);
+
+			cellX = bad_clamp(cellX, 0, mColumns - 1);
+			cellY = bad_clamp(cellY, 0, mRows - 1);
+			//4) get the sign of a step
+			const float2 step = sign_vector(ray.dir);
+			//5) compute the distance to cross one cell in x and y
+			const float2 delta = float2(
+				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
+				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
+			);
+			//6) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
+			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
+			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
+
+			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
+			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
+
+			//7) traverse the grid
+			int currX = cellX;
+			int currY = cellY;
+			while (currX >= 0 && currX < mColumns && currY >= 0 && currY < mRows) {
+				//get the cell index
+				cell_indices.emplace_back(currY * mColumns + currX);
+
+				//next step
+				if (tMaxX < tMaxY) {
+					currX += step.x;
+					tMaxX += delta.x;
+				}
+				else {
+					currY += step.y;
+					tMaxY += delta.y;
+				}
+			}
 		}
 
 		//if this function is called on a populated grid, it will remove elemnts
@@ -100,20 +154,28 @@ namespace badEngine {
 		void maintain_uniform_memory(std::size_t cell_capacity_target) {
 
 		}
-		//empties out all cells, leaves capacity intact
-		void clear()noexcept {
-			for (auto& cell : mCells) {
-				cell.clear();
-			}
-		}
+
 		//returns the structure itself
-		const Sequence<Cell>& get_cells()const noexcept {
+		const Sequence<Cell>& get_grid()const noexcept {
 			return mCells;
 		}
-		//get the bounds of the grid
+		const Cell& get_cell(std::size_t index)const noexcept {
+			assert(mCells.size() > index);
+			return mCells[index];
+		}
 		const AABB& get_grid_bounds()noexcept {
 			return mBounds;
 		}
+		float get_cell_width()const noexcept {
+			return mCellWidth;
+		}
+		float get_cell_height()const noexcept {
+			return mCellHeight;
+		}
+
+
+
+
 		//get how much elements are actually stored
 		//keep in mind an object can overlap multiple cells
 		std::size_t debug_elements_count()const {
