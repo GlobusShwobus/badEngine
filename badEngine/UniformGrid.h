@@ -148,7 +148,161 @@ namespace badEngine {
 				}
 			}
 		}
+		void query_ray2(const float2& lineOrigin, const float2& lineEnd,  Sequence<int>& cell_indices)const noexcept
+		{
+			//1) compute ray direction and segment length, if segment legth is 0 then there is no ray, could still mean a point intersection though...
+			const float2 direction = lineEnd - lineOrigin;
+			const float segmentLength = length_vector(direction);
+			
+			if (segmentLength == 0.0f)
+				return;
+			//2) check if the ray intersects with the grid at all, if it doesn't then there is nothing to do
+			Ray ray(lineOrigin, direction / segmentLength);
+			Hit hit;
+			sweep(ray, mBounds, hit);
+			if (hit.t < 0)
+				return;
+			//3) early exit if intersection point is beyond segment length
+			if (hit.t > segmentLength)
+				return;
 
+			//4) ray starting cell (with epsilon because a ray can be exactly on the edge and move on an infite plane, which is bad because it would hit a number of cells but never register)
+			float2 entry = ray.origin + ray.dir * (hit.t + 0.0001f);
+
+			//5) Calculate starting cell and clamp it to corner (float gets rounded down to int)
+			int cellX = static_cast<int>((entry.x - mBounds.x) * invCellW);
+			int cellY = static_cast<int>((entry.y - mBounds.y) * invCellH);
+			cellX = bad_clamp(cellX, 0, mColumns - 1);
+			cellY = bad_clamp(cellY, 0, mRows - 1);
+			//6) get the sign of a step
+			const float2 step = sign_vector(ray.dir);
+			//7) compute the distance to cross one cell in x and y
+			const float2 delta = float2(
+				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
+				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
+			);
+			//8) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
+			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
+			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
+
+			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
+			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
+
+			//9) current distance traveled along the ray, start at hit.t (entry point) + epsilon
+			float currentT = hit.t + 0.0001f;
+
+			//10) traverse the grid with segment length limit
+			int currX = cellX;
+			int currY = cellY;
+			while (
+				currX >= 0 && currX < mColumns && 
+				currY >= 0 && currY < mRows &&
+				currentT <= segmentLength
+				) {
+				//get the cell index
+				cell_indices.emplace_back(currY * mColumns + currX);
+
+				//next step
+				if (tMaxX < tMaxY) {
+					currentT = tMaxX;//update the next intersection point
+					currX += static_cast<int>(step.x);
+					tMaxX += delta.x;
+				}
+				else {
+					currentT = tMaxY;//update the next intersection point
+					currY += static_cast<int>(step.y);
+					tMaxY += delta.y;
+				}
+			}
+		}
+		void query_ray3(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
+		{
+			constexpr float EPS = 1e-4f;
+			//1) compute ray direction and segment length, if segment legth is 0 then there is no ray, could still mean a point intersection though...
+			const float2 dir = lineEnd - lineOrigin;
+			const float segmentLength = length_vector(dir);
+
+			if (segmentLength == 0.0f)
+				return;
+			//2) check if the origin is inside grid bounds
+			Ray ray(lineOrigin, dir / segmentLength);
+			const AABB& bounds = mBounds;
+			bool originInside =
+				ray.origin.x >= bounds.x &&
+				ray.origin.x < bounds.x + bounds.w &&
+				ray.origin.y >= bounds.y &&
+				ray.origin.y < bounds.y + bounds.h;
+			//3) compute entry and exit T
+			float entryT = 0.0f;
+			float exitT = segmentLength;
+			if (!originInside) {
+				Hit hit;
+				sweep(ray, bounds, hit);
+				//no intersection at all
+				if (hit.t == INFINITY)
+					return;
+
+				//entry beyond segment
+				if (hit.t > segmentLength)
+					return;
+				entryT = hit.t;
+			}
+			//4) entry point (nudged inside)
+			float currentT = entryT + EPS;
+			if (currentT > segmentLength)
+				return;
+			float2 entryPos = ray.origin + ray.dir * currentT;
+			//5) Calculate starting cell and clamp it to corner (float gets rounded down to int)
+			int cellX = static_cast<int>((entryPos.x - bounds.x) * invCellW);
+			int cellY = static_cast<int>((entryPos.y - bounds.y) * invCellH);
+			cellX = bad_clamp(cellX, 0, mColumns - 1);
+			cellY = bad_clamp(cellY, 0, mRows - 1);
+			//6) get the sign of a step
+			float2 step = sign_vector(ray.dir);
+			//7) compute the distance to cross one cell in x and y
+			const float2 delta = float2(
+				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
+				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
+			);
+			//8) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
+			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
+			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
+
+			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
+			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
+
+			//9) Traverse grid
+			while (
+				cellX >= 0 && cellX < mColumns &&
+				cellY >= 0 && cellY < mRows &&
+				currentT <= segmentLength
+				)
+			{
+				cell_indices.emplace_back(cellY * mColumns + cellX);
+
+				// Step to next cell
+				if (tMaxX < tMaxY)
+				{
+					currentT = tMaxX;
+					tMaxX += delta.x;
+					cellX += step.x;
+				}
+				else if (tMaxY < tMaxX)
+				{
+					currentT = tMaxY;
+					tMaxY += delta.y;
+					cellY += step.y;
+				}
+				else // Corner crossing
+				{
+					currentT = tMaxX;
+					tMaxX += delta.x;
+					tMaxY += delta.y;
+					cellX += step.x;
+					cellY += step.y;
+				}
+			}
+		}
 		//if this function is called on a populated grid, it will remove elemnts
 		//intended usage: call it periodically IF there are a lot of moving objects on a cleared out grid
 		void maintain_uniform_memory(std::size_t cell_capacity_target) {

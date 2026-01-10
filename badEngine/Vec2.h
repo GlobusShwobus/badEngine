@@ -176,7 +176,6 @@ namespace badEngine {
 		return float2(v.x * invlen, v.y * invlen);
 	}
 
-
 	template <typename T>
 	constexpr vec2<T> sign_vector(const vec2<T>& v)noexcept {
 		return vec2<T>(

@@ -119,22 +119,12 @@ int main() {
             //create and draw a line segment
             float2 lineStart = float2(wasdBox.x, wasdBox.y);
             float2 lineEnd = float2(mouseBox.x, mouseBox.y);
-            renManager.render_line(lineStart,lineEnd, Colors::White);
-            //create a ray
-            Ray ray;
-            ray.origin = lineStart;
-            ray.dir = unit_vector(lineEnd-lineStart);
-            //capture indecies the ray intersects with
+           // renManager.render_line(lineStart,lineEnd, Colors::White);
             Sequence<int> cells;
-            muhGrid.query_ray(ray, cells);
+            muhGrid.query_ray3(lineStart, lineEnd, cells);
             //draw all the cells captured
             for (int idx : cells)
             {
-                //THERE SHOULD BE NO SAFETY HERE BECAUSE WE SHOULD NEVER ACCESS OUTSIDE WTF...
-
-                //if (idx < 0 || idx >= (int)muhGrid.get_grid().size())
-                //    continue;
-
                 int cols = (int)(muhGrid.get_grid_bounds().w / muhGrid.get_cell_width());
                 int gx = idx % cols;
                 int gy = idx / cols;
@@ -151,7 +141,7 @@ int main() {
 
                 renManager.render_rectangle(cellBox, Colors::Green);
             }
-
+            renManager.render_line(lineStart, lineEnd, Colors::White);
             renManager.renderer_present();
             std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }

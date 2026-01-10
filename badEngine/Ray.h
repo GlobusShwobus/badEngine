@@ -7,6 +7,8 @@ namespace badEngine {
 	struct Ray {
 		float2 origin;
 		float2 dir;
+		Ray() = default;
+		Ray(const float2& o, const float2& d) :origin(o), dir(d) {}
 	};
 	struct Hit {
 		float2 pos;
