@@ -46,10 +46,21 @@ namespace badEngine {
 		//if x or y aren't in range they will be inserted to the clamped index at x, y or both x and y axis
 		void insert(int user_index, const AABB& box)noexcept
 		{
-			const auto g4 = grid_range(box);
-			for (int y = g4.miny; y < g4.maxy; ++y) {
+			//NOTE: the reason for std::ceil is because we must include partially overlapping cells
+			int minx = static_cast<int>((box.x - mBounds.x) * invCellW);					     //left edge (round down)
+			int miny = static_cast<int>((box.y - mBounds.y) * invCellH);					     //top edge (round down)
+			int maxx = static_cast<int>(std::ceil((box.x + box.w - mBounds.x) * invCellW));	     //right edge (round up)
+			int maxy = static_cast<int>(std::ceil((box.y + box.h - mBounds.y) * invCellH));	     //bottom edge (round up)
+
+			//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
+			minx = bad_clamp(minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
+			miny = bad_clamp(miny, 0, mRows - 1);		    //clamp y to top edge if negative, to bottom if deeper than height, or keep
+			maxx = bad_clamp(maxx, 0, mColumns);			//clamp x to left edge if negative, to right if wider than width, or keep
+			maxy = bad_clamp(maxy, 0, mRows);				//clamp y to top edge if negative, to bottom if deeper than height, or keep
+
+			for (int y = miny; y < maxy; ++y) {
 				const int offset = y * mColumns;//cache multiplication, minor thing...
-				for (int x = g4.minx; x < g4.maxx; ++x) {
+				for (int x = minx; x < maxx; ++x) {
 					mCells[static_cast<std::size_t>(offset + x)].emplace_back(user_index);
 				}
 			}
@@ -61,34 +72,38 @@ namespace badEngine {
 				insert(begin_index_naming++, *first);
 			}
 		}
-		//returns all potential collision candidates, includes duplicates
-		//doing basic intersecion tests with duplicates should be always be better than cache misses, otherwise sorting is left to the user
-		void query_pairs(Sequence<std::pair<int, int>>& pairs)noexcept {
-			//for every cell
-			for (const auto& cell : mCells) {
-				//collect all potential collisions
-				for (std::size_t a = 0; a < cell.size(); ++a) {
-					for (std::size_t b = a + 1; b < cell.size(); ++b) {
-						pairs.emplace_back(cell[a], cell[b]);
-					}
-				}
-			}
+		
+		//returns the structure itself
+		const Sequence<Cell>& query_grid()const noexcept {
+			return mCells;
 		}
+
 		//collects all elements within the region
 		//the rectangle can be partially intersecting the bounds of the grid but returns no results if the region is fully outside
 		void query_region(const AABB& region, Sequence<int>& results)noexcept {
-			const auto g4 = grid_range(region);
+			//NOTE: the reason for std::ceil is because we must include partially overlapping cells
+			int minx = static_cast<int>((region.x - mBounds.x) * invCellW);					             //left edge (round down)
+			int miny = static_cast<int>((region.y - mBounds.y) * invCellH);					             //top edge (round down)
+			int maxx = static_cast<int>(std::ceil((region.x + region.w - mBounds.x) * invCellW));	     //right edge (round up)
+			int maxy = static_cast<int>(std::ceil((region.y + region.h - mBounds.y) * invCellH));	     //bottom edge (round up)
 
-			for (int y = g4.miny; y < g4.maxy; ++y) {
+			//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
+			minx = bad_clamp(minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
+			miny = bad_clamp(miny, 0, mRows - 1);		    //clamp y to top edge if negative, to bottom if deeper than height, or keep
+			maxx = bad_clamp(maxx, 0, mColumns);			//clamp x to left edge if negative, to right if wider than width, or keep
+			maxy = bad_clamp(maxy, 0, mRows);				//clamp y to top edge if negative, to bottom if deeper than height, or keep
+
+			for (int y = miny; y < maxy; ++y) {
 				const int offset = y * mColumns;
-				for (int x = g4.minx; x < g4.maxx; ++x) {
+				for (int x = minx; x < maxx; ++x) {
 					for (int id : mCells[static_cast<std::size_t>(offset + x)]) {
 						results.emplace_back(id);
 					}
 				}
 			}
 		}
-		//converts a point to a cell index, returns -1 if point is outside of the grid
+		//queries a point against the grid
+		//returns cell index or -1 if the point is not in bounds of the grid
 		inline int query_point(const float2& point)const noexcept {
 			int x = static_cast<int>((point.x - mBounds.x) * invCellW);
 			int y = static_cast<int>((point.y - mBounds.y) * invCellH);
@@ -99,8 +114,9 @@ namespace badEngine {
 
 			return y * mColumns + x;
 		}
-		//queries a line against the grid returning cells it intersects with
+		//queries a line against the grid
 		//IMPORTANT: if the length of [lineEnd - lineOrigin] is 0, it could still be inside the grid but it will NOT be queried
+		//returns cell indices, not individual elements
 		void query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
 		{
 			static constexpr float EPS = 0.0001;
@@ -204,16 +220,16 @@ namespace badEngine {
 				}
 			}
 		}
+		
+		
 		//if this function is called on a populated grid, it will remove elemnts
 		//intended usage: call it periodically IF there are a lot of moving objects on a cleared out grid
 		void maintain_uniform_memory(std::size_t cell_capacity_target) {
-
+			for (auto& cell : mCells) {
+				cell.set_capacity(cell_capacity_target);
+			}
 		}
 
-		//returns the structure itself
-		const Sequence<Cell>& get_grid()const noexcept {
-			return mCells;
-		}
 		const Cell& get_cell(std::size_t index)const noexcept {
 			assert(mCells.size() > index);
 			return mCells[index];
@@ -226,44 +242,6 @@ namespace badEngine {
 		}
 		float get_cell_height()const noexcept {
 			return mCellHeight;
-		}
-
-
-
-
-		//get how much elements are actually stored
-		//keep in mind an object can overlap multiple cells
-		std::size_t debug_elements_count()const {
-			std::size_t counter = 0;
-			for (auto& cell : mCells) {
-				counter += cell.size();
-			}
-			return counter;
-		}
-	private:
-
-		struct GridInt4 {
-			int minx;
-			int miny;
-			int maxx;
-			int maxy;
-		};
-
-		inline GridInt4 grid_range(const AABB& box)const noexcept
-		{
-			GridInt4 g4;
-			//NOTE: the reason for std::ceil is because we must include partially overlapping cells
-			g4.minx = static_cast<int>((box.x - mBounds.x) * invCellW);					     //left edge (round down)
-			g4.miny = static_cast<int>((box.y - mBounds.y) * invCellH);					     //top edge (round down)
-			g4.maxx = static_cast<int>(std::ceil((box.x + box.w - mBounds.x) * invCellW));	 //right edge (round up)
-			g4.maxy = static_cast<int>(std::ceil((box.y + box.h - mBounds.y) * invCellH));	 //bottom edge (round up)
-
-			//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
-			g4.minx = bad_clamp(g4.minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
-			g4.miny = bad_clamp(g4.miny, 0, mRows - 1);		    //clamp y to top edge if negative, to bottom if deeper than height, or keep
-			g4.maxx = bad_clamp(g4.maxx, 0, mColumns);			//clamp x to left edge if negative, to right if wider than width, or keep
-			g4.maxy = bad_clamp(g4.maxy, 0, mRows);				//clamp y to top edge if negative, to bottom if deeper than height, or keep
-			return g4;
 		}
 
 	private:
