@@ -52,7 +52,7 @@ int main() {
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
-        AABB gridBounds = AABB(2 * 32, 2 * 32, 22*32,14*32);
+        AABB gridBounds = AABB(0, 0, 256, 256); // exact square
         NumberGenerator gen;
         Sequence<AABB> myABBS;
         myABBS.set_capacity(10000);
@@ -65,12 +65,12 @@ int main() {
             );
         }
 
-        UniformGrid muhGrid(gridBounds, 32.0f, 32.0f);
+        UniformGrid muhGrid(gridBounds, 8.0f, 8.0f);
         muhGrid.insert(myABBS.begin(), myABBS.end(), 0ll);
 
 
-        AABB wasdBox = AABB(32, 32, 8, 8);
-        AABB mouseBox = AABB(0, 0, 8, 8);
+        AABB wasdBox = AABB(-64, -64, 8, 8);   // outside, top-left
+        AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -94,23 +94,23 @@ int main() {
                 }
                 //update wasdBox
                 if (EVENT.key.key == SDLK_W) {
-                    wasdBox.y -= 10;
+                    wasdBox.y -= 1;
                 }
                 if (EVENT.key.key == SDLK_A) {
-                    wasdBox.x -= 10;
+                    wasdBox.x -= 1;
                 }
                 if (EVENT.key.key == SDLK_S) {
-                    wasdBox.y += 10;
+                    wasdBox.y += 1;
                 }
                 if (EVENT.key.key == SDLK_D) {
-                    wasdBox.x += 10;
+                    wasdBox.x += 1;
                 }
             }
             //update mouseBox
-            float x, y;
-            SDL_GetMouseState(&x, &y);
-            mouseBox.x = x;
-            mouseBox.y = y;
+           // float x, y;
+           // SDL_GetMouseState(&x, &y);
+           // mouseBox.x = x;
+           // mouseBox.y = y;
             //first draw the whole grid to yellow
             renManager.render_rectangle(muhGrid.get_grid_bounds(), Colors::Yellow);
             //draw mouse and wasd box
@@ -121,7 +121,7 @@ int main() {
             float2 lineEnd = float2(mouseBox.x, mouseBox.y);
            // renManager.render_line(lineStart,lineEnd, Colors::White);
             Sequence<int> cells;
-            muhGrid.query_ray3(lineStart, lineEnd, cells);
+            muhGrid.query_ray(lineStart, lineEnd, cells);
             //draw all the cells captured
             for (int idx : cells)
             {

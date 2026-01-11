@@ -99,179 +99,80 @@ namespace badEngine {
 
 			return y * mColumns + x;
 		}
-		void query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
+		//queries a line against the grid returning cells it intersects with
+		//IMPORTANT: if the length of [lineEnd - lineOrigin] is 0, it could still be inside the grid but it will NOT be queried
+		void query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
 		{
-			//1) check if the ray intersects with the grid at all
-			Hit hit;
-			sweep(ray, mBounds, hit);
-			if (hit.t < 0)
-				return; //no hit
-
-			//2) ray starting cell (with epsilon because a ray can be exactly on the edge and move on an infite plane, which is bad because it would hit a number of cells but never register)
-			float2 entry = ray.origin + ray.dir * (hit.t + 0.0001f);
-
-			//3) Calculate starting cell
-			int cellX = static_cast<int>((entry.x - mBounds.x) * invCellW);
-			int cellY = static_cast<int>((entry.y - mBounds.y) * invCellH);
-
-			cellX = bad_clamp(cellX, 0, mColumns - 1);
-			cellY = bad_clamp(cellY, 0, mRows - 1);
-			//4) get the sign of a step
-			const float2 step = sign_vector(ray.dir);
-			//5) compute the distance to cross one cell in x and y
-			const float2 delta = float2(
-				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
-				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
-			);
-			//6) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
-			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
-			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
-
-			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
-			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
-
-			//7) traverse the grid
-			int currX = cellX;
-			int currY = cellY;
-			while (currX >= 0 && currX < mColumns && currY >= 0 && currY < mRows) {
-				//get the cell index
-				cell_indices.emplace_back(currY * mColumns + currX);
-
-				//next step
-				if (tMaxX < tMaxY) {
-					currX += step.x;
-					tMaxX += delta.x;
-				}
-				else {
-					currY += step.y;
-					tMaxY += delta.y;
-				}
-			}
-		}
-		void query_ray2(const float2& lineOrigin, const float2& lineEnd,  Sequence<int>& cell_indices)const noexcept
-		{
-			//1) compute ray direction and segment length, if segment legth is 0 then there is no ray, could still mean a point intersection though...
-			const float2 direction = lineEnd - lineOrigin;
-			const float segmentLength = length_vector(direction);
-			
-			if (segmentLength == 0.0f)
-				return;
-			//2) check if the ray intersects with the grid at all, if it doesn't then there is nothing to do
-			Ray ray(lineOrigin, direction / segmentLength);
-			Hit hit;
-			sweep(ray, mBounds, hit);
-			if (hit.t < 0)
-				return;
-			//3) early exit if intersection point is beyond segment length
-			if (hit.t > segmentLength)
-				return;
-
-			//4) ray starting cell (with epsilon because a ray can be exactly on the edge and move on an infite plane, which is bad because it would hit a number of cells but never register)
-			float2 entry = ray.origin + ray.dir * (hit.t + 0.0001f);
-
-			//5) Calculate starting cell and clamp it to corner (float gets rounded down to int)
-			int cellX = static_cast<int>((entry.x - mBounds.x) * invCellW);
-			int cellY = static_cast<int>((entry.y - mBounds.y) * invCellH);
-			cellX = bad_clamp(cellX, 0, mColumns - 1);
-			cellY = bad_clamp(cellY, 0, mRows - 1);
-			//6) get the sign of a step
-			const float2 step = sign_vector(ray.dir);
-			//7) compute the distance to cross one cell in x and y
-			const float2 delta = float2(
-				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
-				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
-			);
-			//8) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
-			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
-			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
-
-			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
-			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
-
-			//9) current distance traveled along the ray, start at hit.t (entry point) + epsilon
-			float currentT = hit.t + 0.0001f;
-
-			//10) traverse the grid with segment length limit
-			int currX = cellX;
-			int currY = cellY;
-			while (
-				currX >= 0 && currX < mColumns && 
-				currY >= 0 && currY < mRows &&
-				currentT <= segmentLength
-				) {
-				//get the cell index
-				cell_indices.emplace_back(currY * mColumns + currX);
-
-				//next step
-				if (tMaxX < tMaxY) {
-					currentT = tMaxX;//update the next intersection point
-					currX += static_cast<int>(step.x);
-					tMaxX += delta.x;
-				}
-				else {
-					currentT = tMaxY;//update the next intersection point
-					currY += static_cast<int>(step.y);
-					tMaxY += delta.y;
-				}
-			}
-		}
-		void query_ray3(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
-		{
-			constexpr float EPS = 1e-4f;
+			static constexpr float EPS = 0.0001;
+		
 			//1) compute ray direction and segment length, if segment legth is 0 then there is no ray, could still mean a point intersection though...
 			const float2 dir = lineEnd - lineOrigin;
 			const float segmentLength = length_vector(dir);
+			if (segmentLength == 0.0f) return;
 
-			if (segmentLength == 0.0f)
-				return;
-			//2) check if the origin is inside grid bounds
-			Ray ray(lineOrigin, dir / segmentLength);
-			const AABB& bounds = mBounds;
-			bool originInside =
-				ray.origin.x >= bounds.x &&
-				ray.origin.x < bounds.x + bounds.w &&
-				ray.origin.y >= bounds.y &&
-				ray.origin.y < bounds.y + bounds.h;
-			//3) compute entry and exit T
+			//2) create a ray and check if the origin is inside grid bounds
+			const Ray ray(lineOrigin, dir / segmentLength);
+
+			const bool originInside =
+				ray.origin.x >= mBounds.x &&
+				ray.origin.x < mBounds.x + mBounds.w &&
+				ray.origin.y >= mBounds.y &&
+				ray.origin.y < mBounds.y + mBounds.h;
+
+			//3) the point origin can be in the grid or out. if it is inside, by default entry MUST be 0. Doing a sweep blindly will result in not quering inner cells. 
+			//otherwise do a sweep test if the origin is outside the grid and find entry that way
 			float entryT = 0.0f;
-			float exitT = segmentLength;
 			if (!originInside) {
 				Hit hit;
-				sweep(ray, bounds, hit);
+				sweep(ray, mBounds, hit);
 				//no intersection at all
 				if (hit.t == INFINITY)
 					return;
-
-				//entry beyond segment
+				//entry does happen but only not in the length of the segment
 				if (hit.t > segmentLength)
 					return;
 				entryT = hit.t;
 			}
-			//4) entry point (nudged inside)
+
+			//4) apply a tiny epsilon to entryT to avoid edges cases like traversing EXACTLY on the edges.
+			//also check again if entry is within the maximum segment length
 			float currentT = entryT + EPS;
 			if (currentT > segmentLength)
 				return;
+
+			//5) unlike sweep, query_ray is about where to start traversing the grid thus sweeps hit.pos does not apply. logical traversal must be respected
+			//calculate the starting points of traversal in cell indices format clamping twice. once implicitly from float to int but secondly making sure it stays in the grid
+			//the second clamp forces traversal to begin in the grid, not some value outside. not a crash but fails to query
 			float2 entryPos = ray.origin + ray.dir * currentT;
-			//5) Calculate starting cell and clamp it to corner (float gets rounded down to int)
-			int cellX = static_cast<int>((entryPos.x - bounds.x) * invCellW);
-			int cellY = static_cast<int>((entryPos.y - bounds.y) * invCellH);
+			int cellX = static_cast<int>((entryPos.x - mBounds.x) * invCellW);
+			int cellY = static_cast<int>((entryPos.y - mBounds.y) * invCellH);
 			cellX = bad_clamp(cellX, 0, mColumns - 1);
 			cellY = bad_clamp(cellY, 0, mRows - 1);
-			//6) get the sign of a step
-			float2 step = sign_vector(ray.dir);
-			//7) compute the distance to cross one cell in x and y
+
+			//6) get the sign of a step, which way to traverse
+			const int2 step = sign_vector(ray.dir);
+
+			//7) get the distance difference per step. per 1 x axis step how much y length changes; per 1 y axis step how much x length changes (basic graph stuff)
+			//if step.x or step.y is 0 it means it's axis aligned and should never choose the other step, thus give it infinity value
 			const float2 delta = float2(
 				(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
 				(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
 			);
-			//8) compute the inital tMax, here if maxX or maxY is infinity, we can just always move 1 axis and never the other
-			float nextBoundaryX = mBounds.x + (step.x > 0 ? (cellX + 1) * mCellWidth : cellX * mCellWidth);
-			float nextBoundaryY = mBounds.y + (step.y > 0 ? (cellY + 1) * mCellHeight : cellY * mCellHeight);
 
-			float tMaxX = (step.x == 0.0f) ? INFINITY : (nextBoundaryX - ray.origin.x) / ray.dir.x;
-			float tMaxY = (step.y == 0.0f) ? INFINITY : (nextBoundaryY - ray.origin.y) / ray.dir.y;
+			//8) initalize the time along the ray when each axis crosses its next cell boundary
+			const float nextBoundaryX = mBounds.x + (step.x > 0 ?
+				(cellX + 1) * mCellWidth : cellX * mCellWidth);
+			const float nextBoundaryY = mBounds.y + (step.y > 0 ?
+				(cellY + 1) * mCellHeight : cellY * mCellHeight);
 
-			//9) Traverse grid
+			//9) since the origin can be anywhere in the grid, set up initially as the length that is "already traversed"
+			float traversedX = (step.x == 0.0f) ? INFINITY :
+				(nextBoundaryX - entryPos.x) / ray.dir.x + currentT;
+			
+			float traversedY = (step.y == 0.0f) ? INFINITY :
+				(nextBoundaryY - entryPos.y) / ray.dir.y + currentT;
+
+			//10) Traverse grid as long as cell indecies are within range and currentT is within segment length
 			while (
 				cellX >= 0 && cellX < mColumns &&
 				cellY >= 0 && cellY < mRows &&
@@ -280,24 +181,24 @@ namespace badEngine {
 			{
 				cell_indices.emplace_back(cellY * mColumns + cellX);
 
-				// Step to next cell
-				if (tMaxX < tMaxY)
+				//step to next cell if either is dominant
+				if (traversedX < traversedY)
 				{
-					currentT = tMaxX;
-					tMaxX += delta.x;
+					currentT = traversedX;
+					traversedX += delta.x;
 					cellX += step.x;
 				}
-				else if (tMaxY < tMaxX)
+				else if (traversedY < traversedX)
 				{
-					currentT = tMaxY;
-					tMaxY += delta.y;
+					currentT = traversedY;
+					traversedY += delta.y;
 					cellY += step.y;
 				}
-				else // Corner crossing
+				else //45 degree angles
 				{
-					currentT = tMaxX;
-					tMaxX += delta.x;
-					tMaxY += delta.y;
+					currentT = traversedX;
+					traversedX += delta.x;
+					traversedY += delta.y;
 					cellX += step.x;
 					cellY += step.y;
 				}
