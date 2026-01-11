@@ -78,8 +78,8 @@ namespace badEngine {
 			return mCells;
 		}
 
-		//collects all elements within the region
-		//the rectangle can be partially intersecting the bounds of the grid but returns no results if the region is fully outside
+		//queries a region against the grid
+		//returns indices to the cells the region intersects with
 		void query_region(const AABB& region, Sequence<int>& results)noexcept {
 			//NOTE: the reason for std::ceil is because we must include partially overlapping cells
 			int minx = static_cast<int>((region.x - mBounds.x) * invCellW);					             //left edge (round down)
@@ -96,9 +96,7 @@ namespace badEngine {
 			for (int y = miny; y < maxy; ++y) {
 				const int offset = y * mColumns;
 				for (int x = minx; x < maxx; ++x) {
-					for (int id : mCells[static_cast<std::size_t>(offset + x)]) {
-						results.emplace_back(id);
-					}
+					results.emplace_back(static_cast<std::size_t>(offset + x));
 				}
 			}
 		}
