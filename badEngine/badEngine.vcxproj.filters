@@ -89,5 +89,8 @@
     <ClCompile Include="Scripts.cpp">
       <Filter>Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="UniformGrid.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
