@@ -140,6 +140,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Scripts.h" />
+    <ClInclude Include="SDLCleanUp.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Sprite.h" />

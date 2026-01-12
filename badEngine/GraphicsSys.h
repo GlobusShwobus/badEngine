@@ -9,25 +9,15 @@
 #include "BadExceptions.h"
 #include "Sequence.h"
 
+#include "SDLCleanUp.h"
+
 namespace badEngine {
 #define BAD_RENDERER_EXCEPTION(type,note) BadException(__FILE__, __LINE__,type,note)
 
-	class SDLWindowDeleter {
-	public:
-		void operator()(SDL_Window* window)noexcept {
-			if(window)
-				SDL_DestroyWindow(window);
-		}
-	};
-	class SDLRendererDeleter {
-	public:
-		void operator()(SDL_Renderer* renderer)noexcept {
-			if (renderer)
-				SDL_DestroyRenderer(renderer);
-		}
-	};
-
 	class GraphicsSys {
+		
+		using Renderer = std::unique_ptr<SDL_Renderer, SDLDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
+		using Window = std::unique_ptr<SDL_Window, SDLDeleter<SDL_Window, SDL_DestroyWindow>>;
 
 		void do_setup(std::string_view heading, Uint32 width, Uint32 height, SDL_WindowFlags flags);
 
@@ -111,10 +101,12 @@ namespace badEngine {
 		}
 
 	private:
-		/* ORDER MATTERS BECAUSE OF DELETER! */
-		std::unique_ptr<SDL_Renderer, SDLRendererDeleter> mRenderer{ nullptr, {} };
-		std::unique_ptr<SDL_Window, SDLWindowDeleter>     mWindow{ nullptr, {} };
+		/* ORDER MATTERS BECAUSE OF DELETER! ALWAYS DELETE RENDERER BEFORE WINDOW */
+		Renderer mRenderer;
+		Window mWindow;
+
 		Color mDrawColor = Colors::Black;
+
 
 		static constexpr std::string_view default_window_heading = "DEFAULT HEADING";
 		static constexpr size_t default_window_width = 960;

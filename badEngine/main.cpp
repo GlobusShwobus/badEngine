@@ -71,6 +71,11 @@ int main() {
 
         AABB wasdBox = AABB(-64, -64, 8, 8);   // outside, top-left
         AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
+
+        std::string path = "C:/Users/ADMIN/Desktop/badEngine/Textures/enemy_spear1.png";
+        StaticTexture txt(path, renManager);
+        Sprite basicSprt(txt);
+
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -107,10 +112,10 @@ int main() {
                 }
             }
             //update mouseBox
-           // float x, y;
-           // SDL_GetMouseState(&x, &y);
-           // mouseBox.x = x;
-           // mouseBox.y = y;
+            float x, y;
+            SDL_GetMouseState(&x, &y);
+            mouseBox.x = x;
+            mouseBox.y = y;
             //first draw the whole grid to yellow
             renManager.render_rectangle(muhGrid.get_grid_bounds(), Colors::Yellow);
             //draw mouse and wasd box
@@ -142,6 +147,7 @@ int main() {
                 renManager.render_rectangle(cellBox, Colors::Green);
             }
             renManager.render_line(lineStart, lineEnd, Colors::White);
+            renManager.draw(basicSprt.get_texture(), basicSprt.get_source(), basicSprt.get_dest());
             renManager.renderer_present();
             std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }

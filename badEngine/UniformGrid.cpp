@@ -61,7 +61,7 @@ namespace badEngine {
 
 	void UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const noexcept
 	{
-		assert(mCells.size() > cellIndex);
+		assert(mCells.size() > cellIndex && cellIndex >= 0);
 		//1) work back the formula [ y * mColums + x ] to get x and y origin to do arithmetic from -1 to 1
 		const int x = cellIndex % mColumns;//column index
 		const int y = cellIndex / mColumns;//row index

@@ -9,11 +9,11 @@ namespace badEngine {
 
 	class Sprite {
 
-	protected:
+	public:
 
 		Sprite(const StaticTexture& texture) :mTexture(texture.get())
 		{
-			assert(mTexture != nullptr && "Texture is nullptr");
+			assert(mTexture != nullptr);
 			float w, h;
 			SDL_GetTextureSize(mTexture, &w, &h);
 			mSource = AABB(0, 0, w, h);
@@ -22,14 +22,12 @@ namespace badEngine {
 
 		Sprite(const TargetTexture& texture) :mTexture(texture.get())
 		{
-			assert(mTexture != nullptr && "Texture is nullptr");
+			assert(mTexture != nullptr);
 			float w, h;
 			SDL_GetTextureSize(mTexture, &w, &h);
 			mSource = AABB(0, 0, w, h);
 			mDest = AABB(0, 0, w, h);
 		}
-
-	public:
 
 		virtual ~Sprite() = default;
 

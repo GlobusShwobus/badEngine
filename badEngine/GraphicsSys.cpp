@@ -1,5 +1,4 @@
 #include "GraphicsSys.h"
-
 namespace badEngine {
 	void GraphicsSys::do_setup(std::string_view heading, Uint32 width, Uint32 height, SDL_WindowFlags flags)
 	{

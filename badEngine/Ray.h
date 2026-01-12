@@ -3,7 +3,7 @@
 #include "Rectangle.h"
 
 namespace badEngine {
-	//dir should be normalized for sweep tests, can be a vector otherwise
+	//dir should be normalized for sweep tests, this struct itself does no do it, caller must do it manually
 	struct Ray {
 		float2 origin;
 		float2 dir;
