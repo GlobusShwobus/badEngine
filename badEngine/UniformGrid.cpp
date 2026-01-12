@@ -59,6 +59,39 @@ namespace badEngine {
 		return y * mColumns + x;
 	}
 
+	void UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const noexcept
+	{
+		assert(mCells.size() > cellIndex);
+		//1) work back the formula [ y * mColums + x ] to get x and y origin to do arithmetic from -1 to 1
+		const int x = cellIndex % mColumns;//column index
+		const int y = cellIndex / mColumns;//row index
+
+		//MENTAL MODEL
+		//    _________________________________    
+		//    |  (-1,-1) |  (0, -1) | (1, -1) | 
+		//    |__________|__________|_________|  	 
+		//    |  (-1, 0) |  x and y | (1,  0) |  	 
+		//    |__________|__________|_________|  	 
+		//    |  (-1, 1) |  (0,  1) | (1,  1) |  	 
+		//    |__________|__________|_________|  	 		   	
+
+		//2) traverse the grid
+		for (int dy = -1; dy <= 1; ++dy) {
+			const int ny = y + dy;
+			//if neightbor index is less than 0 or more than rows, it is off the edge thus doesn't actually exist so skip it
+			if (ny < 0 || ny >= mRows)continue;
+
+			for (int dx = -1; dx <= 1; ++dx) {
+				int nx = x + dx;
+				//if neighbor is less than 0 or more than columns, it is off the edge thus skip. also if both are 0's then it is the cellIndex itself, skip that too
+				if (nx < 0 || nx >= mColumns)continue;
+				if (dx == 0 && dy == 0)continue;
+				//put together the neighbor [y * mColums + x]
+				neighbors.emplace_back(ny * mColumns + nx);
+			}
+		}
+	}
+
 	void UniformGrid::query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
 	{
 		static constexpr float EPS = 0.0001;

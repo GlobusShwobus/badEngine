@@ -70,6 +70,10 @@ namespace badEngine {
 		// returns cell index or -1 if the point is not in bounds of the grid
 		int query_point(const float2& point)const noexcept;
 
+		// queries the neighbors of a valid index. in debug does an assert but no protection at runtime
+		// returns all neighboring indices, up to a maximum of 8
+		void query_neighbors(int cellIndex, Sequence<int>& neighbors)const noexcept;
+
 		// queries a line against the grid
 		// IMPORTANT: if the length of [lineEnd - lineOrigin] is 0, it could still be inside the grid but it will NOT be queried
 		// returns cell indices, not individual elements
