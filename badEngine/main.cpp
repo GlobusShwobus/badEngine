@@ -72,9 +72,10 @@ int main() {
         AABB wasdBox = AABB(-64, -64, 8, 8);   // outside, top-left
         AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
 
-        std::string path = "C:/Users/ADMIN/Desktop/badEngine/Textures/enemy_spear1.png";
+        std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
         StaticTexture txt(path, renManager);
-        Sprite basicSprt(txt);
+        Font font(txt, 32, 3);
+        font.font_set_text("yey or nay", float2(0, 0));
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -117,10 +118,10 @@ int main() {
             mouseBox.x = x;
             mouseBox.y = y;
             //first draw the whole grid to yellow
-            renManager.draw_shape(Colors::Yellow, muhGrid.get_grid_bounds());
+            renManager.draw_shape(muhGrid.get_grid_bounds(), Colors::Yellow);
             //draw mouse and wasd box
-            renManager.draw_shape(Colors::Red, mouseBox);
-            renManager.draw_shape(Colors::Blue,wasdBox);
+            renManager.draw_shape(mouseBox, Colors::Red);
+            renManager.draw_shape(wasdBox, Colors::Blue);
             //create and draw a line segment
             float2 lineStart = float2(wasdBox.x, wasdBox.y);
             float2 lineEnd = float2(mouseBox.x, mouseBox.y);
@@ -144,10 +145,10 @@ int main() {
                 cellBox.w = cellW;
                 cellBox.h = cellH;
 
-                renManager.draw_shape(Colors::Green, cellBox);
+                renManager.draw_shape(cellBox, Colors::Green);
             }
-            renManager.draw_shape(Colors::White, lineStart, lineEnd, 4);
-            renManager.draw(basicSprt.get_texture(), basicSprt.get_source(), basicSprt.get_dest());
+            renManager.draw_shape(lineStart, lineEnd, 4, Colors::Green);
+            renManager.draw_texture(font.get_texture(), font.begin(), font.end());
             renManager.system_present();
             std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }

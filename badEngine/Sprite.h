@@ -88,8 +88,11 @@ namespace badEngine {
 		void font_clear_text()noexcept;
 		void font_set_scale(float scale)noexcept;
 
-		const Sequence<std::pair<AABB, AABB>>& get_letter_positions()const {
-			return mLetterPos;
+		const auto begin()const noexcept {
+			return mLetterPos.cbegin();
+		}
+		const auto end()const noexcept {
+			return mLetterPos.cend();
 		}
 	private:
 		Sequence<std::pair<AABB, AABB>> mLetterPos;

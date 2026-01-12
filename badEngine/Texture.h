@@ -31,13 +31,13 @@ namespace badEngine {
 	public:
 		StaticTexture(SDL_Surface& surface, const GraphicsSys& gfx)
 		{
-			SDL_Texture* txtr = gfx.load_texture_static(&surface);
+			SDL_Texture* txtr = gfx.create_texture_static(&surface);
 			assert(txtr != nullptr);
 			mTexture.reset(txtr);
 		}
 		StaticTexture(std::string_view path, const GraphicsSys& gfx)
 		{
-			SDL_Texture* txtr = gfx.load_texture_static(path);
+			SDL_Texture* txtr = gfx.create_texture_static(path);
 			assert(txtr != nullptr);
 			mTexture.reset(txtr);
 		}

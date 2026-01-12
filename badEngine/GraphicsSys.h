@@ -7,8 +7,6 @@
 #include "Rectangle.h"
 #include "json.hpp"
 #include "BadExceptions.h"
-#include "Sequence.h"
-
 #include "SDLCleanUp.h"
 
 namespace badEngine {
@@ -86,8 +84,18 @@ namespace badEngine {
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept;
 
-		// draws a texture with specified source and dest locations. SDL does automatic cliping.
-		void draw_texture(SDL_Texture* texture, const Sequence<std::pair<AABB, AABB>>& list)const noexcept;
+		template<std::input_iterator InputIt>
+			requires std::same_as<const std::pair<AABB, AABB>&, std::iter_reference_t<InputIt>>
+		void draw_texture(SDL_Texture* texture, InputIt begin, InputIt end)const noexcept
+		{
+			SDL_Renderer* ren = mRenderer.get();
+
+			for (; begin != end; ++begin) {
+				auto src = convert_rect(begin->first);
+				auto dest = convert_rect(begin->second);
+				SDL_RenderTexture(ren, texture, &src, &dest);
+			}
+		}
 
 		// draws a texture
 		void draw_texture(SDL_Texture* texture)const noexcept;

@@ -99,18 +99,6 @@ namespace badEngine {
 		SDL_RenderTexture(ren, texture, &sdlSrc, &sdlDest);
 	}
 
-	void GraphicsSys::draw_texture(SDL_Texture* texture, const Sequence<std::pair<AABB, AABB>>& list)const noexcept
-	{
-		SDL_Renderer* ren = mRenderer.get();
-
-		for (const auto& pair : list) {
-			auto src = convert_rect(pair.first);
-			auto dest = convert_rect(pair.second);
-
-			SDL_RenderTexture(ren, texture, &src, &dest);
-		}
-	}
-
 	void GraphicsSys::draw_texture(SDL_Texture* texture)const noexcept
 	{
 		SDL_RenderTexture(mRenderer.get(), texture, nullptr, nullptr);
