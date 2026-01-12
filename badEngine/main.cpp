@@ -89,7 +89,7 @@ int main() {
         while (GAME_RUNNING) {
             Stopwatch fps;
             //CLEAR RENDERING
-            renManager.renderer_refresh();
+            renManager.system_refresh();
 
             //LISTEN TO EVENTS
             while (SDL_PollEvent(&EVENT)) {
@@ -117,10 +117,10 @@ int main() {
             mouseBox.x = x;
             mouseBox.y = y;
             //first draw the whole grid to yellow
-            renManager.render_rectangle(muhGrid.get_grid_bounds(), Colors::Yellow);
+            renManager.draw_shape(Colors::Yellow, muhGrid.get_grid_bounds());
             //draw mouse and wasd box
-            renManager.render_rectangle(mouseBox, Colors::Red);
-            renManager.render_rectangle(wasdBox, Colors::Blue);
+            renManager.draw_shape(Colors::Red, mouseBox);
+            renManager.draw_shape(Colors::Blue,wasdBox);
             //create and draw a line segment
             float2 lineStart = float2(wasdBox.x, wasdBox.y);
             float2 lineEnd = float2(mouseBox.x, mouseBox.y);
@@ -144,11 +144,11 @@ int main() {
                 cellBox.w = cellW;
                 cellBox.h = cellH;
 
-                renManager.render_rectangle(cellBox, Colors::Green);
+                renManager.draw_shape(Colors::Green, cellBox);
             }
-            renManager.render_line(lineStart, lineEnd, Colors::White);
+            renManager.draw_shape(Colors::White, lineStart, lineEnd, 4);
             renManager.draw(basicSprt.get_texture(), basicSprt.get_source(), basicSprt.get_dest());
-            renManager.renderer_present();
+            renManager.system_present();
             std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }
     }

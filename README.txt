@@ -12,6 +12,7 @@ The following are the tags:
 
 sdl3
 sdl3-image
+sdl3-image [jpeg, png]
 imgui
 imgui[sdl3-binding]
 imgui[sdl3-renderer-binding]
