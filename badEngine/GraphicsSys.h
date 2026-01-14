@@ -2,11 +2,9 @@
 
 #include <memory>
 #include "SDL3/SDL.h"
-#include <SDL3_image/SDL_image.h>
 #include "Color.h"
 #include "Rectangle.h"
 #include "json.hpp"
-#include "BadExceptions.h"
 #include "SDLCleanUp.h"
 
 namespace badEngine {
@@ -23,36 +21,7 @@ namespace badEngine {
 
 	public:
 
-		GraphicsSys(const nlohmann::json& windowConfig) {
-
-			try {
-				const auto& config = windowConfig["sys_config"];
-
-				std::string heading = config["heading"];
-				Uint32 width = config["window_width"];
-				Uint32 height = config["window_height"];
-				Uint64 engine = config["engine"];
-				Uint64 windowMode = config["mode"];
-
-				const bool goodInit = SDL_InitSubSystem(SDL_INIT_VIDEO);
-				SDL_Window* window = SDL_CreateWindow(heading.data(), width, height, engine | windowMode);
-				SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
-
-				if (!goodInit && !window && !renderer) {
-					throw BAD_RENDERER_EXCEPTION("SDL EXCEPTION", SDL_GetError());
-				}
-
-				mWindow.reset(window);
-				mRenderer.reset(renderer);
-			}
-			catch (const nlohmann::json::exception& e) {
-				throw BAD_RENDERER_EXCEPTION("JSON EXCEPTION", e.what());
-			}
-			catch (const BadException& e) {
-				throw e;
-			}
-
-		}
+		GraphicsSys(const nlohmann::json& windowConfig);
 		GraphicsSys(const GraphicsSys&) = delete;
 		GraphicsSys(GraphicsSys&&)noexcept = delete;
 		GraphicsSys& operator=(const GraphicsSys&) = delete;
@@ -84,19 +53,6 @@ namespace badEngine {
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept;
 
-		template<std::input_iterator InputIt>
-			requires std::same_as<const std::pair<AABB, AABB>&, std::iter_reference_t<InputIt>>
-		void draw_texture(SDL_Texture* texture, InputIt begin, InputIt end)const noexcept
-		{
-			SDL_Renderer* ren = mRenderer.get();
-
-			for (; begin != end; ++begin) {
-				auto src = convert_rect(begin->first);
-				auto dest = convert_rect(begin->second);
-				SDL_RenderTexture(ren, texture, &src, &dest);
-			}
-		}
-
 		// draws a texture
 		void draw_texture(SDL_Texture* texture)const noexcept;
 
@@ -119,11 +75,10 @@ namespace badEngine {
 		void set_default_color(Color color)noexcept;
 
 
-		//TODO:: isolate these with some percise functional do gooders
-		SDL_Window* get_window_test()const noexcept {
+		SDL_Window* const get_window()const noexcept {
 			return mWindow.get();
 		}
-		SDL_Renderer* get_render_test()const noexcept {
+		SDL_Renderer* const get_render()const noexcept {
 			return mRenderer.get();
 		}
 

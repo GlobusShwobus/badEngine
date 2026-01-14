@@ -23,11 +23,9 @@
 
 #include <iostream>
 /*
-PRIORITY: constexpr for SLList and then correct signatures for quad/BHV tree
 
-1) revist quadtree (though not a lot of justification), mainly create a hash grid instead
-2) documentation and visit <functional>
-2) make engine class for on user create and run loop sepparation
+1) make engine class for on user create and run loop sepparation
+
 
 */
 
@@ -73,9 +71,16 @@ int main() {
         AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
 
         std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
+        std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player_sheet_2.png";
+        
         StaticTexture txt(path, renManager);
+        StaticTexture animtxt(path2, renManager);
+        TargetTexture ttxt(500,500, renManager);
+
         Font font(txt, 32, 3);
-        font.font_set_text("yey or nay", float2(0, 0));
+        Canvas canv(ttxt);
+        Animation anim(animtxt, 32,32);
+        font.set_text("yey or nay");
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -86,9 +91,9 @@ int main() {
         bool GAME_RUNNING = true;
         SDL_Event EVENT;
         //this whole main loop is badly bad but engine class in the future so fuck it for now
-
+        Stopwatch steper;
         while (GAME_RUNNING) {
-            Stopwatch fps;
+            float dt = steper.dt_float();
             //CLEAR RENDERING
             renManager.system_refresh();
 
@@ -111,10 +116,27 @@ int main() {
                 if (EVENT.key.key == SDLK_D) {
                     wasdBox.x += 1;
                 }
+                if (EVENT.key.key == SDLK_E) {
+                    anim.set_scale(anim.get_scale() + 1);
+                }
+                if (EVENT.key.key == SDLK_J) {
+                    font.set_scale(font.get_scale() + 1);
+                    font.update();
+                }
+                if (EVENT.key.key == SDLK_K) {
+                    font.set_scale(font.get_scale() - 1);
+                    font.update();
+                }
             }
+
+            anim.update(dt);
+
             //update mouseBox
             float x, y;
             SDL_GetMouseState(&x, &y);
+            anim.set_pos(float2(x, y));
+            font.set_pos(float2(x, y));
+            font.update();
             mouseBox.x = x;
             mouseBox.y = y;
             //first draw the whole grid to yellow
@@ -148,9 +170,10 @@ int main() {
                 renManager.draw_shape(cellBox, Colors::Green);
             }
             renManager.draw_shape(lineStart, lineEnd, 4, Colors::Green);
-            renManager.draw_texture(font.get_texture(), font.begin(), font.end());
+
+            anim.draw(renManager);
+            font.draw(renManager);
             renManager.system_present();
-            std::cout << "fps: " << 1 / fps.dt_float() << '\n';
         }
     }
     _CrtDumpMemoryLeaks();

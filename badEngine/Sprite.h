@@ -1,71 +1,72 @@
 #pragma once
 
-#include <assert.h>
 #include "Sequence.h"
 #include "Rectangle.h"
 #include "Texture.h"
+#include "GraphicsSys.h"
 
 namespace badEngine {
-
-	class Sprite {
-
+	// base class for all drawable types that contain SDL_Texture*
+	// is meant to be used as an interface class
+	class Sprite
+	{
 	public:
-
-		Sprite(const StaticTexture& texture) :mTexture(texture.get())
-		{
-			assert(mTexture != nullptr);
-			float w, h;
-			SDL_GetTextureSize(mTexture, &w, &h);
-			mSource = AABB(0, 0, w, h);
-			mDest = AABB(0, 0, w, h);
-		}
-
-		Sprite(const TargetTexture& texture) :mTexture(texture.get())
-		{
-			assert(mTexture != nullptr);
-			float w, h;
-			SDL_GetTextureSize(mTexture, &w, &h);
-			mSource = AABB(0, 0, w, h);
-			mDest = AABB(0, 0, w, h);
-		}
-
+		
 		virtual ~Sprite() = default;
 
-		const AABB& get_source()const noexcept {
-			return mSource;
-		}
-		const AABB& get_dest()const noexcept {
-			return mDest;
-		}
-		SDL_Texture* const get_texture()const noexcept {
-			return mTexture;
-		}
+		// base method for drawing a sprite. just calls gfx.draw_texture
+		virtual void draw(const GraphicsSys& gfx)const noexcept;
+
+		// sets the width and height of destination using original source as a base
+		void set_scale(float scale) noexcept;
+
+		// returns the current scale factor
+		float get_scale()const noexcept;
+
+		// sets the x and y of destination
+		void set_pos(const float2& pos)noexcept;
 
 	protected:
-		SDL_Texture* mTexture = nullptr;
+		// a texture can be either static or targetable, thus polymorphism is used to save on code duplication
+		// a derived class of sprite however should always demand either a static or targetable texture becasue TextureBase is also an interface
+		Sprite(const TextureBase* texture);
+
 		AABB mSource;
 		AABB mDest;
+		SDL_Texture* mTexture = nullptr;
+		float mScale = 1.0f;
 	};
 
-	class Animation :public Sprite {
-
+	// basic drawable sprite
+	class BasicSprite: public Sprite
+	{
 	public:
+		BasicSprite(const StaticTexture& texture);
+	};
 
+	// animatable object, creates frames from a texture and updates based on a time step
+	class Animation :public Sprite
+	{
+	public:
 		Animation(const StaticTexture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
 
-		void anim_update(float dt, float2* pos = nullptr)noexcept;
-		void anim_set_hold_time(float time)noexcept;
-		uint16_t anim_get_lines_count()const noexcept;
-		void anim_set_line(uint16_t line)noexcept;
-		float anim_get_scale()const noexcept;
-		void anim_set_scale(float scale)noexcept;
+		// update step
+		void update(float step)noexcept;
+		
+		// set interval in which a frame should be changed
+		void set_hold_time(float time)noexcept;
+
+		// set the line of animation to run
+		uint16_t get_lines_count()const noexcept;
+
+		//get the count for lines total
+		void set_line(uint16_t line)noexcept;
 
 	private:
 		Sequence<float2> mFrames;
 
 		float mHoldTime = 0.08f;
 		float mCurrentFrameTime = 0.0f;
-		float mScale = 1.0f;
 
 		uint16_t mColumnsN = 0;
 		uint16_t mRowsN = 0;
@@ -74,9 +75,9 @@ namespace badEngine {
 		uint16_t mCurrentRow = 0;
 	};
 
-
-	class Font : public Sprite {
-
+	// font object, requires the texture to be build in a specific way
+	class Font : public Sprite
+	{
 		static constexpr char first_ASCII_character = ' ';
 		static constexpr char last_ASCII_character = '~';
 
@@ -84,42 +85,31 @@ namespace badEngine {
 
 		Font(const StaticTexture& texture, uint32_t columnsCount, uint32_t rowsCount);
 
-		void font_set_text(std::string_view string, const float2& pos)noexcept;
-		void font_clear_text()noexcept;
-		void font_set_scale(float scale)noexcept;
+		// collects pieces of the texture to draw as a text, if pos or scale is changed after set_text, text is not updated
+		void set_text(std::string_view string)noexcept;
 
-		const auto begin()const noexcept {
-			return mLetterPos.cbegin();
-		}
-		const auto end()const noexcept {
-			return mLetterPos.cend();
-		}
+		// updates the current text (should be used only after pos/scale have been changed, otherwise wasted computation)
+		void update()noexcept;
+
+		//clears all text
+		void clear()noexcept;
+
+		//overridden version of draw taking into account many source locations instead of one
+		void draw(const GraphicsSys& gfx)const noexcept override;
 	private:
 		Sequence<std::pair<AABB, AABB>> mLetterPos;
-
 		uint32_t mColumnsCount = 0;
-		uint32_t mRowsCount = 0;
-		uint32_t mGlyphWidth = 0;
-		uint32_t mGlyphHeight = 0;
-		float mScale = 1.0f;
 	};
 
-	class Canvas :public Sprite {
+	//kinda not finished, but not sure what utility it needs untill i actually use it more than just a dumb canvas
+	class Canvas :public Sprite
+	{
 	public:
 
-
-		Canvas(const TargetTexture& texture)
-			:Sprite(texture)
-		{
-		}
+		Canvas(const TargetTexture& texture);
 		//false == failure, call SDL_GetError
-		bool start_drawing(const GraphicsSys& gfx)const noexcept {
-			return gfx.set_render_target(mTexture);
-		}
+		bool start_drawing(const GraphicsSys& gfx)const noexcept;
 		//false == failure, call SDL_GetError
-		bool end_drawing(const GraphicsSys& gfx)const noexcept {
-			return gfx.set_render_target(nullptr);
-		}
+		bool end_drawing(const GraphicsSys& gfx)const noexcept;
 	};
-
 }

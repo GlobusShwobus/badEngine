@@ -1,5 +1,39 @@
 #include "GraphicsSys.h"
+#include "BadExceptions.h"
+#include <SDL3_image/SDL_image.h>
+
 namespace badEngine {
+
+	GraphicsSys::GraphicsSys(const nlohmann::json& windowConfig) {
+
+		try {
+			const auto& config = windowConfig["sys_config"];
+
+			std::string heading = config["heading"];
+			Uint32 width = config["window_width"];
+			Uint32 height = config["window_height"];
+			Uint64 engine = config["engine"];
+			Uint64 windowMode = config["mode"];
+
+			const bool goodInit = SDL_InitSubSystem(SDL_INIT_VIDEO);
+			SDL_Window* window = SDL_CreateWindow(heading.data(), width, height, engine | windowMode);
+			SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
+
+			if (!goodInit && !window && !renderer) {
+				throw BAD_RENDERER_EXCEPTION("SDL EXCEPTION", SDL_GetError());
+			}
+
+			mWindow.reset(window);
+			mRenderer.reset(renderer);
+		}
+		catch (const nlohmann::json::exception& e) {
+			throw BAD_RENDERER_EXCEPTION("JSON EXCEPTION", e.what());
+		}
+		catch (const BadException& e) {
+			throw e;
+		}
+
+	}
 
 	void GraphicsSys::reset()noexcept
 	{

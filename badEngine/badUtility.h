@@ -74,4 +74,6 @@ namespace badEngine {
 	constexpr bool bad_isNaN(T x)noexcept {
 		return x != x;
 	}
+
+	static constexpr float BAD_EPSILON = 0.0001f;
 }

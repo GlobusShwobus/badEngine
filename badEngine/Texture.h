@@ -3,6 +3,15 @@
 #include "SDLCleanUp.h"
 #include "GraphicsSys.h"
 
+//TODO: WRONG SHIT
+//1) TextureBase is meant to be the origin, the truth of what a texture is. it owns the memory
+//2) TextureBase should be loaded up and stored once
+//3) All users (object types) of texture base actually use SDL_Texture which use a raw pointer as a reference
+//4) That pointer can be naively copied, thus rule of 0 applies. That pointer should never be deleted manually.
+//5) That pointer can become dangling in case TextureBase gets deleted before user. This however should never happen
+//6) 
+//TODO:: texture collection, and sprites get created via texture collection
+
 namespace badEngine {
 
 	class TextureBase {
@@ -14,15 +23,13 @@ namespace badEngine {
 		SDL_Texture* const get()const noexcept {
 			return mTexture.get();
 		}
-
-		bool isNullPtr()const noexcept {
-			return mTexture == nullptr;
-		}
+		
+		virtual ~TextureBase() = default;
 
 	protected:
 
 		TextureBase() = default;
-		virtual ~TextureBase() = default;
+
 		Texture mTexture;
 	};
 
