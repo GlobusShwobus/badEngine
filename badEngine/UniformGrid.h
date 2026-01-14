@@ -11,7 +11,6 @@ namespace badEngine {
 		using Cell = Sequence<int>;
 
 	public:
-
 		UniformGrid(const AABB& bounds, float cellWidth, float cellHeight);
 
 		//empties out all cells, leaves capacity intact

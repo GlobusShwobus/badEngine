@@ -75,6 +75,9 @@
     <ClInclude Include="SDLCleanUp.h">
       <Filter>Visual</Filter>
     </ClInclude>
+    <ClInclude Include="badEngine.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
