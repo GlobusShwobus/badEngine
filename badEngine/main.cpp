@@ -1,7 +1,7 @@
 #include "SLList.h"
 #include "Stopwatch.h"
 #include "GraphicsSys.h"
-#include "Configs.h"
+#include "Config_JSON.h"
 #include <thread>
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
@@ -41,10 +41,10 @@ int main() {
         using namespace badEngine;
         //using namespace badEngine;
         //configs
-        Configs windowConfig("../Configs/system_config.json");
+        Config_JSON windowConfig("../Configs/system_config.json");
 
         //init SDL system, can throw
-        GraphicsSys renManager(windowConfig.get());
+        GraphicsSys renManager(windowConfig);
 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -71,14 +71,14 @@ int main() {
         AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
 
         std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
-        std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player_sheet_2.png";
+        std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player.png";
         
-        StaticTexture txt(path, renManager);
-        StaticTexture animtxt(path2, renManager);
-        TargetTexture ttxt(500,500, renManager);
+        Texture txt(path, renManager);
+        Texture animtxt(path2, renManager);
+        //TargetTexture ttxt(500,500, renManager);
 
         Font font(txt, 32, 3);
-        Canvas canv(ttxt);
+        //Canvas canv(ttxt);
         Animation anim(animtxt, 32,32);
         font.set_text("yey or nay");
 

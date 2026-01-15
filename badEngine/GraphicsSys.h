@@ -4,11 +4,10 @@
 #include "SDL3/SDL.h"
 #include "Color.h"
 #include "Rectangle.h"
-#include "json.hpp"
 #include "SDLCleanUp.h"
+#include "Config_JSON.h"
 
 namespace badEngine {
-#define BAD_RENDERER_EXCEPTION(type,note) BadException(__FILE__, __LINE__,type,note)
 
 	class GraphicsSys {
 		
@@ -21,7 +20,7 @@ namespace badEngine {
 
 	public:
 
-		GraphicsSys(const nlohmann::json& windowConfig);
+		GraphicsSys(const Config_JSON& window_config);
 		GraphicsSys(const GraphicsSys&) = delete;
 		GraphicsSys(GraphicsSys&&)noexcept = delete;
 		GraphicsSys& operator=(const GraphicsSys&) = delete;

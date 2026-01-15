@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -133,8 +133,9 @@
     <ClInclude Include="BadExceptions.h" />
     <ClInclude Include="badUtility.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Configs.h" />
+    <ClInclude Include="Config_JSON.h" />
     <ClInclude Include="badEngine.h" />
     <ClInclude Include="GraphicsSys.h" />
     <ClInclude Include="NumberGenerator.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>
@@ -157,6 +159,9 @@
     <ClCompile Include="Scripts.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="UniformGrid.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="textures.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

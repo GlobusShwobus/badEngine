@@ -2,20 +2,19 @@
 #include <assert.h>
 namespace badEngine {
 
-	Sprite::Sprite(const TextureBase* texture)
+	Sprite::Sprite(const Texture& texture)
+		:mTexture(texture)
 	{
-		assert(texture != nullptr);
-		assert(texture->get() != nullptr);
-		mTexture = texture->get();
+		assert(texture.get() != nullptr);
 		float w, h;
-		SDL_GetTextureSize(mTexture, &w, &h);
+		SDL_GetTextureSize(mTexture.get(), &w, &h);
 		mSource = AABB(0, 0, w, h);
 		mDest = AABB(0, 0, w, h);
 	}
 
 	void Sprite:: draw(const GraphicsSys& gfx)const noexcept
 	{
-		gfx.draw_texture(mTexture, mSource, mDest);
+		gfx.draw_texture(mTexture.get(), mSource, mDest);
 	}
 
 	void Sprite::set_scale(float scale) noexcept
@@ -38,16 +37,16 @@ namespace badEngine {
 		mDest.y = pos.y;
 	}
 
-	BasicSprite::BasicSprite(const StaticTexture& texture)
-		:Sprite(&texture)
+	BasicSprite::BasicSprite(const Texture& texture)
+		:Sprite(texture)
 	{}
 
 	//####################################################################################
-	Animation::Animation(const StaticTexture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
-		:Sprite(&texture)
+	Animation::Animation(const Texture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
+		:Sprite(texture)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mTexture, &textureW, &textureH);
+		SDL_GetTextureSize(mTexture.get(), &textureW, &textureH);
 		//set values for iteration, internally frames are stored as 2D array
 		uint16_t columnCount = (nColumns != nullptr) ? *nColumns : static_cast<uint16_t>(textureW / frameWidth);
 		uint16_t rowCount = (nRows != nullptr) ? *nRows : static_cast<uint16_t>(textureH / frameHeight);
@@ -108,12 +107,12 @@ namespace badEngine {
 	}
 	//#########################################################################################
 
-	Font::Font(const StaticTexture& texture, uint32_t columnsCount, uint32_t rowsCount)
-		:Sprite(&texture),
+	Font::Font(const Texture& texture, uint32_t columnsCount, uint32_t rowsCount)
+		:Sprite(texture),
 		mColumnsCount(columnsCount)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mTexture, &textureW, &textureH);
+		SDL_GetTextureSize(mTexture.get(), &textureW, &textureH);
 
 		int mGlyphWidth = static_cast<unsigned int>(textureW / columnsCount);
 		int mGlyphHeight = static_cast<unsigned int>(textureH / rowsCount);
@@ -197,28 +196,13 @@ namespace badEngine {
 	void Font::draw(const GraphicsSys& gfx)const noexcept
 	{
 		auto it = mLetterPos.begin();
+		SDL_Texture* txtr = mTexture.get();
 		for (; it != mLetterPos.end(); ++it)
-			gfx.draw_texture(mTexture, it->first, it->second);
+			gfx.draw_texture(txtr, it->first, it->second);
 	}
 
 	void Font::clear()noexcept
 	{
 		mLetterPos.clear();
-	}
-
-	//#########################################################################################
-
-	Canvas::Canvas(const TargetTexture& texture)
-		:Sprite(&texture)
-	{}
-	//false == failure, call SDL_GetError
-	bool Canvas::start_drawing(const GraphicsSys& gfx)const noexcept
-	{
-		return gfx.set_render_target(mTexture);
-	}
-	//false == failure, call SDL_GetError
-	bool Canvas::end_drawing(const GraphicsSys& gfx)const noexcept
-	{
-		return gfx.set_render_target(nullptr);
 	}
 }

@@ -238,7 +238,7 @@ namespace badEngine {
 		*/
 		reference at(size_type index) {
 			if (index >= mSize)
-				throw BadException(__FILE__, __LINE__, "Out of Range", "at() access with out of range index");
+				throw BasicException("out of range access INFO: [size: "+std::to_string(mSize)+"; index: "+std::to_string(index));
 			return mArray[index];
 		}
 		/*
@@ -247,7 +247,7 @@ namespace badEngine {
 		*/
 		const_reference at(size_type index)const {
 			if (index >= mSize)
-				throw BadException(__FILE__, __LINE__, "Out of Range", "at() access with out of range index");
+				throw BasicException("out of range access INFO: [size: " + std::to_string(mSize) + "; index: " + std::to_string(index));
 			return mArray[index];
 		}
 

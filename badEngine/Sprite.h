@@ -29,11 +29,14 @@ namespace badEngine {
 	protected:
 		// a texture can be either static or targetable, thus polymorphism is used to save on code duplication
 		// a derived class of sprite however should always demand either a static or targetable texture becasue TextureBase is also an interface
-		Sprite(const TextureBase* texture);
+		Sprite(const Texture& texture);
+
+		//guarantee lifetime
+		explicit Sprite(const Texture& texture) noexcept;
 
 		AABB mSource;
 		AABB mDest;
-		SDL_Texture* mTexture = nullptr;
+		const Texture& mTexture;
 		float mScale = 1.0f;
 	};
 
@@ -41,14 +44,14 @@ namespace badEngine {
 	class BasicSprite: public Sprite
 	{
 	public:
-		BasicSprite(const StaticTexture& texture);
+		BasicSprite(const Texture& texture);
 	};
 
 	// animatable object, creates frames from a texture and updates based on a time step
 	class Animation :public Sprite
 	{
 	public:
-		Animation(const StaticTexture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
+		Animation(const Texture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
 
 		// update step
 		void update(float step)noexcept;
@@ -83,7 +86,7 @@ namespace badEngine {
 
 	public:
 
-		Font(const StaticTexture& texture, uint32_t columnsCount, uint32_t rowsCount);
+		Font(const Texture& texture, uint32_t columnsCount, uint32_t rowsCount);
 
 		// collects pieces of the texture to draw as a text, if pos or scale is changed after set_text, text is not updated
 		void set_text(std::string_view string)noexcept;
@@ -99,17 +102,5 @@ namespace badEngine {
 	private:
 		Sequence<std::pair<AABB, AABB>> mLetterPos;
 		uint32_t mColumnsCount = 0;
-	};
-
-	//kinda not finished, but not sure what utility it needs untill i actually use it more than just a dumb canvas
-	class Canvas :public Sprite
-	{
-	public:
-
-		Canvas(const TargetTexture& texture);
-		//false == failure, call SDL_GetError
-		bool start_drawing(const GraphicsSys& gfx)const noexcept;
-		//false == failure, call SDL_GetError
-		bool end_drawing(const GraphicsSys& gfx)const noexcept;
 	};
 }

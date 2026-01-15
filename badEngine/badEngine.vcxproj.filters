@@ -39,7 +39,7 @@
     <ClInclude Include="Stopwatch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Configs.h">
+    <ClInclude Include="Config_JSON.h">
       <Filter>JSON_things</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
@@ -78,6 +78,10 @@
     <ClInclude Include="badEngine.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>Visual</Filter>
+    </ClInclude>
+    <ClInclude Include="Canvas.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,5 +102,10 @@
     <ClCompile Include="UniformGrid.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="textures.json">
+      <Filter>JSON_things</Filter>
+    </None>
   </ItemGroup>
 </Project>
