@@ -3,7 +3,6 @@
 #include "Sequence.h"
 #include "Rectangle.h"
 #include "Texture.h"
-#include "GraphicsSys.h"
 
 namespace badEngine {
 	// base class for all drawable types that contain SDL_Texture*
@@ -14,14 +13,13 @@ namespace badEngine {
 		
 		virtual ~Sprite() = default;
 
-		// base method for drawing a sprite. just calls gfx.draw_texture
-		virtual void draw(const GraphicsSys& gfx)const noexcept;
+		float get_scale()const noexcept;
+		const AABB& get_source()const noexcept;
+		const AABB& get_dest()const noexcept;
+		SDL_Texture* const get_texture()const noexcept;
 
 		// sets the width and height of destination using original source as a base
 		void set_scale(float scale) noexcept;
-
-		// returns the current scale factor
-		float get_scale()const noexcept;
 
 		// sets the x and y of destination
 		void set_pos(const float2& pos)noexcept;
@@ -29,14 +27,11 @@ namespace badEngine {
 	protected:
 		// a texture can be either static or targetable, thus polymorphism is used to save on code duplication
 		// a derived class of sprite however should always demand either a static or targetable texture becasue TextureBase is also an interface
-		Sprite(const Texture& texture);
-
-		//guarantee lifetime
 		explicit Sprite(const Texture& texture) noexcept;
 
 		AABB mSource;
 		AABB mDest;
-		const Texture& mTexture;
+		SDL_Texture* mTexture;
 		float mScale = 1.0f;
 	};
 
@@ -97,8 +92,14 @@ namespace badEngine {
 		//clears all text
 		void clear()noexcept;
 
-		//overridden version of draw taking into account many source locations instead of one
-		void draw(const GraphicsSys& gfx)const noexcept override;
+		const auto begin()const noexcept
+		{
+			return mLetterPos.begin();
+		}
+		const auto end()const noexcept
+		{
+			return mLetterPos.end();
+		}
 	private:
 		Sequence<std::pair<AABB, AABB>> mLetterPos;
 		uint32_t mColumnsCount = 0;

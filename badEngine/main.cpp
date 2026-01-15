@@ -73,8 +73,8 @@ int main() {
         std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
         std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player.png";
         
-        Texture txt(path, renManager);
-        Texture animtxt(path2, renManager);
+        Texture txt(path, renManager.get_render());
+        Texture animtxt(path2, renManager.get_render());
         //TargetTexture ttxt(500,500, renManager);
 
         Font font(txt, 32, 3);
@@ -171,8 +171,8 @@ int main() {
             }
             renManager.draw_shape(lineStart, lineEnd, 4, Colors::Green);
 
-            anim.draw(renManager);
-            font.draw(renManager);
+            renManager.draw_sprite(anim);
+            renManager.draw_sprite(font);
             renManager.system_present();
         }
     }

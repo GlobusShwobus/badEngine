@@ -2,19 +2,14 @@
 #include <assert.h>
 namespace badEngine {
 
-	Sprite::Sprite(const Texture& texture)
-		:mTexture(texture)
+	Sprite::Sprite(const Texture& texture)noexcept
 	{
 		assert(texture.get() != nullptr);
+		mTexture = texture.get();
 		float w, h;
-		SDL_GetTextureSize(mTexture.get(), &w, &h);
+		SDL_GetTextureSize(mTexture, &w, &h);
 		mSource = AABB(0, 0, w, h);
 		mDest = AABB(0, 0, w, h);
-	}
-
-	void Sprite:: draw(const GraphicsSys& gfx)const noexcept
-	{
-		gfx.draw_texture(mTexture.get(), mSource, mDest);
 	}
 
 	void Sprite::set_scale(float scale) noexcept
@@ -29,6 +24,20 @@ namespace badEngine {
 	float Sprite::get_scale()const noexcept
 	{
 		return mScale;
+	}
+
+	const AABB& Sprite::get_source()const noexcept
+	{
+		return mSource;
+	}
+	const AABB& Sprite::get_dest()const noexcept
+	{
+		return mDest;
+	}
+
+	SDL_Texture* const Sprite::get_texture()const noexcept
+	{
+		return mTexture;
 	}
 
 	void Sprite::set_pos(const float2& pos)noexcept
@@ -46,7 +55,7 @@ namespace badEngine {
 		:Sprite(texture)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mTexture.get(), &textureW, &textureH);
+		SDL_GetTextureSize(mTexture, &textureW, &textureH);
 		//set values for iteration, internally frames are stored as 2D array
 		uint16_t columnCount = (nColumns != nullptr) ? *nColumns : static_cast<uint16_t>(textureW / frameWidth);
 		uint16_t rowCount = (nRows != nullptr) ? *nRows : static_cast<uint16_t>(textureH / frameHeight);
@@ -112,7 +121,7 @@ namespace badEngine {
 		mColumnsCount(columnsCount)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mTexture.get(), &textureW, &textureH);
+		SDL_GetTextureSize(mTexture, &textureW, &textureH);
 
 		int mGlyphWidth = static_cast<unsigned int>(textureW / columnsCount);
 		int mGlyphHeight = static_cast<unsigned int>(textureH / rowsCount);
@@ -191,14 +200,6 @@ namespace badEngine {
 			d.w = originalBase.w * sx;
 			d.h = originalBase.h * sy;
 		}
-	}
-
-	void Font::draw(const GraphicsSys& gfx)const noexcept
-	{
-		auto it = mLetterPos.begin();
-		SDL_Texture* txtr = mTexture.get();
-		for (; it != mLetterPos.end(); ++it)
-			gfx.draw_texture(txtr, it->first, it->second);
 	}
 
 	void Font::clear()noexcept

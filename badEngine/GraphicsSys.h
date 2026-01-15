@@ -1,14 +1,17 @@
 #pragma once
 
 #include <memory>
-#include "SDL3/SDL.h"
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_render.h>
+#include "SDLCleanUp.h"
+
+#include "Config_JSON.h"
 #include "Color.h"
 #include "Rectangle.h"
-#include "SDLCleanUp.h"
-#include "Config_JSON.h"
+#include "Sprite.h"
+
 
 namespace badEngine {
-
 	class GraphicsSys {
 		
 		using Renderer = std::unique_ptr<SDL_Renderer, SDLDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
@@ -52,20 +55,13 @@ namespace badEngine {
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept;
 
-		// draws a texture
-		void draw_texture(SDL_Texture* texture)const noexcept;
-
-
-		// creates a static texture from an SDL_Surface
-		SDL_Texture* create_texture_static(SDL_Surface* surface)const noexcept;
-
-		// creates a static texture from a given path (currently png, jpeg, and maybe probably bmp, not sure)
-		SDL_Texture* create_texture_static(std::string_view path)const noexcept;
+		// draws different sprite types
+		void draw_sprite(const BasicSprite& sprite)const noexcept;
+		void draw_sprite(const Animation& sprite)const noexcept;
+		void draw_sprite(const Font& sprite)const noexcept;
 
 		// creates a texture that can be used as a render target
 		SDL_Texture* create_texture_targetable(Uint32 width, Uint32 height, SDL_Texture* copy_from = nullptr, AABB* src = nullptr, AABB* dest = nullptr)const noexcept;
-
-
 
 		// sets target where all drawing operations will take place in. Target texture sould be created as a targetable texture (for example created with create_texture_targetable)
 		// returns true of success, false on failure. call SDL_GetError on failure for details

@@ -1,7 +1,6 @@
 #include "GraphicsSys.h"
 #include "BadExceptions.h"
-#include <SDL3_image/SDL_image.h>
-
+#include <SDL3/SDL_init.h>
 namespace badEngine {
 
 	GraphicsSys::GraphicsSys(const Config_JSON& window_config) {
@@ -135,23 +134,20 @@ namespace badEngine {
 		SDL_RenderTexture(ren, texture, &sdlSrc, &sdlDest);
 	}
 
-	void GraphicsSys::draw_texture(SDL_Texture* texture)const noexcept
+	void GraphicsSys::draw_sprite(const BasicSprite& sprite)const noexcept
 	{
-		SDL_RenderTexture(mRenderer.get(), texture, nullptr, nullptr);
+		draw_texture(sprite.get_texture(), sprite.get_source(), sprite.get_dest());
 	}
-
-	SDL_Texture* GraphicsSys::create_texture_static(SDL_Surface* surface)const noexcept
+	void GraphicsSys::draw_sprite(const Animation& sprite)const noexcept
 	{
-		SDL_Texture* txtr = SDL_CreateTextureFromSurface(mRenderer.get(), surface);
-		assert(txtr != nullptr);
-		return txtr;
+		draw_texture(sprite.get_texture(), sprite.get_source(), sprite.get_dest());
 	}
-
-	SDL_Texture* GraphicsSys::create_texture_static(std::string_view path)const noexcept
+	void GraphicsSys::draw_sprite(const Font& sprite)const noexcept
 	{
-		SDL_Texture* txtr = IMG_LoadTexture(mRenderer.get(), path.data());
-		assert(txtr != nullptr);
-		return txtr;
+		auto it = sprite.begin();
+		for (; it != sprite.end(); ++it) {
+			draw_texture(sprite.get_texture(), it->first, it->second);
+		}
 	}
 
 	SDL_Texture* GraphicsSys::create_texture_targetable(Uint32 width, Uint32 height, SDL_Texture* copy_from, AABB* src, AABB* dest)const noexcept

@@ -2,10 +2,10 @@
 
 #include <unordered_map>
 #include <string>
+#include <SDL3/SDL_render.h>
+#include <SDL3_image/SDL_image.h>
 #include "Texture.h"
-#include "GraphicsSys.h"
 #include "Config_JSON.h"
-
 
 namespace badEngine {
 
@@ -13,8 +13,12 @@ namespace badEngine {
 	{
 	public:
 
-		TextureLoader(const Config_JSON& manifest, const GraphicsSys& gfx)
+		TextureLoader(const Config_JSON& manifest, SDL_Renderer* renderer)
 		{
+
+			if (!renderer) {
+				throw BasicException("Missing renderer");
+			}
 			const nlohmann::json& json = manifest.get();
 			
 			try {
@@ -35,7 +39,11 @@ namespace badEngine {
 					}
 
 					// create a texture
-					SDL_Texture* sdlTexture = gfx.create_texture_static(filepath);
+					SDL_Texture* sdlTexture = IMG_LoadTexture(renderer, filepath.c_str());
+
+					if (!sdlTexture) {
+						throw BasicException("Texture created as nullptr: " + tag, "Check manifest");
+					}
 
 					// wrap it in up
 					mTextures.emplace(tag, sdlTexture);
@@ -55,8 +63,6 @@ namespace badEngine {
 		//getter
 
 	private:
-
 		std::unordered_map<std::string, Texture> mTextures;
 	};
-
 }

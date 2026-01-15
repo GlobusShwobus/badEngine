@@ -1,7 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <SDL3/SDL_render.h>
+#include <SDL3_image/SDL_image.h>
+#include <string_view>
+#include <cassert>
 #include "SDLCleanUp.h"
-#include "GraphicsSys.h"
 
 namespace badEngine {
 
@@ -11,27 +15,31 @@ namespace badEngine {
 		using Texture_type = std::unique_ptr<SDL_Texture, SDLDeleter<SDL_Texture, SDL_DestroyTexture>>;
 
 	public:
-		Texture(SDL_Texture* texture)
+
+		explicit Texture(SDL_Texture* texture)noexcept
 		{
 			assert(texture != nullptr);
 			mTexture.reset(texture);
 		}
-		Texture(SDL_Surface& surface, const GraphicsSys& gfx)
+
+		Texture(SDL_Surface* surface, SDL_Renderer* renderer)
 		{
-			SDL_Texture* txtr = gfx.create_texture_static(&surface);
+			SDL_Texture* txtr = SDL_CreateTextureFromSurface(renderer, surface);
 			assert(txtr != nullptr);
 			mTexture.reset(txtr);
 		}
-		Texture(std::string_view path, const GraphicsSys& gfx)
+		Texture(std::string_view path, SDL_Renderer* renderer)
 		{
-			SDL_Texture* txtr = gfx.create_texture_static(path);
+			SDL_Texture* txtr = IMG_LoadTexture(renderer, path.data());
 			assert(txtr != nullptr);
 			mTexture.reset(txtr);
 		}
 
-		SDL_Texture* const get()const noexcept {
+		SDL_Texture* const get()const noexcept
+		{
 			return mTexture.get();
 		}
+
 	private:
 		Texture_type mTexture;
 	};
