@@ -26,20 +26,6 @@ namespace badEngine {
 		return mScale;
 	}
 
-	const AABB& Sprite::get_source()const noexcept
-	{
-		return mSource;
-	}
-	const AABB& Sprite::get_dest()const noexcept
-	{
-		return mDest;
-	}
-
-	SDL_Texture* const Sprite::get_texture()const noexcept
-	{
-		return mTexture;
-	}
-
 	void Sprite::set_pos(const float2& pos)noexcept
 	{
 		mDest.x = pos.x;

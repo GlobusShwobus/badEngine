@@ -136,17 +136,17 @@ namespace badEngine {
 
 	void GraphicsSys::draw_sprite(const BasicSprite& sprite)const noexcept
 	{
-		draw_texture(sprite.get_texture(), sprite.get_source(), sprite.get_dest());
+		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
 	}
 	void GraphicsSys::draw_sprite(const Animation& sprite)const noexcept
 	{
-		draw_texture(sprite.get_texture(), sprite.get_source(), sprite.get_dest());
+		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
 	}
 	void GraphicsSys::draw_sprite(const Font& sprite)const noexcept
 	{
 		auto it = sprite.begin();
 		for (; it != sprite.end(); ++it) {
-			draw_texture(sprite.get_texture(), it->first, it->second);
+			draw_texture(sprite.mTexture, it->first, it->second);
 		}
 	}
 

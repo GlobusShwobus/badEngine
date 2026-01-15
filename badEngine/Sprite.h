@@ -9,14 +9,13 @@ namespace badEngine {
 	// is meant to be used as an interface class
 	class Sprite
 	{
+		friend class GraphicsSys;
+
 	public:
 		
 		virtual ~Sprite() = default;
 
 		float get_scale()const noexcept;
-		const AABB& get_source()const noexcept;
-		const AABB& get_dest()const noexcept;
-		SDL_Texture* const get_texture()const noexcept;
 
 		// sets the width and height of destination using original source as a base
 		void set_scale(float scale) noexcept;
