@@ -7,7 +7,7 @@
 
 namespace badEngine {
 
-	//Canvas is a texture type that is modifiable by rendering onto it. call start_drawing - > render something - > end_drawing
+	// Canvas is a texture type that is modifiable by rendering onto it. call start_drawing - > render something - > end_drawing
 
 	class Canvas
 	{

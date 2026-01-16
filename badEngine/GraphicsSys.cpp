@@ -3,11 +3,10 @@
 #include <SDL3/SDL_init.h>
 namespace badEngine {
 
-	GraphicsSys::GraphicsSys(const Config_JSON& window_config) {
-		const nlohmann::json& json = window_config.get();
+	GraphicsSys::GraphicsSys(const nlohmann::json& window_config, const char* key) {
 
 		try {
-			const auto& config = json["sys_config"];
+			const auto& config = window_config[key];
 
 			std::string heading = config["heading"];
 			Uint32 width = config["window_width"];

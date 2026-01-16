@@ -32,7 +32,7 @@ namespace badEngine {
 
 		AABB mSource;
 		AABB mDest;
-		SDL_Texture* mTexture;
+		SDL_Texture* const mTexture;
 		float mScale = 1.0f;
 	};
 

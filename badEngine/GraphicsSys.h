@@ -5,7 +5,7 @@
 #include <SDL3/SDL_render.h>
 #include "SDLCleanUp.h"
 
-#include "Config_JSON.h"
+#include "json.hpp"
 #include "Color.h"
 #include "Rectangle.h"
 #include "Sprite.h"
@@ -19,7 +19,7 @@ namespace badEngine {
 
 	public:
 
-		GraphicsSys(const Config_JSON& window_config);
+		GraphicsSys(const nlohmann::json& window_config, const char* key);
 		GraphicsSys(const GraphicsSys&) = delete;
 		GraphicsSys(GraphicsSys&&)noexcept = delete;
 		GraphicsSys& operator=(const GraphicsSys&) = delete;

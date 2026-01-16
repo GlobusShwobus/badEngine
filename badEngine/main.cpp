@@ -44,7 +44,7 @@ int main() {
         Config_JSON windowConfig("../Configs/system_config.json");
 
         //init SDL system, can throw
-        GraphicsSys renManager(windowConfig);
+        GraphicsSys renManager(windowConfig.get(), "sys_config");
 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -69,12 +69,9 @@ int main() {
 
         AABB wasdBox = AABB(100, 100, 69, 69);   // outside, top-left
         AABB mouseBox = AABB(420, 420, 16, 16);  // outside, bottom-right
-
-        std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
-        std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player.png";
         
-        Texture txt(path, renManager.get_render());
-        Texture animtxt(path2, renManager.get_render());
+        Texture txt("C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png", renManager.get_render());
+        Texture animtxt("C:/Users/ADMIN/Desktop/badEngine/Textures/player.png", renManager.get_render());
         //TargetTexture ttxt(500,500, renManager);
 
         Font font(txt, 32, 3);

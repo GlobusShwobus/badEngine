@@ -3,9 +3,8 @@
 namespace badEngine {
 
 	Sprite::Sprite(const Texture& texture)noexcept
-	{
-		assert(texture.get() != nullptr);
-		mTexture = texture.get();
+	:mTexture(texture.get()){
+		assert(mTexture != nullptr);
 		float w, h;
 		SDL_GetTextureSize(mTexture, &w, &h);
 		mSource = AABB(0, 0, w, h);
