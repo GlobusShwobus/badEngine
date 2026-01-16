@@ -17,10 +17,6 @@ namespace badEngine {
 		using Renderer = std::unique_ptr<SDL_Renderer, SDLDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
 		using Window = std::unique_ptr<SDL_Window, SDLDeleter<SDL_Window, SDL_DestroyWindow>>;
 
-		inline SDL_FRect convert_rect(const AABB& rect)const noexcept {
-			return SDL_FRect(rect.x, rect.y, rect.w, rect.h);
-		}
-
 	public:
 
 		GraphicsSys(const Config_JSON& window_config);
@@ -51,17 +47,16 @@ namespace badEngine {
 		// renders a line on the screen with a given color and thickness
 		void draw_shape(const float2& start, const float2& end, std::size_t thichness, Color color);
 
-
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept;
+
+		// draws a texture with default specifiers
+		void draw_texture(SDL_Texture* texture)const noexcept;
 
 		// draws different sprite types
 		void draw_sprite(const BasicSprite& sprite)const noexcept;
 		void draw_sprite(const Animation& sprite)const noexcept;
 		void draw_sprite(const Font& sprite)const noexcept;
-
-		// creates a texture that can be used as a render target
-		SDL_Texture* create_texture_targetable(Uint32 width, Uint32 height, SDL_Texture* copy_from = nullptr, AABB* src = nullptr, AABB* dest = nullptr)const noexcept;
 
 		// sets target where all drawing operations will take place in. Target texture sould be created as a targetable texture (for example created with create_texture_targetable)
 		// returns true of success, false on failure. call SDL_GetError on failure for details

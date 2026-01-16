@@ -11,7 +11,7 @@
 #include "Sprite.h"
 
 #include "UniformGrid.h"
-
+#include "Canvas.h"
 #include "Sequence.h"
 
 #include "NumberGenerator.h"
@@ -67,8 +67,8 @@ int main() {
         muhGrid.insert(myABBS.begin(), myABBS.end(), 0ll);
 
 
-        AABB wasdBox = AABB(-64, -64, 8, 8);   // outside, top-left
-        AABB mouseBox = AABB(256, 256, 8, 8);  // outside, bottom-right
+        AABB wasdBox = AABB(100, 100, 69, 69);   // outside, top-left
+        AABB mouseBox = AABB(420, 420, 16, 16);  // outside, bottom-right
 
         std::string path = "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png";
         std::string path2 = "C:/Users/ADMIN/Desktop/badEngine/Textures/player.png";
@@ -78,9 +78,16 @@ int main() {
         //TargetTexture ttxt(500,500, renManager);
 
         Font font(txt, 32, 3);
-        //Canvas canv(ttxt);
+        Canvas canv(960,540, renManager.get_render());
         Animation anim(animtxt, 32,32);
         font.set_text("yey or nay");
+
+        canv.start_drawing(renManager.get_render());
+        anim.set_pos(float2(200, 200));
+        renManager.draw_sprite(anim);
+        renManager.draw_shape(mouseBox, Colors::Red);
+        renManager.draw_shape(wasdBox, Colors::Blue);
+        canv.end_drawing(renManager.get_render());
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -116,63 +123,8 @@ int main() {
                 if (EVENT.key.key == SDLK_D) {
                     wasdBox.x += 1;
                 }
-                if (EVENT.key.key == SDLK_E) {
-                    anim.set_scale(anim.get_scale() + 1);
-                }
-                if (EVENT.key.key == SDLK_J) {
-                    font.set_scale(font.get_scale() + 1);
-                    font.update();
-                }
-                if (EVENT.key.key == SDLK_K) {
-                    font.set_scale(font.get_scale() - 1);
-                    font.update();
-                }
             }
-
-            anim.update(dt);
-
-            //update mouseBox
-            float x, y;
-            SDL_GetMouseState(&x, &y);
-            anim.set_pos(float2(x, y));
-            font.set_pos(float2(x, y));
-            font.update();
-            mouseBox.x = x;
-            mouseBox.y = y;
-            //first draw the whole grid to yellow
-            renManager.draw_shape(muhGrid.get_grid_bounds(), Colors::Yellow);
-            //draw mouse and wasd box
-            renManager.draw_shape(mouseBox, Colors::Red);
-            renManager.draw_shape(wasdBox, Colors::Blue);
-            //create and draw a line segment
-            float2 lineStart = float2(wasdBox.x, wasdBox.y);
-            float2 lineEnd = float2(mouseBox.x, mouseBox.y);
-           // renManager.render_line(lineStart,lineEnd, Colors::White);
-            Sequence<int> cells;
-            muhGrid.query_ray(lineStart, lineEnd, cells);
-            //draw all the cells captured
-            for (int idx : cells)
-            {
-                int cols = (int)(muhGrid.get_grid_bounds().w / muhGrid.get_cell_width());
-                int gx = idx % cols;
-                int gy = idx / cols;
-
-                float cellW = muhGrid.get_cell_width();
-                float cellH = muhGrid.get_cell_height();
-                const AABB& gridBounds = muhGrid.get_grid_bounds();
-
-                AABB cellBox;
-                cellBox.x = gridBounds.x + gx * cellW;
-                cellBox.y = gridBounds.y + gy * cellH;
-                cellBox.w = cellW;
-                cellBox.h = cellH;
-
-                renManager.draw_shape(cellBox, Colors::Green);
-            }
-            renManager.draw_shape(lineStart, lineEnd, 4, Colors::Green);
-
-            renManager.draw_sprite(anim);
-            renManager.draw_sprite(font);
+            renManager.draw_texture(canv.get());
             renManager.system_present();
         }
     }

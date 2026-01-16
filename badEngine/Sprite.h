@@ -5,6 +5,8 @@
 #include "Texture.h"
 
 namespace badEngine {
+	class GraphicsSys;//forward declare my thing
+
 	// base class for all drawable types that contain SDL_Texture*
 	// is meant to be used as an interface class
 	class Sprite

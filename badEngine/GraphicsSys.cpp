@@ -128,10 +128,15 @@ namespace badEngine {
 	void GraphicsSys::draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
-		SDL_FRect sdlSrc = convert_rect(source);
-		SDL_FRect sdlDest = convert_rect(dest);
+		SDL_FRect sdlSrc(source.x, source.y, source.w, source.h);
+		SDL_FRect sdlDest(dest.x, dest.y, dest.w, dest.h);
 
 		SDL_RenderTexture(ren, texture, &sdlSrc, &sdlDest);
+	}
+
+	void GraphicsSys::draw_texture(SDL_Texture* texture)const noexcept
+	{
+		SDL_RenderTexture(mRenderer.get(), texture, nullptr, nullptr);
 	}
 
 	void GraphicsSys::draw_sprite(const BasicSprite& sprite)const noexcept
@@ -148,43 +153,5 @@ namespace badEngine {
 		for (; it != sprite.end(); ++it) {
 			draw_texture(sprite.mTexture, it->first, it->second);
 		}
-	}
-
-	SDL_Texture* GraphicsSys::create_texture_targetable(Uint32 width, Uint32 height, SDL_Texture* copy_from, AABB* src, AABB* dest)const noexcept
-	{
-		SDL_Renderer* ren = mRenderer.get();
-		//create texture
-		SDL_Texture* texture = SDL_CreateTexture(
-			ren,
-			SDL_PIXELFORMAT_RGBA8888,
-			SDL_TEXTUREACCESS_TARGET,
-			width,
-			height
-		);
-		assert(texture != nullptr);
-
-		//set blend mode to blend to read alpha channels as well
-		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-		if (copy_from) {
-			//get full size of the copy texture
-			float copyTextureW, copyTextureH;
-			SDL_GetTextureSize(copy_from, &copyTextureW, &copyTextureH);
-
-			//set copied size, by default whole texture
-			SDL_FRect cSrc = (src) ? convert_rect(*src) : SDL_FRect(0, 0, copyTextureW, copyTextureH);
-			//set destination size, by default cSrc size
-			SDL_FRect cDest = (dest) ? convert_rect(*dest) : cSrc;
-
-			//store current target, if null is fine
-			SDL_Texture* oldTarget = SDL_GetRenderTarget(ren);
-			//set this texture as target so we copy data onto it
-			SDL_SetRenderTarget(ren, texture);
-			//render copied texture onto current canvas
-			SDL_RenderTexture(ren, copy_from, &cSrc, &cDest);
-			//reset target
-			SDL_SetRenderTarget(ren, oldTarget);
-		}
-		return texture;
 	}
 }

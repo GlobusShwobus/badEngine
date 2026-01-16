@@ -1,47 +1,33 @@
 #pragma once
 
+#include <memory>
+#include <SDL3/SDL_render.h>
+#include "SDLCleanUp.h"
+#include "Rectangle.h"
 
 namespace badEngine {
 
-	////TODO:: FULLY ISOLATE TARGETABLE TEXTURE INTO IT'S OWN THING
-	//class TargetTexture {
-	//	using Texture_type2 = std::unique_ptr<SDL_Texture, SDLDeleter<SDL_Texture, SDL_DestroyTexture>>;
-	//public:
-	//
-	//	TargetTexture(Uint32 w, Uint32 h, const GraphicsSys& gfx)
-	//	{
-	//		SDL_Texture* txtr = gfx.create_texture_targetable(w, h);
-	//		assert(txtr != nullptr);
-	//		mTexture.reset(txtr);
-	//	}
-	//	TargetTexture(Uint32 w, Uint32 h, const GraphicsSys& gfx, SDL_Texture* copy_from, AABB* src = nullptr, AABB* dest = nullptr)
-	//	{
-	//		SDL_Texture* txtr = gfx.create_texture_targetable(w, h, copy_from, src, dest);
-	//		assert(txtr != nullptr);
-	//		mTexture.reset(txtr);
-	//	}
-	//
-	//	Texture_type2 mTexture;
-	//};
-	////kinda not finished, but not sure what utility it needs untill i actually use it more than just a dumb canvas
-	//class Canvas
-	//{
-	//public:
-	//	Canvas(const TargetTexture& texture)
-	//		:temporary_ass(texture.mTexture.get())
-	//	{
-	//	}
-	//
-	//	bool start_drawing(const GraphicsSys& gfx)const noexcept
-	//	{
-	//		return true; //gfx.set_render_target(mTexture);
-	//	}
-	//
-	//	bool end_drawing(const GraphicsSys& gfx)const noexcept
-	//	{
-	//		return true; //gfx.set_render_target(nullptr);
-	//	}
-	//	SDL_Texture* temporary_ass;
-	//};
+	//Canvas is a texture type that is modifiable by rendering onto it. call start_drawing - > render something - > end_drawing
 
+	class Canvas
+	{
+		using CanvasType = std::unique_ptr<SDL_Texture, SDLDeleter<SDL_Texture, SDL_DestroyTexture>>;
+
+	public:
+		// constructs a blank canvas
+		Canvas(Uint32 width, Uint32 height, SDL_Renderer* const renderer);
+
+		// sets current rendering target as the texture
+		bool start_drawing(SDL_Renderer* const renderer)const noexcept;
+	
+		// resets the current rendering target of the renderer
+		bool end_drawing(SDL_Renderer* const renderer)const noexcept;
+
+		// ref accessor for SDL_Texture
+		SDL_Texture* const get()const noexcept;
+
+	private:
+		
+		CanvasType mTexture;
+	};
 }
