@@ -135,7 +135,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Config_JSON.h" />
+    <ClInclude Include="Validate_data.h" />
     <ClInclude Include="badEngine.h" />
     <ClInclude Include="GraphicsSys.h" />
     <ClInclude Include="NumberGenerator.h" />
@@ -160,9 +160,7 @@
     <ClCompile Include="Scripts.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="UniformGrid.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="textures.json" />
+    <ClCompile Include="Validate_data.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

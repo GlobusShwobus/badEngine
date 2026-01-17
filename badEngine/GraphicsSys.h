@@ -19,7 +19,7 @@ namespace badEngine {
 
 	public:
 
-		GraphicsSys(const nlohmann::json& window_config, const char* key);
+		GraphicsSys(const nlohmann::json& window_config);
 		GraphicsSys(const GraphicsSys&) = delete;
 		GraphicsSys(GraphicsSys&&)noexcept = delete;
 		GraphicsSys& operator=(const GraphicsSys&) = delete;
@@ -79,4 +79,8 @@ namespace badEngine {
 
 		Color mDrawColor = Colors::Black;
 	};
+
+
+	// modifies flag bits by adding onto it 
+	bool SDL_Flag_string_to_uint64(const std::string& key, std::size_t& flags);
 }

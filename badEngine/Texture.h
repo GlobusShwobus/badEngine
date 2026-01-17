@@ -15,8 +15,6 @@ namespace badEngine {
 
 	public:
 
-		Texture() = default;
-
 		Texture(SDL_Surface* surface, SDL_Renderer* renderer)
 		{
 			if (surface && renderer) {

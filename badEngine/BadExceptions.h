@@ -15,9 +15,9 @@ namespace badEngine {
 			:mDescription(my_message)
 		{
 			if (!external_message.empty()) {
-				mDescription += " [EXTERNAL MESSAGE: ";
+				mDescription += " [[ ";
 				mDescription += external_message;
-				mDescription += "]";
+				mDescription += " ]]";
 			}
 		}
 

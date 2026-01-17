@@ -1,7 +1,7 @@
 #include "SLList.h"
 #include "Stopwatch.h"
 #include "GraphicsSys.h"
-#include "Config_JSON.h"
+#include "Validate_data.h"
 #include <thread>
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "Scripts.h"
 #include "Ray.h"
+#include "TextureLoader.h"
 
 #include <iostream>
 /*
@@ -40,11 +41,17 @@ int main() {
     {
         using namespace badEngine;
         //using namespace badEngine;
-        //configs
-        Config_JSON windowConfig("../Configs/system_config.json");
+        nlohmann::json window_conf;
+        nlohmann::json texture_loader_config;
+        load_and_validate_JSON(window_conf, "../Configs/system_config.json");
+        load_and_validate_JSON(texture_loader_config, "../Configs/textures.json");
+        validate_GraphicsSys_manifest(window_conf, "sys_config");
+        validate_texture_manifest(texture_loader_config, "texture_set1");
 
         //init SDL system, can throw
-        GraphicsSys renManager(windowConfig.get(), "sys_config");
+        GraphicsSys renManager(window_conf.at("sys_config"));
+
+        TextureLoader loader(texture_loader_config.at("texture_set1"), renManager.get_render());
 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################

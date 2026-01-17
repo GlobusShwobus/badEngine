@@ -9,6 +9,12 @@
 #include "BadExceptions.h"
 #include "Sequence.h"
 
+
+//TODO::load single texture
+//		remove a single texture
+//		review exception logic
+//		documentation and cleaup
+
 namespace badEngine {
 
 	class TextureLoader
@@ -36,14 +42,47 @@ namespace badEngine {
 			clear();
 			load(manifest, renderer);
 		}
-		void load_from_section(const nlohmann::json& manifest, const char* key, SDL_Renderer* renderer) {
-			load(manifest.at(key), renderer);
-		}
+		void load(const nlohmann::json& manifest, SDL_Renderer* renderer)
+		{
+			if (!renderer)
+				throw BasicException("Missing renderer");
 
-		const Texture& get_texture(const char* tag)const
+			if (mTextures.size() < manifest.size())
+				mTextures.reserve(manifest.size());
+
+			for (auto it = manifest.begin(); it != manifest.end(); ++it)
+			{
+				const std::string& tag = it.key();
+				const auto& info = it.value();
+
+				std::string filepath = info.at("file");
+				//other fields here
+
+				// create a texture
+				Texture texture(filepath.c_str(), renderer);
+
+				if (texture.get() == nullptr)
+					throw BasicException("Texture created as nullptr: " + tag, "Check manifest");
+
+				auto [_, inserted] = mTextures.emplace(tag, std::move(texture));
+				if (!inserted)
+					throw BasicException("Duplicate texture tag: " + tag);
+			}
+		}
+		// can throw
+		const Texture& get(const char* tag)const
 		{
 			auto it = mTextures.find(tag);
-			return(it != mTextures.end()) ? it->second : mSentinel;
+			if (it == mTextures.end()) {
+				throw BasicException("Missing or invalid tag: ", tag);
+			}
+			return it->second;
+		}
+
+		// returns nullptr on fail
+		const Texture* const try_get(const char* tag) const noexcept {
+			auto it = mTextures.find(tag);
+			return it == mTextures.end() ? nullptr : &it->second;
 		}
 
 		bool has(const char* tag)const noexcept
@@ -51,7 +90,7 @@ namespace badEngine {
 			return mTextures.find(tag) != mTextures.end();
 		}
 
-		Sequence<std::string> get_tags()const {
+		Sequence<std::string> get_tags()const noexcept {
 			Sequence<std::string> tags;
 			tags.set_capacity(mTextures.size());
 			for (const auto& pair : mTextures) {
@@ -61,55 +100,6 @@ namespace badEngine {
 		}
 
 	private:
-
-		void load(const nlohmann::json& manifest, SDL_Renderer* renderer)
-		{
-			if (!renderer) {
-				throw BasicException("Missing renderer");
-			}
-
-			try {
-				mTextures.reserve(manifest.size());
-				for (auto it = manifest.begin(); it != manifest.end(); ++it) {
-
-					// key type for mTextures
-					const std::string& tag = it.key();
-
-					// potential other info in the future
-					const auto& info = it.value();
-
-					std::string filepath = info.at("file");
-
-					if (filepath.empty()) {
-						throw BasicException("Texture file missing for tag: " + tag, "Check manifest");
-					}
-
-					// create a texture
-					Texture texture(filepath.c_str(), renderer);
-
-					if (texture.get() == nullptr) {
-						throw BasicException("Texture created as nullptr: " + tag, "Check manifest");
-					}
-
-					auto [_, inserted] = mTextures.emplace(tag, std::move(texture));
-					if (!inserted) {
-						throw BasicException("Duplicate texture tag: " + tag);
-					}
-				}
-
-			}
-			catch (const nlohmann::json::exception& e) {
-				const int err_code = e.id;
-				const std::string my_message = "JSON exception INFO: [code: " + std::to_string(err_code) + "]";
-				throw BasicException(my_message, e.what());
-			}
-			catch (const std::exception& e) {
-				throw BasicException("Failed to load textures", e.what());
-			}
-		}
-
-	private:
 		Map mTextures;
-		Texture mSentinel;
 	};
 }

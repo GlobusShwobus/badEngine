@@ -39,7 +39,7 @@
     <ClInclude Include="Stopwatch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Config_JSON.h">
+    <ClInclude Include="Validate_data.h">
       <Filter>JSON_things</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
@@ -107,10 +107,8 @@
     <ClCompile Include="Canvas.cpp">
       <Filter>Visual</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="textures.json">
+    <ClCompile Include="Validate_data.cpp">
       <Filter>JSON_things</Filter>
-    </None>
+    </ClCompile>
   </ItemGroup>
 </Project>

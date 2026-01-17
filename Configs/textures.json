@@ -1,0 +1,16 @@
+{
+  "texture_set1": {
+    "player": {
+      "file": "../Textures/player.png"
+    },
+    "enemy": {
+      "file": "../Textures/enemy.png"
+    },
+    "blue_box": {
+      "file": "../Textures/blue_box.png"
+    },
+    "red_box": {
+      "file": "../Textures/red_box.png"
+    } 
+  }
+}
