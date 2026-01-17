@@ -1,4 +1,5 @@
 #pragma once
+
 namespace badEngine {
 
 	template <typename T, void(*func)(T*)>

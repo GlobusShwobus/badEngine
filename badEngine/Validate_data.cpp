@@ -96,7 +96,7 @@ namespace badEngine {
 		if (!config.contains("window_height") || !config["window_height"].is_number_unsigned())
 			throw BasicException("malformed 'window_height' field", key);
 
-		if (config["window_width"].get<uint32_t>() < 720 || config["window_height"].get<uint32_t>() < 480)
+		if (config["window_width"].get<uint32_t>() == 0 || config["window_height"].get<uint32_t>() == 0)
 			throw BasicException("window width and height minimum requirement fail", key);
 		// flags
 		if (!config.contains("flags") || !config["flags"].is_array())

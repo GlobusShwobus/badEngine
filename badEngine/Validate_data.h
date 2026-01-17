@@ -17,13 +17,4 @@ namespace badEngine {
 	// throws BasicException on various checks related to json structure
 	// flag field is checkd for existance and type but not contents
 	void validate_GraphicsSys_manifest(const nlohmann::json& manifest, const char* key);
-
-	//load and boot then pass
-	struct ValidatedTextureData {
-
-	};
-
-	struct ValidatedGFXData {
-
-	};
 }

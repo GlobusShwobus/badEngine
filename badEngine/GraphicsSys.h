@@ -4,8 +4,8 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
 #include "SDLCleanUp.h"
+#include "load_data.h"
 
-#include "json.hpp"
 #include "Color.h"
 #include "Rectangle.h"
 #include "Sprite.h"
@@ -19,7 +19,7 @@ namespace badEngine {
 
 	public:
 
-		GraphicsSys(const nlohmann::json& window_config);
+		GraphicsSys(const GFX_loadup& data) noexcept;
 		GraphicsSys(const GraphicsSys&) = delete;
 		GraphicsSys(GraphicsSys&&)noexcept = delete;
 		GraphicsSys& operator=(const GraphicsSys&) = delete;
@@ -28,6 +28,8 @@ namespace badEngine {
 		~GraphicsSys() {
 			reset();
 		}
+		// checks if window and renderer are running
+		bool is_good()const noexcept;
 
 		// shuts down all sub systems and SDL
 		void reset()noexcept;
@@ -45,7 +47,7 @@ namespace badEngine {
 		void draw_shape(const AABB& aabb, Color color, AABB* other = nullptr, Color* otherCol = nullptr)const noexcept;
 
 		// renders a line on the screen with a given color and thickness
-		void draw_shape(const float2& start, const float2& end, std::size_t thichness, Color color);
+		void draw_shape(const float2& start, const float2& end, std::size_t thickness, Color color);
 
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept;
@@ -79,8 +81,4 @@ namespace badEngine {
 
 		Color mDrawColor = Colors::Black;
 	};
-
-
-	// modifies flag bits by adding onto it 
-	bool SDL_Flag_string_to_uint64(const std::string& key, std::size_t& flags);
 }

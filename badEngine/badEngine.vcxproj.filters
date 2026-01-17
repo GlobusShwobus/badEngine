@@ -4,9 +4,6 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{5095a12d-948c-4f02-b30d-ac8a74948916}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JSON_things">
-      <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Main">
       <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
     </Filter>
@@ -18,6 +15,9 @@
     </Filter>
     <Filter Include="Scripts">
       <UniqueIdentifier>{62c8ec14-40fa-48bc-a630-d17736ac2b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Validate and load">
+      <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,8 +39,8 @@
     <ClInclude Include="Stopwatch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Validate_data.h">
-      <Filter>JSON_things</Filter>
+    <ClInclude Include="validate_data.h">
+      <Filter>Validate and load</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>Geometry</Filter>
@@ -84,6 +84,9 @@
     <ClInclude Include="Canvas.h">
       <Filter>Visual</Filter>
     </ClInclude>
+    <ClInclude Include="load_data.h">
+      <Filter>Validate and load</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -107,8 +110,11 @@
     <ClCompile Include="Canvas.cpp">
       <Filter>Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Validate_data.cpp">
-      <Filter>JSON_things</Filter>
+    <ClCompile Include="validate_data.cpp">
+      <Filter>Validate and load</Filter>
+    </ClCompile>
+    <ClCompile Include="load_data.cpp">
+      <Filter>Validate and load</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

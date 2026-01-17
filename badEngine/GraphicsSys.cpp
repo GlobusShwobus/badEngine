@@ -3,36 +3,18 @@
 #include <SDL3/SDL_init.h>
 namespace badEngine {
 
-	GraphicsSys::GraphicsSys(const nlohmann::json& window_config)
+	GraphicsSys::GraphicsSys(const GFX_loadup& data)noexcept
 	{
-		std::string heading = window_config["heading"];
-		Uint32 width = window_config["window_width"];
-		Uint32 height = window_config["window_height"];
-
-		std::size_t flags = 0;
-
-		const auto& flags_config = window_config.at("flags");
-
-		for (const auto& each_flag : flags_config) {
-			SDL_Flag_string_to_uint64(each_flag, flags);
-		}
-		// default falgs
-		if (flags == 0)
-			flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
-
-		if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
-			throw BasicException("SDL video subsystem failed to initialize", SDL_GetError());
-
-		SDL_Window* window = SDL_CreateWindow(heading.data(), width, height, flags);
-		SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-
-		if (!window && !renderer) {
-			std::string message = "Failed init: window [" + std::to_string(window != nullptr) + "] renderer [" + std::to_string(renderer != nullptr) + "]\n";
-			throw BasicException(message, SDL_GetError());
-		}
+		SDL_Window* window = static_cast<SDL_Window*>(data.window);
+		SDL_Renderer* renderer = static_cast<SDL_Renderer*>(data.renderer);
 
 		mWindow.reset(window);
 		mRenderer.reset(renderer);
+	}
+
+	bool GraphicsSys::is_good()const noexcept
+	{
+		return mWindow && mRenderer;
 	}
 
 	void GraphicsSys::reset()noexcept
@@ -152,24 +134,5 @@ namespace badEngine {
 		for (; it != sprite.end(); ++it) {
 			draw_texture(sprite.mTexture, it->first, it->second);
 		}
-	}
-
-
-
-	// LOCAL HELPERS
-
-	bool SDL_Flag_string_to_uint64(const std::string& key, std::size_t& flags)
-	{
-		if (key == "SDL_WINDOW_OPENGL") {
-			flags |= SDL_WINDOW_OPENGL;
-			return true;
-		}
-		if (key == "SDL_WINDOW_RESIZABLE") {
-
-			flags |= SDL_WINDOW_RESIZABLE;
-			return true;
-		}
-		// more flags here
-		return false;
 	}
 }

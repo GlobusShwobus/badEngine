@@ -135,7 +135,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Validate_data.h" />
+    <ClInclude Include="load_data.h" />
+    <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
     <ClInclude Include="GraphicsSys.h" />
     <ClInclude Include="NumberGenerator.h" />
@@ -155,12 +156,13 @@
   <ItemGroup>
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="GraphicsSys.cpp" />
+    <ClCompile Include="load_data.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Scripts.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="UniformGrid.cpp" />
-    <ClCompile Include="Validate_data.cpp" />
+    <ClCompile Include="validate_data.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
