@@ -7,9 +7,6 @@
     <Filter Include="Main">
       <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Geometry">
-      <UniqueIdentifier>{09c34b63-d26c-45f9-821a-2036432ae0ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Visual">
       <UniqueIdentifier>{d617e8e6-f5a4-46a8-9e1b-fbffd3c7e7ce}</UniqueIdentifier>
     </Filter>
@@ -18,6 +15,9 @@
     </Filter>
     <Filter Include="Validate and load">
       <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{09c34b63-d26c-45f9-821a-2036432ae0ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,24 +43,18 @@
       <Filter>Validate and load</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Rectangle.h">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="UniformGrid.h">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Vec2.h">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsSys.h">
+    <ClInclude Include="WindowContext.h">
       <Filter>Visual</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
@@ -69,16 +63,16 @@
     <ClInclude Include="Texture.h">
       <Filter>Visual</Filter>
     </ClInclude>
-    <ClInclude Include="Scripts.h">
+    <ClInclude Include="Dumpster.h">
       <Filter>Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="SDLCleanUp.h">
+    <ClInclude Include="mySDL_utils.h">
       <Filter>Visual</Filter>
     </ClInclude>
     <ClInclude Include="badEngine.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="TextureLoader.h">
+    <ClInclude Include="TextureMap.h">
       <Filter>Visual</Filter>
     </ClInclude>
     <ClInclude Include="Canvas.h">
@@ -87,25 +81,28 @@
     <ClInclude Include="load_data.h">
       <Filter>Validate and load</Filter>
     </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Ray.cpp">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsSys.cpp">
+    <ClCompile Include="WindowContext.cpp">
       <Filter>Visual</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Visual</Filter>
     </ClCompile>
-    <ClCompile Include="Scripts.cpp">
-      <Filter>Scripts</Filter>
-    </ClCompile>
     <ClCompile Include="UniformGrid.cpp">
-      <Filter>Geometry</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
       <Filter>Visual</Filter>
@@ -115,6 +112,12 @@
     </ClCompile>
     <ClCompile Include="load_data.cpp">
       <Filter>Validate and load</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Visual</Filter>
+    </ClCompile>
+    <ClCompile Include="mySDL_utils.cpp">
+      <Filter>Visual</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

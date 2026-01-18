@@ -1,61 +1,66 @@
 #include "load_data.h"
-
-#include <string>
-#include <SDL3/SDL_init.h>
-#include <SDL3//SDL_render.h>
-#include <SDL3/SDL_video.h>
+#include <fstream>
+#include "mySDL_utils.h"
 
 namespace badEngine {
-	GFX_loadup load_GraphicsSys_data(const nlohmann::json& manifest, const char* key) noexcept
+
+	nlohmann::json load_json(const char* path)
 	{
-		if (!manifest.contains(key))
-			return {};
-		if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
-			return {};
+		std::ifstream file(path);
+		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-		const auto& config = manifest.at(key);
-
-		//default values
-		std::string heading("default");
-		Uint32 width = 960;
-		Uint32 height = 540;
-		std::size_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
-
-		if (config.contains("heading") && config["heading"].is_string())
-			heading = config.at("heading");
-
-		if (config.contains("window_width") && config["window_width"].is_number_integer()) {
-			width = config["window_width"].get<Uint32>();
-		}
-		if (config.contains("window_height") && config["window_height"].is_number_integer()) {
-			height = config["window_height"].get<Uint32>();
-		}
-		if (config.contains("flags") && config["flags"].is_array()) {
-			const auto& flag_arry = config.at("flags");
-			for (const auto& flag : flag_arry) {
-				if (flag.is_string()) {
-					SDL_Flag_string_to_uint64(flag, flags);
-				}
-			}
-		}
-		SDL_Window* window = SDL_CreateWindow(heading.data(), width, height, flags);
-		if (!window) {
-			return {};
-		}
-
-		SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-		if (!renderer) {
-			SDL_DestroyWindow(window);
-			return {};
-		}
-		return { window, renderer };
+		return nlohmann::json::parse(file, nullptr, true, false);
 	}
 
-	void SDL_Flag_string_to_uint64(const nlohmann::json_abi_v3_11_3::json& key, std::size_t& flags)
+	// assumes the manifest was validated. provides no checks
+	WindowContextDescription extract_WindowContext_desc(const nlohmann::json& manifest, const char* key)
 	{
-		if (key == "SDL_WINDOW_OPENGL")
-			flags |= SDL_WINDOW_OPENGL;
-		if (key == "SDL_WINDOW_RESIZABLE")
-			flags |= SDL_WINDOW_RESIZABLE;
+		const auto& config = manifest.at(key);
+
+		WindowContextDescription desc;
+		desc.heading = config.at("heading").get<std::string>();
+		desc.width = config.at("window_width").get<uint32_t>();
+		desc.height = config.at("window_height").get<uint32_t>();
+
+		desc.flags = 0;
+		for (const auto& flag : config.at("flags")) {
+			MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>().c_str(), desc.flags);
+		}
+		return desc;
+	}
+
+	// assumes the manifest is valid. provides no checks. if it indeed throws, program will be terminated.
+	Sequence<TextureDescription> extract_texture_descs(const nlohmann::json& texture_manifest, const char* key)
+	{
+		Sequence<TextureDescription>textures;
+
+		const auto& config = texture_manifest.at(key);
+		textures.set_capacity(config.size());
+
+		for (const auto& [tag, info] : config.items()) {
+			textures.emplace_back( tag, info.at("file").get<std::string>() );
+		}
+
+		return textures;
+	}
+
+	Sequence<std::pair<std::string, Texture>> load_textures(const Sequence<TextureDescription>& descs, SDL_Renderer* renderer)
+	{
+		Sequence<std::pair<std::string, Texture>> textures;
+
+		if (!renderer) return textures;
+		textures.set_capacity(descs.size());
+
+		for (const auto& desc : descs) {
+			Texture tex(desc.file.string().c_str(), renderer);
+
+			if (!tex.get()) {
+				// log maybe?
+				continue;
+			}
+
+			textures.emplace_back(desc.tag, std::move(tex));
+		}
+		return textures;
 	}
 }

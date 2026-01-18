@@ -1,29 +1,32 @@
 #include "Validate_data.h"
-#include <fstream>
 #include <filesystem>
+#include "mySDL_utils.h"
 #include "BadExceptions.h"
 namespace badEngine {
 
-	void load_and_validate_JSON(nlohmann::json& json, const char* path) {
+	void validate_json_file(const char* path)
+	{
 		if (!path)
-			throw BasicException("Nullptr path entered");
+			throw BasicException("Null path");
 
-		std::ifstream file;
+		std::filesystem::path p(path);
 
-		file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		file.open(path);
+		if (!p.has_extension())
+			throw BasicException("File has no extension", path);
+		std::string ext = p.extension().string();
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-		if (!file.is_open())
-			throw BasicException("File failed to open", path);
+		if (ext != ".json")
+			throw BasicException("File is not a .json", path);
 
-		file.seekg(0, std::ios::end);
-		if (file.tellg() == 0)
-			throw BasicException("Empty file", path);
+		if (!std::filesystem::exists(p))
+			throw BasicException("File does not exist", path);
 
-		file.seekg(0, std::ios::beg);
+		if (!std::filesystem::is_regular_file(p))
+			throw BasicException("Path is not a regular file", path);
 
-		//PARAMS: no custom parser, allow exceptions, don't ignore trailing commas
-		json = nlohmann::json::parse(file, nullptr, true, false);
+		if (std::filesystem::file_size(p) == 0)
+			throw BasicException("File is empty", path);
 	}
 
 	void validate_texture_manifest(const nlohmann::json& manifest, const char* key)
@@ -72,7 +75,7 @@ namespace badEngine {
 				throw BasicException("File does not exist", path.string());
 		}
 	}
-	void validate_GraphicsSys_manifest(const nlohmann::json& manifest, const char* key)
+	void validate_WindowContext_manifest(const nlohmann::json& manifest, const char* key)
 	{
 		if (!manifest.is_object())
 			throw BasicException("type not an object");
@@ -103,8 +106,12 @@ namespace badEngine {
 			throw BasicException("malformed 'flags' field", key);
 
 		for (const auto& flag : config["flags"]) {
+			std::size_t dummy = 0;
 			if (!flag.is_string()) {
 				throw BasicException("All elements in 'flags' must be strings for key", key);
+			}
+			if (!MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>(), dummy)) {
+				throw BasicException(std::string("Unknown flag found: ") + flag.get<std::string>(), key);
 			}
 		}
 	}

@@ -1,17 +1,17 @@
 #pragma once
-
+#include <SDL3/SDL_render.h>
 #include "Sequence.h"
 #include "Rectangle.h"
 #include "Texture.h"
 
 namespace badEngine {
-	class GraphicsSys;//forward declare my thing
+	class WindowContext;//forward declare my thing
 
 	// base class for all drawable types that contain SDL_Texture*
 	// is meant to be used as an interface class
 	class Sprite
 	{
-		friend class GraphicsSys;
+		friend class WindowContext;
 
 	public:
 		

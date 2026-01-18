@@ -2,8 +2,7 @@
 
 #include <memory>
 #include <SDL3/SDL_render.h>
-#include <SDL3_image/SDL_image.h>
-#include "SDLCleanUp.h"
+#include "mySDL_utils.h"
 
 namespace badEngine {
 
@@ -15,26 +14,10 @@ namespace badEngine {
 
 	public:
 
-		Texture(SDL_Surface* surface, SDL_Renderer* renderer)
-		{
-			if (surface && renderer) {
-				SDL_Texture* txtr = SDL_CreateTextureFromSurface(renderer, surface);
-				mTexture.reset(txtr);
-			}
-		}
+		Texture(SDL_Surface* surface, SDL_Renderer* renderer);
+		Texture(const char* path, SDL_Renderer* renderer);
 
-		Texture(const char* path, SDL_Renderer* renderer)
-		{
-			if (path && renderer) {
-				SDL_Texture* txtr = IMG_LoadTexture(renderer, path);
-				mTexture.reset(txtr);
-			}
-		}
-
-		SDL_Texture* const get()const noexcept
-		{
-			return mTexture.get();
-		}
+		SDL_Texture* const get()const noexcept;
 
 	private:
 		Texture_type mTexture;

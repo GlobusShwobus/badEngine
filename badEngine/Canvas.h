@@ -2,8 +2,7 @@
 
 #include <memory>
 #include <SDL3/SDL_render.h>
-#include "SDLCleanUp.h"
-#include "Rectangle.h"
+#include "mySDL_utils.h"
 
 namespace badEngine {
 

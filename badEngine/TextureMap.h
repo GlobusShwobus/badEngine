@@ -2,13 +2,9 @@
 
 #include <unordered_map>
 #include <string>
-#include <SDL3/SDL_render.h>
-#include <SDL3_image/SDL_image.h>
+#include <span>
 #include "Texture.h"
-#include "json.hpp"
-#include "BadExceptions.h"
 #include "Sequence.h"
-
 
 //TODO::load single texture
 //		remove a single texture
@@ -17,7 +13,7 @@
 
 namespace badEngine {
 
-	class TextureLoader
+	class TextureMap
 	{
 		// required to avoid look up bs with const char*. by default std::equal_to<std::string>, so set it manually turn it off
 		using Map = std::unordered_map<
@@ -27,10 +23,11 @@ namespace badEngine {
 			std::equal_to<>
 		>;
 	public:
+		TextureMap() = default;
 
-		TextureLoader(const nlohmann::json& manifest, SDL_Renderer* renderer)
+		TextureMap(std::span<std::pair<std::string, Texture>> textures)
 		{
-			load(manifest, renderer);
+			load_bulk(textures);
 		}
 
 		void clear() noexcept
@@ -38,35 +35,12 @@ namespace badEngine {
 			mTextures.clear();
 		}
 
-		void reload(const nlohmann::json& manifest, SDL_Renderer* renderer) {
-			clear();
-			load(manifest, renderer);
-		}
-		void load(const nlohmann::json& manifest, SDL_Renderer* renderer)
+		void load_bulk(std::span<std::pair<std::string, Texture>> textures)noexcept
 		{
-			if (!renderer)
-				throw BasicException("Missing renderer");
-
-			if (mTextures.size() < manifest.size())
-				mTextures.reserve(manifest.size());
-
-			for (auto it = manifest.begin(); it != manifest.end(); ++it)
-			{
-				const std::string& tag = it.key();
-				const auto& info = it.value();
-
-				std::string filepath = info.at("file");
-				//other fields here
-
-				// create a texture
-				Texture texture(filepath.c_str(), renderer);
-
-				if (texture.get() == nullptr)
-					throw BasicException("Texture created as nullptr: " + tag, "Check manifest");
-
-				auto [_, inserted] = mTextures.emplace(tag, std::move(texture));
-				if (!inserted)
-					throw BasicException("Duplicate texture tag: " + tag);
+			for (auto& [tag, texture] : textures) {
+				if (texture.get() != nullptr) {
+					mTextures.try_emplace(tag, std::move(texture));
+				}
 			}
 		}
 		// can throw

@@ -3,8 +3,7 @@
 #include <memory>
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
-#include "SDLCleanUp.h"
-#include "load_data.h"
+#include "mySDL_utils.h"
 
 #include "Color.h"
 #include "Rectangle.h"
@@ -12,20 +11,23 @@
 
 
 namespace badEngine {
-	class GraphicsSys {
+	class WindowContext {
 		
 		using Renderer = std::unique_ptr<SDL_Renderer, SDLDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
 		using Window = std::unique_ptr<SDL_Window, SDLDeleter<SDL_Window, SDL_DestroyWindow>>;
 
 	public:
 
-		GraphicsSys(const GFX_loadup& data) noexcept;
-		GraphicsSys(const GraphicsSys&) = delete;
-		GraphicsSys(GraphicsSys&&)noexcept = delete;
-		GraphicsSys& operator=(const GraphicsSys&) = delete;
-		GraphicsSys& operator=(GraphicsSys&&)noexcept = delete;
+		WindowContext(const char* heading, uint32_t width, uint32_t height, std::size_t flags);
+		
+		// not sure yet if enable or disable explicitly
+		
+		//WindowContext(const WindowContext&) = delete;
+		//WindowContext(WindowContext&&)noexcept = delete;
+		//WindowContext& operator=(const WindowContext&) = delete;
+		//WindowContext& operator=(WindowContext&&)noexcept = delete;
 
-		~GraphicsSys() {
+		~WindowContext() {
 			reset();
 		}
 		// checks if window and renderer are running
@@ -67,12 +69,8 @@ namespace badEngine {
 		void set_default_color(Color color)noexcept;
 
 
-		SDL_Window* const get_window()const noexcept {
-			return mWindow.get();
-		}
-		SDL_Renderer* const get_render()const noexcept {
-			return mRenderer.get();
-		}
+		SDL_Window* const get_window()const noexcept;
+		SDL_Renderer* const get_render()const noexcept;
 
 	private:
 		/* ORDER MATTERS BECAUSE OF DELETER! ALWAYS DELETE RENDERER BEFORE WINDOW */

@@ -1,23 +1,49 @@
-#include "GraphicsSys.h"
+#include "WindowContext.h"
 #include "BadExceptions.h"
 #include <SDL3/SDL_init.h>
 namespace badEngine {
 
-	GraphicsSys::GraphicsSys(const GFX_loadup& data)noexcept
+	WindowContext::WindowContext(const char* heading, uint32_t width, uint32_t height, std::size_t flags)
 	{
-		SDL_Window* window = static_cast<SDL_Window*>(data.window);
-		SDL_Renderer* renderer = static_cast<SDL_Renderer*>(data.renderer);
+		if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
+			return;
+
+		SDL_Window* window = SDL_CreateWindow(
+			heading,
+			width,
+			height,
+			flags
+		);
+
+		if (!window) {
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
+			return;
+		}
+
+		SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
+		if (!renderer) {
+			SDL_DestroyWindow(window);
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
+			return;
+		}
 
 		mWindow.reset(window);
 		mRenderer.reset(renderer);
 	}
 
-	bool GraphicsSys::is_good()const noexcept
+	SDL_Window* const WindowContext::get_window()const noexcept {
+		return mWindow.get();
+	}
+	SDL_Renderer* const WindowContext::get_render()const noexcept {
+		return mRenderer.get();
+	}
+
+	bool WindowContext::is_good()const noexcept
 	{
 		return mWindow && mRenderer;
 	}
 
-	void GraphicsSys::reset()noexcept
+	void WindowContext::reset()noexcept
 	{
 		mRenderer.reset();
 		mWindow.reset();
@@ -25,30 +51,30 @@ namespace badEngine {
 		SDL_Quit();
 	}
 
-	bool GraphicsSys::system_present()const noexcept
+	bool WindowContext::system_present()const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderTarget(ren, nullptr);//on setting to null should never error
 		return SDL_RenderPresent(ren);
 	}
 
-	bool GraphicsSys::system_refresh()const noexcept
+	bool WindowContext::system_refresh()const noexcept
 	{
 		return SDL_RenderClear(mRenderer.get());
 	}
 
-	bool GraphicsSys::set_render_target(SDL_Texture* target)const noexcept
+	bool WindowContext::set_render_target(SDL_Texture* target)const noexcept
 	{
 		return SDL_SetRenderTarget(mRenderer.get(), target);
 	}
 
-	void GraphicsSys::set_default_color(Color color)noexcept
+	void WindowContext::set_default_color(Color color)noexcept
 	{
 		if (SDL_SetRenderDrawColor(mRenderer.get(), color.get_red(), color.get_green(), color.get_blue(), color.get_alpha()))
 			mDrawColor = color;
 	}
 
-	void GraphicsSys::draw_shape(const AABB& aabb, Color color, AABB* other, Color* otherCol)const noexcept
+	void WindowContext::draw_shape(const AABB& aabb, Color color, AABB* other, Color* otherCol)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		//set the drawing color
@@ -69,7 +95,7 @@ namespace badEngine {
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_red(), mDrawColor.get_green(), mDrawColor.get_blue(), mDrawColor.get_alpha());
 	}
 
-	void GraphicsSys::draw_shape(const float2& start, const float2& end, std::size_t thickness, Color color)
+	void WindowContext::draw_shape(const float2& start, const float2& end, std::size_t thickness, Color color)
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderDrawColor(ren, color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
@@ -106,7 +132,7 @@ namespace badEngine {
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_red(), mDrawColor.get_green(), mDrawColor.get_blue(), mDrawColor.get_alpha());
 	}
 
-	void GraphicsSys::draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_FRect sdlSrc(source.x, source.y, source.w, source.h);
@@ -115,20 +141,20 @@ namespace badEngine {
 		SDL_RenderTexture(ren, texture, &sdlSrc, &sdlDest);
 	}
 
-	void GraphicsSys::draw_texture(SDL_Texture* texture)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture)const noexcept
 	{
 		SDL_RenderTexture(mRenderer.get(), texture, nullptr, nullptr);
 	}
 
-	void GraphicsSys::draw_sprite(const BasicSprite& sprite)const noexcept
+	void WindowContext::draw_sprite(const BasicSprite& sprite)const noexcept
 	{
 		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
 	}
-	void GraphicsSys::draw_sprite(const Animation& sprite)const noexcept
+	void WindowContext::draw_sprite(const Animation& sprite)const noexcept
 	{
 		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
 	}
-	void GraphicsSys::draw_sprite(const Font& sprite)const noexcept
+	void WindowContext::draw_sprite(const Font& sprite)const noexcept
 	{
 		auto it = sprite.begin();
 		for (; it != sprite.end(); ++it) {

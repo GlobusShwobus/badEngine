@@ -138,29 +138,30 @@
     <ClInclude Include="load_data.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
-    <ClInclude Include="GraphicsSys.h" />
+    <ClInclude Include="WindowContext.h" />
     <ClInclude Include="NumberGenerator.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Rectangle.h" />
-    <ClInclude Include="Scripts.h" />
-    <ClInclude Include="SDLCleanUp.h" />
+    <ClInclude Include="Dumpster.h" />
+    <ClInclude Include="mySDL_utils.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="TextureMap.h" />
     <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Canvas.cpp" />
-    <ClCompile Include="GraphicsSys.cpp" />
+    <ClCompile Include="WindowContext.cpp" />
     <ClCompile Include="load_data.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mySDL_utils.cpp" />
     <ClCompile Include="Ray.cpp" />
-    <ClCompile Include="Scripts.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UniformGrid.cpp" />
     <ClCompile Include="validate_data.cpp" />
   </ItemGroup>
