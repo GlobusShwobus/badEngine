@@ -79,8 +79,9 @@ int main() {
                     GAME_RUNNING = false;
                     continue;
                 }
-
             }
+
+            std::cout << "hello world\n";
             window.system_present();
         }
     }

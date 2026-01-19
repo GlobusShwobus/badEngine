@@ -238,7 +238,7 @@ namespace badEngine {
 		*/
 		reference at(size_type index) {
 			if (index >= mSize)
-				throw BasicException("out of range access INFO: [size: "+std::to_string(mSize)+"; index: "+std::to_string(index));
+				throw BasicException("out of range access INFO: [size: " + std::to_string(mSize) + "; index: " + std::to_string(index));
 			return mArray[index];
 		}
 		/*

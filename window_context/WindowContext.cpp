@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "WindowContext.h"
-#include "BadExceptions.h"
-#include <SDL3/SDL_init.h>
+
 namespace badEngine {
 
 	WindowContext::WindowContext(const char* heading, uint32_t width, uint32_t height, std::size_t flags)
@@ -105,18 +105,18 @@ namespace badEngine {
 		}
 		else {
 			// using a right triangle
-			
+
 			// find the deltas
 			const float A = end.x - start.x;
 			const float B = end.y - start.y;
 			// pythagorean length of C
 			const float C = std::sqrtf(A * A + B * B);
 			if (C == 0) return;
-			
+
 			// create a perpendicular vector by swaping x, y and negating one. also make it unit length
 			const float px = -B / C;
 			const float py = A / C;
-			
+
 			const int iThickness = static_cast<int>(thickness);
 			// draw lines on both sides perpendicular to original line
 			for (int i = -iThickness / 2; i <= iThickness / 2; ++i)

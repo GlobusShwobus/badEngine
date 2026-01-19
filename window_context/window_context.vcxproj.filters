@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="precomp">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="window_context">
+      <UniqueIdentifier>{7698f939-48aa-4edf-8869-9e33b0226d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="textures">
+      <UniqueIdentifier>{d39b1bbc-88dd-4faf-9704-a961662f9fe2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>precomp</Filter>
+    </ClInclude>
+    <ClInclude Include="mySDL_utils.h">
+      <Filter>window_context</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Canvas.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMap.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowContext.h">
+      <Filter>window_context</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>precomp</Filter>
+    </ClCompile>
+    <ClCompile Include="mySDL_utils.cpp">
+      <Filter>window_context</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Canvas.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowContext.cpp">
+      <Filter>window_context</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

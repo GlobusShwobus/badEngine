@@ -18,7 +18,7 @@ namespace badEngine {
 
 		// sets current rendering target as the texture
 		bool start_drawing(SDL_Renderer* const renderer)const noexcept;
-	
+
 		// resets the current rendering target of the renderer
 		bool end_drawing(SDL_Renderer* const renderer)const noexcept;
 
@@ -26,7 +26,7 @@ namespace badEngine {
 		SDL_Texture* const get()const noexcept;
 
 	private:
-		
+
 		CanvasType mTexture;
 	};
 }

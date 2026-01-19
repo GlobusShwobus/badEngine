@@ -1,9 +1,10 @@
+#include "pch.h"
 #include "Sprite.h"
-#include <assert.h>
+
 namespace badEngine {
 
 	Sprite::Sprite(const Texture& texture)noexcept
-	:mTexture(texture.get()){
+		:mTexture(texture.get()) {
 		assert(mTexture != nullptr);
 		float w, h;
 		SDL_GetTextureSize(mTexture, &w, &h);
@@ -33,7 +34,8 @@ namespace badEngine {
 
 	BasicSprite::BasicSprite(const Texture& texture)
 		:Sprite(texture)
-	{}
+	{
+	}
 
 	//####################################################################################
 	Animation::Animation(const Texture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
@@ -140,7 +142,7 @@ namespace badEngine {
 			//for any printable character
 			if (c >= first_ASCII_character + 1 && c <= last_ASCII_character) {
 				int glyphIndex = c - first_ASCII_character;  //convert char to its index in the texture atlas (0 based)
-			
+
 				const uint32_t sourceX = glyphIndex % mColumnsCount; //unflatten 2D to 1D
 				const uint32_t sourceY = glyphIndex / mColumnsCount; //unflatten 2D to 1D
 				mLetterPos.emplace_back(

@@ -55,7 +55,7 @@ namespace badEngine {
 				insert(begin_index_naming++, *first);
 			}
 		}
-		
+
 		// returns the structure itself
 		const Sequence<Cell>& query_grid()const noexcept {
 			return mCells;
@@ -77,7 +77,7 @@ namespace badEngine {
 		// IMPORTANT: if the length of [lineEnd - lineOrigin] is 0, it could still be inside the grid but it will NOT be queried
 		// returns cell indices, not individual elements
 		void query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept;
-		
+
 		// sets the capacity of each cell to specified number
 		// intended use: on a cleared grid (otherwise would delete elements unknown to user)
 		void maintain_uniform_memory(std::size_t cell_capacity_target);

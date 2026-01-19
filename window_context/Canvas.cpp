@@ -1,5 +1,6 @@
+#include "pch.h"
 #include "Canvas.h"
-#include <cassert>
+
 namespace badEngine {
 
 	Canvas::Canvas(Uint32 width, Uint32 height, SDL_Renderer* const renderer)

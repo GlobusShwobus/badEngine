@@ -12,16 +12,16 @@
 
 namespace badEngine {
 	class WindowContext {
-		
+
 		using Renderer = std::unique_ptr<SDL_Renderer, SDLDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
 		using Window = std::unique_ptr<SDL_Window, SDLDeleter<SDL_Window, SDL_DestroyWindow>>;
 
 	public:
 
 		WindowContext(const char* heading, uint32_t width, uint32_t height, std::size_t flags);
-		
+
 		// not sure yet if enable or disable explicitly
-		
+
 		//WindowContext(const WindowContext&) = delete;
 		//WindowContext(WindowContext&&)noexcept = delete;
 		//WindowContext& operator=(const WindowContext&) = delete;

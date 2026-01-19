@@ -14,7 +14,7 @@ namespace badEngine {
 		friend class WindowContext;
 
 	public:
-		
+
 		virtual ~Sprite() = default;
 
 		float get_scale()const noexcept;
@@ -37,7 +37,7 @@ namespace badEngine {
 	};
 
 	// basic drawable sprite
-	class BasicSprite: public Sprite
+	class BasicSprite : public Sprite
 	{
 	public:
 		BasicSprite(const Texture& texture);
@@ -51,7 +51,7 @@ namespace badEngine {
 
 		// update step
 		void update(float step)noexcept;
-		
+
 		// set interval in which a frame should be changed
 		void set_hold_time(float time)noexcept;
 

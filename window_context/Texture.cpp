@@ -1,5 +1,6 @@
+#include "pch.h"
 #include "Texture.h"
-#include <SDL3_image/SDL_image.h>
+
 namespace badEngine {
 	Texture::Texture(SDL_Surface* surface, SDL_Renderer* renderer)
 	{
