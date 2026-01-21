@@ -1,59 +1,85 @@
 #pragma once
 
 namespace badEngine {
-	class Color {
-		unsigned int dword;
-
+	class Color final
+	{
 	public:
 		constexpr Color()                 noexcept :dword(0) {}
 		constexpr Color(unsigned int dw)  noexcept :dword(dw) {}
 
-		constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)noexcept
-			: dword((a << 24u) | (b << 16u) | (g << 8u) | r) {
+		constexpr Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)noexcept
+			: dword((a << 24u) | (b << 16u) | (g << 8u) | r)
+		{
 		}
-		constexpr Color(uint8_t r, uint8_t g, uint8_t b)noexcept
-			: dword((255u << 24u) | (b << 16u) | (g << 8u) | r) {
+
+		constexpr Color(unsigned char r, unsigned char g, unsigned char b)noexcept
+			: dword((255u << 24u) | (b << 16u) | (g << 8u) | r) 
+		{
 		}
-		constexpr Color& operator=(unsigned int color) noexcept {
+
+		constexpr Color& operator=(unsigned int color) noexcept
+		{
 			dword = color;
 			return *this;
 		}
-		constexpr bool operator==(const Color& color)const noexcept {
+
+		constexpr bool operator==(const Color& color)const noexcept
+		{
 			return dword == color.dword;
 		}
-		constexpr bool operator!=(const Color& color)const noexcept {
+
+		constexpr bool operator!=(const Color& color)const noexcept 
+		{
 			return !(*this == color);
 		}
 
-		constexpr void set_alpha(uint8_t alpha)noexcept {
+		constexpr void set_a(unsigned char alpha)noexcept 
+		{
 			dword = (dword & 0xFFFFFFu) | (alpha << 24u);
 		}
-		constexpr void set_blue(uint8_t blue)noexcept {
+
+		constexpr void set_b(unsigned char blue)noexcept
+		{
 			dword = (dword & 0xFF00FFFFu) | (blue << 16u);
 		}
-		constexpr void set_green(uint8_t green)noexcept {
+
+		constexpr void set_g(unsigned char green)noexcept
+		{
 			dword = (dword & 0xFFFF00FFu) | (green << 8u);
 		}
-		constexpr void set_red(uint8_t red)noexcept {
+
+		constexpr void set_r(unsigned char red)noexcept 
+		{
 			dword = (dword & 0xFFFFFF00u) | red;
 		}
 
-		constexpr uint8_t get_alpha()const noexcept {
+		constexpr unsigned char get_a()const noexcept
+		{
 			return (dword >> 24u) & 0xFFu;
 		}
-		constexpr uint8_t get_blue()const noexcept {
+
+		constexpr unsigned char get_b()const noexcept
+		{
 			return (dword >> 16u) & 0xFFu;
 		}
-		constexpr uint8_t get_green()const noexcept {
+
+		constexpr unsigned char get_g()const noexcept
+		{
 			return (dword >> 8u) & 0xFFu;
 		}
-		constexpr uint8_t get_red()const noexcept {
+
+		constexpr unsigned char get_r()const noexcept
+		{
 			return dword & 0xFFu;
 		}
 
+		unsigned int dword;
 	};
-	namespace Colors {
-		static constexpr Color makeRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)noexcept {
+
+	namespace Colors 
+	{
+		static constexpr Color makeRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a)noexcept
+		{
 			return (a << 24u) | (b << 16u) | (g << 8u) | r;
 		}
 

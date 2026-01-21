@@ -2,49 +2,56 @@
 
 #include <memory>
 #include <limits>
-#include "badUtility.h"
-#include "BadExceptions.h"
+#include "bad_exceptions.h"
+#include "bad_concepts.h"
+#include "bad_utility.h"
 
-namespace badEngine {
-	template<typename T>
-		requires IS_SEQUENCE_COMPATIBLE<T>
-	class Sequence {
-
-		using type = Sequence<T>;
-		using value_type = T;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
-		using size_type = std::size_t;
-		using difference_type = std::ptrdiff_t;
+namespace badCore 
+{
+	template<typename T> requires IS_SEQUENCE_COMPATIBLE<T>
+	class Sequence final
+	{
+		using type                = Sequence<T>;
+		using value_type          = T;
+		using pointer             = T*;
+		using const_pointer       = const T*;
+		using reference           = T&;
+		using const_reference     = const T&;
+		using size_type           = std::size_t;
+		using difference_type     = std::ptrdiff_t;
 
 		//allocator/deallocator functions
-		pointer alloc_memory(size_type count)const noexcept {
-			assert(count < max_size() && "Memory limit reached");
+		constexpr pointer alloc_memory(size_type count)const
+		{
+			assert(count < max_size());
 			return static_cast<pointer>(::operator new(count * sizeof(value_type)));
 		}
-		constexpr void free_memory(pointer& mem)noexcept {
+
+		constexpr void free_memory(pointer& mem)noexcept
+		{
 			::operator delete(mem);
 			mem = nullptr;
 		}
-		constexpr void destroy(pointer obj)noexcept {
+
+		constexpr void destroy(pointer obj)noexcept
+		{
 			obj->~T();
 		}
-		constexpr void destroy_objects(pointer begin, pointer end)noexcept {
+
+		constexpr void destroy_objects(pointer begin, pointer end)noexcept
+		{
 			while (begin != end)
 				begin++->~T();
 		}
-		/*
-		DOES NOT SET SIZE!!!!!!!!!!
-		must return type pointer and take arguments pointer and size_type
-		later check out  std::function<pointer(pointer, size_type)> constructor...
-		*/
+
+		//NOTE:: does not take size
+		//NOTE2:: forever trust me bro function
 		template<typename LambdaFunc>
-		void reConstructAllocate(size_type newSize, LambdaFunc constructor) {
+		constexpr void reConstructAllocate(size_type newSize, LambdaFunc constructor)
+		{
 			//allocate new chunck of memory of size newSize and move [from -> to] data into it (always move) 
 			iterator thisBegin = begin();
-			iterator thisEnd = end();
+			iterator thisEnd   = end();
 
 			iterator destination = nullptr;
 			iterator initialized = nullptr;
@@ -59,7 +66,6 @@ namespace badEngine {
 				throw;
 			}
 
-			//if curr, cleanup
 			if (mArray) {
 				destroy_objects(thisBegin, thisEnd);
 				free_memory(mArray);
@@ -69,85 +75,87 @@ namespace badEngine {
 		}
 
 		//growth math
-		constexpr size_type growthFactor(size_type seed)const noexcept {
+		constexpr size_type growthFactor(size_type seed)const noexcept
+		{
 			return size_type(seed + (seed * 0.5f) + mAdditive);
 		}
 
 	public:
 
-		using iterator = pointer;
-		using const_iterator = const_pointer;
+		constexpr Sequence()noexcept = default;
 
-
-		//constructors
-		constexpr Sequence()noexcept { set_capacity(10); };
-		Sequence(size_type count)
-			requires std::default_initializable<value_type>
+		Sequence(size_type count) requires std::default_initializable<value_type>
 		{
-			if (count > IS_ZERO) {
+			if (count > CORE_ZERO) {
 				reConstructAllocate(count, [](pointer dest, size_type n) {
 					return std::uninitialized_value_construct_n(dest, n);
 					});
 				mSize = count;
 			}
 		}
-		Sequence(size_type count, const_reference value)
-			requires std::constructible_from<value_type, const_reference>
+
+		Sequence(size_type count, const_reference value) requires std::constructible_from<value_type, const_reference>
 		{
-			if (count > IS_ZERO) {
+			if (count > CORE_ZERO) {
 				reConstructAllocate(count, [&value](pointer dest, size_type n) {
 					return std::uninitialized_fill_n(dest, n, value);
 					});
 				mSize = count;
 			}
 		}
-		Sequence(std::initializer_list<value_type> init)
-			requires std::constructible_from<value_type, const_reference>//initializer_list members are const, can't move
+
+		Sequence(std::initializer_list<value_type> init) requires std::constructible_from<value_type, const_reference>
 		{
 			const size_type size = init.size();
-			if (size > IS_ZERO) {
+			if (size > CORE_ZERO) {
 				reConstructAllocate(size, [init](pointer dest, size_type n) {
 					return std::uninitialized_copy(init.begin(), init.end(), dest);
 					});
 				mSize = size;
 			}
 		}
-		Sequence(const Sequence& rhs)
-			requires std::constructible_from<value_type, const_reference>
+
+		Sequence(const Sequence& rhs) requires std::constructible_from<value_type, const_reference>
 		{
 			size_type size = rhs.size();
-			if (size > IS_ZERO) {
+			if (size > CORE_ZERO) {
 				reConstructAllocate(size, [&rhs](pointer dest, size_type n) {
 					return std::uninitialized_copy(rhs.begin(), rhs.end(), dest);
 					});
 				mSize = size;
 			}
 		}
-		constexpr Sequence(Sequence&& rhs)noexcept {
-			mArray = std::move(rhs.mArray);
+
+		Sequence(Sequence&& rhs)noexcept
+		{
+			mArray = rhs.mArray;
 			rhs.mArray = nullptr;
 
-			mSize = std::move(rhs.mSize);
+			mSize = rhs.mSize;
 			rhs.mSize = 0;
 
-			mCapacity = std::move(rhs.mCapacity);
+			mCapacity = rhs.mCapacity;
 			rhs.mCapacity = 0;
 
-			mAdditive = std::move(rhs.mAdditive);
+			mAdditive = rhs.mAdditive;
 			rhs.mAdditive = 1;
 		}
-		Sequence& operator=(Sequence rhs)noexcept {
-			//using swap idiom
+
+		Sequence& operator=(Sequence rhs)noexcept
+		{
 			rhs.swap(*this);
 			return *this;
 		}
-		Sequence& operator=(std::initializer_list<value_type> ilist) {
-			//using swap idiom
+
+		Sequence& operator=(std::initializer_list<value_type> ilist)
+		{
 			Sequence temp(ilist);
 			temp.swap(*this);
 			return *this;
 		}
-		~Sequence()noexcept {//compiler didn't implicitly add noexcept (?) it should
+
+		~Sequence()noexcept
+		{
 			if (mArray) {
 				destroy_objects(begin(), end());
 				free_memory(mArray);
@@ -155,148 +163,163 @@ namespace badEngine {
 				mCapacity = 0;
 			}
 		}
-		//swap
-		constexpr void swap(Sequence& rhs)noexcept {
+
+		constexpr void swap(Sequence& rhs)noexcept
+		{
 			std::swap(mArray, rhs.mArray);
 			std::swap(mSize, rhs.mSize);
 			std::swap(mCapacity, rhs.mCapacity);
 			std::swap(mAdditive, rhs.mAdditive);
 		}
 
-		//iterator access
-		constexpr iterator begin()noexcept {
+		using iterator       = pointer;
+		using const_iterator = const_pointer;
+
+		constexpr iterator begin()noexcept 
+		{
 			return  mArray;
 		}
-		constexpr iterator end()noexcept {
+
+		constexpr iterator end()noexcept 
+		{
 			return  mArray + mSize;
 		}
-		constexpr const_iterator begin()const noexcept {
+
+		constexpr const_iterator begin()const noexcept
+		{
 			return mArray;
 		}
-		constexpr const_iterator end()const noexcept {
-			return mArray + mSize;
-		}
-		constexpr const_iterator cbegin()const noexcept {
-			return mArray;
-		}
-		constexpr const_iterator cend()const noexcept {
+
+		constexpr const_iterator end()const noexcept
+		{
 			return mArray + mSize;
 		}
 
-		//basic access
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if container is empty
-		*/
-		constexpr reference front() {
-			assert(mSize > 0 && "front() called on empty container");
+		constexpr const_iterator cbegin()const noexcept 
+		{
+			return mArray;
+		}
+
+		constexpr const_iterator cend()const noexcept
+		{
+			return mArray + mSize;
+		}
+
+
+		
+		//UB if container is empty, otherwise returns reference to the first element
+		constexpr reference front() noexcept
+		{
+			assert(!isEmpty());
 			return *begin();
 		}
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if container is empty
-		*/
-		constexpr const_reference front()const {
-			assert(mSize > 0 && "front() called on empty container");
+
+		//UB if container is empty, otherwise returns reference to the first element
+		constexpr const_reference front()const noexcept
+		{
+			assert(!isEmpty());
 			return *begin();
 		}
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if container is empty
-		*/
-		constexpr reference back() {
-			assert(mSize > 0 && "back() called on empty container");
+
+		//UB if container is empty, otherwise returns reference to the last element
+		constexpr reference back() noexcept
+		{
+			assert(!isEmpty());
 			return mArray[mSize - 1];
 		}
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if container is empty
-		*/
-		constexpr const_reference back()const {
-			assert(mSize > 0 && "back() called on empty container");
+
+		//UB if container is empty, otherwise returns reference to the last element
+		constexpr const_reference back()const noexcept
+		{
+			assert(!isEmpty());
 			return mArray[mSize - 1];
 		}
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if index is not in the range of [begin -> end]
-		*/
-		constexpr reference operator[](size_type index) {
-			//assert(index < mSize && "operator[] access with out of range index");
-			return mArray[index];
-		}
-		/*
-		UNDEFINED BEHAVIOR CONDITIONS:
-			if index is not in the range of [begin -> end]
-		*/
-		constexpr const_reference operator[](size_type index)const {
-			assert(index < mSize && "operator[] access with out of range index");
-			return mArray[index];
-		}
-		/*
-		THROWS EXCEPTION:
-			if element is not in range of [begin -> end] throws type BadException
-		*/
-		reference at(size_type index) {
-			if (index >= mSize)
-				throw BasicException("out of range access INFO: [size: " + std::to_string(mSize) + "; index: " + std::to_string(index));
-			return mArray[index];
-		}
-		/*
-		THROWS EXCEPTION:
-			if element is not in range of [begin -> end] throws type BadException
-		*/
-		const_reference at(size_type index)const {
-			if (index >= mSize)
-				throw BasicException("out of range access INFO: [size: " + std::to_string(mSize) + "; index: " + std::to_string(index));
+
+		//UB if index is not in the range of [begin -> end), otherwise returns reference to the element
+		constexpr reference operator[](size_type index) noexcept
+		{
+			assert(!isEmpty());
 			return mArray[index];
 		}
 
-		//number of initalized members
-		constexpr size_type size()const noexcept {
+		//UB if index is not in the range of [begin -> end), otherwise returns reference to the element
+		constexpr const_reference operator[](size_type index)const noexcept
+		{
+			assert(!isEmpty());
+			return mArray[index];
+		}
+
+		//throws BadException if indeex is not in the range of [begin -> end), otherwise returns reference to the element
+		constexpr reference at(size_type index)
+		{
+			if (index >= mSize)
+				throw BadException("out of range access element access at index", std::to_string(index).c_str());
+			return mArray[index];
+		}
+
+		//throws BadException if indeex is not in the range of [begin -> end), otherwise returns reference to the element
+		constexpr const_reference at(size_type index)const
+		{
+			if (index >= mSize)
+				throw BadException("out of range access element access at index", std::to_string(index).c_str());
+			return mArray[index];
+		}
+
+		//number of constructed elements
+		constexpr size_type size()const noexcept 
+		{
 			return mSize;
 		}
-		//number of maximum initalizable members for the system
-		constexpr size_type max_size()const noexcept {
+
+		//maximum number elements depending on sizeof(T)
+		constexpr size_type max_size()const noexcept
+		{
 			return std::numeric_limits<size_type>::max() / sizeof(value_type);
 		}
-		//number of objects that can be initalized before reallocation
-		constexpr size_type capacity() const noexcept {
+
+		//current size of allocated memory
+		constexpr size_type capacity() const noexcept
+		{
 			return mCapacity;
 		}
-		//returns true if size is zero
-		constexpr bool isEmpty()const noexcept {
-			return mSize == IS_ZERO;
+
+		//if any constructed elements
+		constexpr bool isEmpty()const noexcept
+		{
+			return mSize == CORE_ZERO;
 		}
 
-		//set addative for growth calculation, can't go lower than 1
-		constexpr void set_additive(size_type additive)noexcept {
-			assert(additive >= 1 && "additive can not be less than 1");
+		//set addative for growth calculation, can't go lower than 1 in debug, otherwise all types of memes will happen
+		constexpr void set_additive(size_type additive)noexcept 
+		{
+			assert(additive >= 1);
 			mAdditive = additive;
 		}
 
-		//clear, capacity unchanged
-		constexpr void clear()noexcept {
-			if (!isEmpty()) {
-				destroy_objects(begin(), end());
-				mSize = 0;
-			}
+		//destroy all constructed elements
+		constexpr void clear()noexcept
+		{
+			destroy_objects(begin(), end());
+			mSize = 0;
 		}
 		//copies elements
-		void push_back(const_reference value)
+		constexpr void push_back(const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			emplace_back(value);
 		}
+
 		//moves elements
-		void push_back(value_type&& value)
+		constexpr void push_back(value_type&& value)
 			requires std::constructible_from<value_type, value_type&&>
 		{
 			emplace_back(std::move(value));
 		}
-		//creates elements in place using any constructor
+
+		//creates elements in place
 		template<typename... Args>
+		constexpr void emplace_back(Args&&... args)
 			requires std::constructible_from<value_type, Args...>
-		void emplace_back(Args&&... args)
 		{
 			//if at capacity, reallocate with extra memory
 			if (mSize == mCapacity) {
@@ -305,24 +328,24 @@ namespace badEngine {
 			new(mArray + mSize)value_type(std::forward<Args>(args)...);
 			++mSize;
 		}
-		//pop back, overload of erase(first, last)
-		constexpr void pop_back()noexcept {
-			if (!isEmpty()) {
-				erase(end() - 1, end());
-			}
+
+		//UB if the container is empty, otherwise erases the last element
+		constexpr void pop_back()noexcept
+		{
+			assert(!isEmpty());
+			erase(end() - 1, end());
 		}
-		//erase, overlaod of erase(first, last)
-		void erase(const_iterator pos)
+
+		//UB if pos is not in the range of [begin -> end) and if container is empty (probably terminate)
+		constexpr void erase(const_iterator pos) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
+			assert(!isEmpty() && pos >= begin() && pos < end());
 			erase(pos, pos + 1);
 		}
-		/*
-		erases elements
-		UNDEFIEND BEHAVIOR CONDITIONS:
-			if [first -> last) is not in the range of [begin -> end)
-		*/
-		void erase(const_iterator first, const_iterator last)
+
+		//UB if given range is not in the range of [begin -> end) and if container is empty (probably terminate)
+		constexpr void erase(const_iterator first, const_iterator last) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)return;
@@ -331,8 +354,8 @@ namespace badEngine {
 			iterator targetEnd = const_cast<iterator>(last);
 			iterator thisBegin = begin();
 			iterator thisEnd = end();
-
-			assert(thisBegin <= targetBegin && thisEnd >= targetEnd && targetBegin <= targetEnd && "position invalidation");
+			assert(!isEmpty());
+			assert(thisBegin <= targetBegin && thisEnd >= targetEnd && targetBegin <= targetEnd);
 			//get distance
 			size_type destroy_size = static_cast<size_type>(targetEnd - targetBegin);
 
@@ -344,27 +367,24 @@ namespace badEngine {
 			mSize -= destroy_size;
 			destroy_objects(end(), thisEnd);
 		}
-		//swaps elements and pops, overlaod of swap_with_last_erase(first, last)
-		void swap_with_last_erase(const_iterator pos)
+
+		//swaps given element with last and pops back. UB if pos is not in the range of [begin -> end)
+		constexpr void swap_with_last_erase(const_iterator pos) noexcept
 		{
-			if (pos != end()) {
-				swap_with_last_erase(pos, pos + 1);
-			}
+			assert(!isEmpty() && pos >= begin() && pos < end());
+			swap_with_last_erase(pos, pos + 1);
 		}
-		/*
-		swaps last element with pos element then pops
-		UNDEFIEND BEHAVIOR CONDITIONS:
-			if [first -> last) is not in the range of [begin -> end]
-		*/
-		void swap_with_last_erase(const_iterator first, const_iterator last)
+
+		//swaps given range with last one by one and pops range. UB if given range is not in the range of [begin -> end)
+		constexpr void swap_with_last_erase(const_iterator first, const_iterator last) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)return;
 			iterator destination = const_cast<iterator>(first);
-			iterator targetEnd = const_cast<iterator>(last);
-			iterator thisEnd = end();
-
-			assert(begin() <= destination && thisEnd >= targetEnd && destination <= targetEnd && "position invalidation");
+			iterator targetEnd   = const_cast<iterator>(last);
+			iterator thisEnd     = end();
+			assert(!isEmpty());
+			assert(begin() <= destination && thisEnd >= targetEnd && destination <= targetEnd);
 			//get distance
 			size_type destroy_size = static_cast<size_type>(targetEnd - destination);
 
@@ -376,27 +396,28 @@ namespace badEngine {
 			mSize -= destroy_size;
 			destroy_objects(end(), thisEnd);
 		}
-		/*
-		reserves memory
-		if however input parameter capacity is less than current capacity, it will destroy anything outside of mSize
-		*/
-		void set_capacity(size_type n)
+
+		//acts as both a reserver or trimmer. if n is more than current cappacity, sets new capacity to given, if less then destroys the difference amount
+		constexpr void set_capacity(size_type n)
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			pointer oldBegin = begin();
-			size_type moveCount = bad_minV(mSize, n);
+			size_type moveCount = core_min(mSize, n);
 			reConstructAllocate(n, [oldBegin, moveCount](pointer dest, size_type size) {
 				return std::uninitialized_move(oldBegin, oldBegin + moveCount, dest);
 				}
 			);
 			mSize = moveCount;
 		}
+		//default constructs or erases elements by the difference amount of current size and given count
 		constexpr void resize(size_type count)
 			requires std::default_initializable<value_type>
 		{
 			value_type def = value_type{};
 			resize(count, def);
 		}
+
+		//default constructs or erases elements by the difference amount of current size and given count
 		constexpr void resize(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
@@ -414,19 +435,20 @@ namespace badEngine {
 				}
 			}
 		}
+
 		//shrinks to current size
-		void shrink_to_fit() {
+		void shrink_to_fit()
+		{
 			set_capacity(mSize);
 		}
+
 	private:
 		//member variables
-		pointer                  mArray = nullptr;
-		size_type                mSize = 0;
-		size_type                mCapacity = 0;
+		pointer mArray = nullptr;
+		size_type mSize = 0;
+		size_type mCapacity = 0;
 
-		size_type                mAdditive = 1;
-		//universal variables
-		static constexpr size_type IS_ZERO = 0;
+		size_type mAdditive = 1;
 	};
 }
 

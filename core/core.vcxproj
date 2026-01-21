@@ -139,28 +139,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BadExceptions.h" />
-    <ClInclude Include="badUtility.h" />
+    <ClInclude Include="bad_exceptions.h" />
+    <ClInclude Include="bad_concepts.h" />
+    <ClInclude Include="bad_utility.h" />
+    <ClInclude Include="bad_geometry.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collision_test.h" />
+    <ClInclude Include="Collision_resolve.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="NumberGenerator.h" />
+    <ClInclude Include="RandomNum.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Ray.h" />
-    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="UniformGrid.h" />
-    <ClInclude Include="Vec2.h" />
+    <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bad_exceptions.cpp" />
+    <ClCompile Include="Collision_resolve.cpp" />
+    <ClCompile Include="Collision_test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="RandomNum.cpp" />
+    <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="UniformGrid.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,9 +1,8 @@
 #pragma once
-
 #include <concepts>
 
-namespace badEngine {
-
+namespace badCore
+{
 	template <typename T, typename... Ts>
 	concept ONE_OF = (std::same_as<T, Ts> || ...);
 
@@ -36,44 +35,4 @@ namespace badEngine {
 
 	template<typename T>
 	concept IS_SLLIST_COMPATIBLE = std::destructible<T> && BY_VALUE_TYPE<T>;
-
-	template <typename T, typename U> requires LESS_THAN_COMPARE<std::remove_cvref_t<T>>
-	constexpr auto bad_maxV(const T& x, const U& y)noexcept {
-		return (x < y) ? y : x;
-	}
-	template<typename T, typename U> requires LESS_THAN_COMPARE<std::remove_cvref_t<T>>
-	constexpr auto bad_minV(const T& x, const U& y)noexcept {
-		return (x < y) ? x : y;
-	}
-
-	//undefined behavior if low is higher than high
-	template<typename T>
-		requires LESS_THAN_COMPARE<std::remove_cvref_t<T>>
-	constexpr const T& bad_clamp(const T& val, const T& low, const T& high) {
-		if (val < low)return low;
-		if (high < val)return high;
-		return val;
-	}
-
-	template<typename T>requires MATHEMATICAL_PRIMITIVE<T>
-	constexpr bool isMinus(T x)noexcept {
-		return x < 0;
-	}
-	template<typename T>requires MATHEMATICAL_PRIMITIVE<T>
-	constexpr bool isPlus(T x)noexcept {
-		return x > 0;
-	}
-	template<typename T> requires PRIMITIVE_TYPE<T>
-	constexpr void swap_numerical(T& n1, T& n2)noexcept {
-		static_assert(!std::is_const_v<T>, "swap_numerical requires non const lvalue T");
-		T temp = n1;
-		n1 = n2;
-		n2 = temp;
-	}
-	template<typename T> requires FLOAT_TYPE<T>
-	constexpr bool bad_isNaN(T x)noexcept {
-		return x != x;
-	}
-
-	static constexpr float BAD_EPSILON = 0.0001f;
 }

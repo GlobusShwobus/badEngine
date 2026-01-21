@@ -9,14 +9,16 @@
 
 // add headers that you want to pre-compile here
 #include <concepts>
-#include <string>
-#include <string_view>
-#include <stdexcept>
-#include <cassert>
-#include <random>
-#include <memory>
-#include <chrono>
-#include <cmath>
 #include <limits>
+#include <utility>
+#include <memory>
+#include <string>
+#include <cassert>
+#include <stdexcept>
+#include <ranges>
+#include <random>
+#include <cmath>
+#include <chrono>
+
 
 #endif //PCH_H

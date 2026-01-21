@@ -2,44 +2,29 @@
 
 #include <chrono>
 
-namespace badEngine {
-
-	class Stopwatch {
-
+namespace badCore
+{
+	class Stopwatch final
+	{
 		using Valuesec = std::chrono::duration<double>;
 		using Millisec = std::chrono::milliseconds;
 		using Microsec = std::chrono::microseconds;
 		using Nanosec = std::chrono::nanoseconds;
 
-		template<typename DurationType = Millisec>
-		DurationType delta_time()noexcept {
-			const auto old = mWatch;
-			mWatch = std::chrono::steady_clock::now();
-			return std::chrono::duration_cast<DurationType>(mWatch - old);
-		}
+		std::chrono::steady_clock::duration elapsed()noexcept;
 
 	public:
-		Stopwatch()noexcept
-			:mWatch(std::chrono::steady_clock::now())
-		{
-		}
+		Stopwatch()noexcept;
 
-		double dt_float()noexcept {
-			return delta_time<Valuesec>().count();
-		}
-		std::size_t dt_millisec()noexcept {
-			return delta_time<Millisec>().count();
-		}
-		std::size_t dt_microsec()noexcept {
-			return delta_time<Microsec>().count();
-		}
-		std::size_t dt_nanosec()noexcept {
-			return delta_time<Nanosec>().count();
-		}
+		double dt_float() noexcept;
 
-		void reset()noexcept {
-			mWatch = std::chrono::steady_clock::now();
-		}
+		std::size_t dt_millisec() noexcept;
+
+		std::size_t dt_microsec() noexcept;
+
+		std::size_t dt_nanosec() noexcept;
+
+		void reset()noexcept;
 
 	private:
 		std::chrono::steady_clock::time_point mWatch;
