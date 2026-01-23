@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Texture.h"
 
-namespace badEngine {
+namespace badWindow
+{
 	Texture::Texture(SDL_Surface* surface, SDL_Renderer* renderer)
 	{
 		if (surface && renderer) {

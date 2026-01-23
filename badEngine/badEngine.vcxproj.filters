@@ -1,14 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Utils">
-      <UniqueIdentifier>{5095a12d-948c-4f02-b30d-ac8a74948916}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Main">
       <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Visual">
-      <UniqueIdentifier>{d617e8e6-f5a4-46a8-9e1b-fbffd3c7e7ce}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scripts">
       <UniqueIdentifier>{62c8ec14-40fa-48bc-a630-d17736ac2b57}</UniqueIdentifier>
@@ -16,108 +10,30 @@
     <Filter Include="Validate and load">
       <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{09c34b63-d26c-45f9-821a-2036432ae0ea}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BadExceptions.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="badUtility.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="NumberGenerator.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Sequence.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="SLList.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Stopwatch.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="validate_data.h">
       <Filter>Validate and load</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Rectangle.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformGrid.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Vec2.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowContext.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Visual</Filter>
     </ClInclude>
     <ClInclude Include="Dumpster.h">
       <Filter>Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="mySDL_utils.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
     <ClInclude Include="badEngine.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="TextureMap.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
-    <ClInclude Include="Canvas.h">
-      <Filter>Visual</Filter>
-    </ClInclude>
     <ClInclude Include="load_data.h">
       <Filter>Validate and load</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Ray.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowContext.cpp">
-      <Filter>Visual</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Visual</Filter>
-    </ClCompile>
-    <ClCompile Include="UniformGrid.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Canvas.cpp">
-      <Filter>Visual</Filter>
-    </ClCompile>
     <ClCompile Include="validate_data.cpp">
       <Filter>Validate and load</Filter>
     </ClCompile>
     <ClCompile Include="load_data.cpp">
       <Filter>Validate and load</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Visual</Filter>
-    </ClCompile>
-    <ClCompile Include="mySDL_utils.cpp">
-      <Filter>Visual</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace badEngine {
+namespace badCore {
 	class Color final
 	{
 	public:

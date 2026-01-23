@@ -15,16 +15,18 @@
 #include "Sequence.h"
 #include "load_data.h"
 
-#include "NumberGenerator.h"
+#include "RandomNum.h"
 
 #include "Color.h"
 #include "Camera.h"
-#include "Ray.h"
 #include "TextureMap.h"
 
 #include <iostream>
 
 int main() {
+
+    using namespace badCore;
+    using namespace badWindow;
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);

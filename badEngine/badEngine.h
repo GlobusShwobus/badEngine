@@ -1,29 +1,32 @@
 #pragma once
 
-#include "GraphicsSys.h"
-#include "NumberGenerator.h"
+#include "load_data.h"
+#include "WindowContext.h"
+#include "RandomNum.h"
 #include "Stopwatch.h"
 #include "UniformGrid.h"
 
 namespace badEngine {
 
+	using namespace badCore;
+	using namespace badWindow;
 
 	class badEngine
 	{
 	public:
 
-		badEngine(const nlohmann::json& sys_config) 
-			:gfx(sys_config)
+		badEngine(const WindowContextDescription& window)
+			:window(window.heading.c_str(), window.width, window.height, window.flags)
 		{
 
 		}
 
 		void run() {
-			gfx.system_refresh();
+			window.system_refresh();
 			advance_state();
 			resolve_state();
 			render();
-			gfx.system_present();
+			window.system_present();
 			prepare_next_frame();
 		}
 	
@@ -37,13 +40,14 @@ namespace badEngine {
 
 	private:
 		//current min
-		GraphicsSys gfx;
-		NumberGenerator rng;
+		WindowContext window;
+		RandomNum rng;
 		Stopwatch frametimer;
 
 		//probably required/important but for now idk
-		UniformGrid staticObjects;
-		UniformGrid dynamicObjects;
+		
+		//UniformGrid staticObjects;
+		//UniformGrid dynamicObjects;
 	};
 
 }

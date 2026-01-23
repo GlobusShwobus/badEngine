@@ -143,7 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animatable.h" />
     <ClInclude Include="Canvas.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="mySDL_utils.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Sprite.h" />
@@ -152,7 +154,9 @@
     <ClInclude Include="WindowContext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animatable.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

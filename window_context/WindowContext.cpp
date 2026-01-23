@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "WindowContext.h"
 
-namespace badEngine {
-
+namespace badWindow
+{
 	WindowContext::WindowContext(const char* heading, uint32_t width, uint32_t height, std::size_t flags)
 	{
 		if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
@@ -47,7 +47,7 @@ namespace badEngine {
 	{
 		mRenderer.reset();
 		mWindow.reset();
-		mDrawColor = Colors::Black;
+		mDrawColor = badCore::Colors::Black;
 		SDL_Quit();
 	}
 
@@ -70,15 +70,15 @@ namespace badEngine {
 
 	void WindowContext::set_default_color(Color color)noexcept
 	{
-		if (SDL_SetRenderDrawColor(mRenderer.get(), color.get_red(), color.get_green(), color.get_blue(), color.get_alpha()))
+		if (SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a()))
 			mDrawColor = color;
 	}
 
-	void WindowContext::draw_shape(const AABB& aabb, Color color, AABB* other, Color* otherCol)const noexcept
+	void WindowContext::draw_AABB(const AABB& aabb, Color color, AABB* other, Color* otherCol)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		//set the drawing color
-		SDL_SetRenderDrawColor(ren, color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
+		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 		//convert aabb to sdl type and draw it
 		SDL_FRect sdlArea = SDL_FRect(aabb.x, aabb.y, aabb.w, aabb.h);
 		SDL_RenderFillRect(ren, &sdlArea);
@@ -86,19 +86,19 @@ namespace badEngine {
 		//if other draw the other doing the same thing
 		if (other) {
 			if (otherCol) {
-				SDL_SetRenderDrawColor(ren, otherCol->get_red(), otherCol->get_green(), otherCol->get_blue(), otherCol->get_alpha());
+				SDL_SetRenderDrawColor(ren, otherCol->get_r(), otherCol->get_g(), otherCol->get_b(), otherCol->get_a());
 			}
 			SDL_FRect sdlOther = SDL_FRect(other->x, other->y, other->w, other->h);
 			SDL_RenderFillRect(ren, &sdlOther);
 		}
 		//reset the color
-		SDL_SetRenderDrawColor(ren, mDrawColor.get_red(), mDrawColor.get_green(), mDrawColor.get_blue(), mDrawColor.get_alpha());
+		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_shape(const float2& start, const float2& end, std::size_t thickness, Color color)
+	void WindowContext::draw_line(const float2& start, const float2& end, std::size_t thickness, Color color)
 	{
 		SDL_Renderer* ren = mRenderer.get();
-		SDL_SetRenderDrawColor(ren, color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
+		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 
 		if (thickness <= 1) {
 			SDL_RenderLine(ren, start.x, start.y, end.x, end.y);
@@ -129,36 +129,20 @@ namespace badEngine {
 				);
 			}
 		}
-		SDL_SetRenderDrawColor(ren, mDrawColor.get_red(), mDrawColor.get_green(), mDrawColor.get_blue(), mDrawColor.get_alpha());
+		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& source, const AABB& dest)const noexcept
+	void WindowContext::draw_texture(const RenderCommand& command)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
-		SDL_FRect sdlSrc(source.x, source.y, source.w, source.h);
-		SDL_FRect sdlDest(dest.x, dest.y, dest.w, dest.h);
-
-		SDL_RenderTexture(ren, texture, &sdlSrc, &sdlDest);
+		SDL_RenderTexture(ren, command.texture, command.source, command.dest);
 	}
 
-	void WindowContext::draw_texture(SDL_Texture* texture)const noexcept
+	void WindowContext::draw_texture(std::span<const RenderCommand> commands)const noexcept
 	{
-		SDL_RenderTexture(mRenderer.get(), texture, nullptr, nullptr);
-	}
-
-	void WindowContext::draw_sprite(const BasicSprite& sprite)const noexcept
-	{
-		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
-	}
-	void WindowContext::draw_sprite(const Animation& sprite)const noexcept
-	{
-		draw_texture(sprite.mTexture, sprite.mSource, sprite.mDest);
-	}
-	void WindowContext::draw_sprite(const Font& sprite)const noexcept
-	{
-		auto it = sprite.begin();
-		for (; it != sprite.end(); ++it) {
-			draw_texture(sprite.mTexture, it->first, it->second);
+		SDL_Renderer* ren = mRenderer.get();
+		for (const auto& command : commands) {
+			SDL_RenderTexture(ren, command.texture, command.source, command.dest);
 		}
 	}
 }

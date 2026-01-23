@@ -153,6 +153,7 @@
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Stopwatch.h" />
+    <ClInclude Include="Translate.h" />
     <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>

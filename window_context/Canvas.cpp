@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Canvas.h"
 
-namespace badEngine {
-
+namespace badWindow
+{
 	Canvas::Canvas(Uint32 width, Uint32 height, SDL_Renderer* const renderer)
 	{
 		if (!renderer)
@@ -23,6 +23,7 @@ namespace badEngine {
 
 		mTexture.reset(texture);
 	}
+
 	bool Canvas::start_drawing(SDL_Renderer* const renderer)const noexcept
 	{
 		return SDL_SetRenderTarget(renderer, mTexture.get());

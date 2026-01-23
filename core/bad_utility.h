@@ -2,11 +2,11 @@
 
 #include "bad_concepts.h"
 
+static constexpr float CORE_EPSILON = 0.0001f;
+static constexpr std::size_t CORE_ZERO = 0;
+
 namespace badCore
 {
-	static constexpr float CORE_EPSILON = 0.0001f;
-	static constexpr std::size_t CORE_ZERO = 0;
-
 	template <typename T> 
 	constexpr auto core_max(const T& x, const T& y)noexcept 
 		requires LESS_THAN_COMPARE<T>

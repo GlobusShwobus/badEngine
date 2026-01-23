@@ -1,11 +1,11 @@
 #pragma once
-
 #include <string>
 #include <filesystem>
 #include "json.hpp"
 #include "Sequence.h"
 #include "Texture.h"
 #include "SDL3/SDL_render.h"
+#include "Sequence.h"
 
 namespace badEngine {
 	// assumes path if verified, provides no checks and can throw anything if malformed input
@@ -32,8 +32,8 @@ namespace badEngine {
 
 	// assumes path if verified, provides no checks and can throw anything if malformed input
 	// verify before or trust
-	Sequence<TextureDescription> extract_texture_descs(const nlohmann::json& texture_manifest, const char* key);
+	badCore::Sequence<TextureDescription> extract_texture_descs(const nlohmann::json& texture_manifest, const char* key);
 
 	// loads up textures, assumes is called with the result of extract_texture_descs
-	Sequence<std::pair<std::string, Texture>> load_textures(const Sequence<TextureDescription>& descs, SDL_Renderer* renderer);
+	badCore::Sequence<std::pair<std::string, badWindow::Texture>> load_textures(const badCore::Sequence<TextureDescription>& descs, SDL_Renderer* renderer);
 }

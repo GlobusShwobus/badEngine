@@ -4,6 +4,7 @@
 #include <string>
 #include <span>
 #include "Texture.h"
+#include "bad_exceptions.h"
 #include "Sequence.h"
 
 //TODO::load single texture
@@ -11,8 +12,8 @@
 //		review exception logic
 //		documentation and cleaup
 
-namespace badEngine {
-
+namespace badWindow
+{
 	class TextureMap
 	{
 		// required to avoid look up bs with const char*. by default std::equal_to<std::string>, so set it manually turn it off
@@ -48,7 +49,7 @@ namespace badEngine {
 		{
 			auto it = mTextures.find(tag);
 			if (it == mTextures.end()) {
-				throw BasicException("Missing or invalid tag: ", tag);
+				throw badCore::BadException("Missing or invalid tag: ", tag);
 			}
 			return it->second;
 		}
@@ -64,8 +65,8 @@ namespace badEngine {
 			return mTextures.find(tag) != mTextures.end();
 		}
 
-		Sequence<std::string> get_tags()const noexcept {
-			Sequence<std::string> tags;
+		badCore::Sequence<std::string> get_tags()const noexcept {
+			badCore::Sequence<std::string> tags;
 			tags.set_capacity(mTextures.size());
 			for (const auto& pair : mTextures) {
 				tags.push_back(pair.first);

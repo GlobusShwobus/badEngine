@@ -1,3 +1,4 @@
+
 #include "load_data.h"
 #include <fstream>
 #include "mySDL_utils.h"
@@ -24,15 +25,15 @@ namespace badEngine {
 
 		desc.flags = 0;
 		for (const auto& flag : config.at("flags")) {
-			MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>().c_str(), desc.flags);
+			badWindow::MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>().c_str(), desc.flags);
 		}
 		return desc;
 	}
 
 	// assumes the manifest is valid. provides no checks. if it indeed throws, program will be terminated.
-	Sequence<TextureDescription> extract_texture_descs(const nlohmann::json& texture_manifest, const char* key)
+	badCore::Sequence<TextureDescription> extract_texture_descs(const nlohmann::json& texture_manifest, const char* key)
 	{
-		Sequence<TextureDescription>textures;
+		badCore::Sequence<TextureDescription>textures;
 
 		const auto& config = texture_manifest.at(key);
 		textures.set_capacity(config.size());
@@ -44,15 +45,15 @@ namespace badEngine {
 		return textures;
 	}
 
-	Sequence<std::pair<std::string, Texture>> load_textures(const Sequence<TextureDescription>& descs, SDL_Renderer* renderer)
+	badCore::Sequence<std::pair<std::string, badWindow::Texture>> load_textures(const badCore::Sequence<TextureDescription>& descs, SDL_Renderer* renderer)
 	{
-		Sequence<std::pair<std::string, Texture>> textures;
+		badCore::Sequence<std::pair<std::string, badWindow::Texture>> textures;
 
 		if (!renderer) return textures;
 		textures.set_capacity(descs.size());
 
 		for (const auto& desc : descs) {
-			Texture tex(desc.file.string().c_str(), renderer);
+			badWindow::Texture tex(desc.file.string().c_str(), renderer);
 
 			if (!tex.get()) {
 				// log maybe?

@@ -8,7 +8,10 @@
     <Filter Include="window_context">
       <UniqueIdentifier>{7698f939-48aa-4edf-8869-9e33b0226d4f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="textures">
+    <Filter Include="TextureMap">
+      <UniqueIdentifier>{3dcb193b-1e3f-4c5b-9a0c-6475169a56f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="textures_types">
       <UniqueIdentifier>{d39b1bbc-88dd-4faf-9704-a961662f9fe2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -20,19 +23,25 @@
       <Filter>window_context</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClInclude>
     <ClInclude Include="Canvas.h">
-      <Filter>textures</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureMap.h">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClInclude>
     <ClInclude Include="WindowContext.h">
       <Filter>window_context</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMap.h">
+      <Filter>TextureMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Animatable.h">
+      <Filter>textures_types</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>textures_types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -43,16 +52,22 @@
       <Filter>window_context</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
-      <Filter>textures</Filter>
+      <Filter>textures_types</Filter>
     </ClCompile>
     <ClCompile Include="WindowContext.cpp">
       <Filter>window_context</Filter>
+    </ClCompile>
+    <ClCompile Include="Animatable.cpp">
+      <Filter>textures_types</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>textures_types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

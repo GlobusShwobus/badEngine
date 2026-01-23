@@ -302,6 +302,7 @@ namespace badCore
 			destroy_objects(begin(), end());
 			mSize = 0;
 		}
+
 		//copies elements
 		constexpr void push_back(const_reference value)
 			requires std::constructible_from<value_type, const_reference>
