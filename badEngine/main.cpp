@@ -159,25 +159,17 @@ int main() {
             for (auto& e : tModels) {
                 cam.transform_model(e);
                 translate_in_window(e, window_size);
+                e.finalize();
             }
 
             //draw models
-            Sequence<Sequence<float2>> models;
-            for (auto& each : models) {
-                for (int i = 0; i < each.size(); i++) {
+            for (auto& tm : tModels) {
+                const auto& model = tm.get_model();
 
-                    auto& begin = each[i];
-
-                    int next;
-
-                    if (i + 1 == each.size()) {
-                        next = 0;
-                    }
-                    else {
-                        next = i + 1;
-                    }
-
-                    window.draw_line(begin, each[next], Colors::Red);
+                for (int i = 0; i < model.size(); i++) {
+                    const auto& a = model[i];
+                    const auto& b = model[(i + 1) % model.size()];
+                    window.draw_line(a, b, Colors::Red);
                 }
             }
 

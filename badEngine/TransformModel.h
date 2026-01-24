@@ -25,13 +25,23 @@ namespace badEngine
 
 		void scale(float scale_in)
 		{
-			mScale *= scale_in;
+			mScale_x *= scale_in;
+			mScale_y *= scale_in;
 			mTranslation *= scale_in;
+		}
+
+		void scale_independent(float scale_in_x, float scale_in_y)
+		{
+			mScale_x *= scale_in_x;
+			mScale_y *= scale_in_y;
+			mTranslation.x *= scale_in_x;
+			mTranslation.y *= scale_in_y;
 		}
 
 		void finalize() {
 			for (auto& v : mModel) {
-				v *= mScale;
+				v.x *= mScale_x;
+				v.y *= mScale_y;
 				v += mTranslation;
 			}
 		}
@@ -43,8 +53,9 @@ namespace badEngine
 	private:
 
 		Model mModel;
-		float2 mTranslation;
-		float mScale = 1.0f;
+		float2 mTranslation = { 0.0f, 0.0f };
+		float mScale_x = 1.0f;
+		float mScale_y = 1.0f;
 	};
 
 	//CLEAN DIS MESS UP
@@ -67,7 +78,7 @@ namespace badEngine
 
 	static void translate_in_window(TransformModel& model, const badCore::int2& window_size) {
 		badCore::float2 offset = badCore::float2(window_size.x * 0.5f, window_size.y * 0.5f);
-		offset.y *= -1;
+		model.scale_independent(1.0f, -1.0f);
 		model.translate(offset);
 	}
 
