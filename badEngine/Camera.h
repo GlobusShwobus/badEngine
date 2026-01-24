@@ -1,8 +1,52 @@
 #pragma once
 
-#include "vector"
 
-namespace badCore {
+#include "vector"
+#include "TransformModel.h"
+
+namespace badEngine
+{
+	class Camera
+	{
+		using float2 = badCore::float2;
+	public:
+
+		Camera() = default;
+
+		float2 get_pos()const noexcept
+		{
+			return mPos;
+		}
+
+		void move_by(const float2& offset) noexcept
+		{
+			mPos += offset;
+		}
+
+		void move_to(const float2& pos)noexcept
+		{
+			mPos = pos;
+		}
+
+		void transform_model(TransformModel& model)const {
+			model.translate(-mPos);
+			model.scale(mScale);
+		}
+
+		float get_scale()const
+		{
+			return mScale;
+		}
+
+		void set_scale(float scale) {
+			mScale = scale;
+		}
+
+
+	private:
+		float2 mPos;
+		float mScale = 1.0f;
+	};
 
 	//class Camera2D final 
 	//{

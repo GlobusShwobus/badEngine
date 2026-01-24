@@ -134,6 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="TransformModel.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />

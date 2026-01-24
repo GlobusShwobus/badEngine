@@ -38,6 +38,13 @@ namespace badWindow
 		return mRenderer.get();
 	}
 
+	badCore::int2 WindowContext::get_window_size()const noexcept
+	{
+		badCore::int2 s;
+		SDL_GetWindowSize(mWindow.get(), &s.x, &s.y);
+		return s;
+	}
+
 	bool WindowContext::is_good()const noexcept
 	{
 		return mWindow && mRenderer;
@@ -95,40 +102,13 @@ namespace badWindow
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_line(const float2& start, const float2& end, std::size_t thickness, Color color)
+	void WindowContext::draw_line(const float2& start, const float2& end, Color color)
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 
-		if (thickness <= 1) {
-			SDL_RenderLine(ren, start.x, start.y, end.x, end.y);
-		}
-		else {
-			// using a right triangle
+		SDL_RenderLine(ren, start.x, start.y, end.x, end.y);
 
-			// find the deltas
-			const float A = end.x - start.x;
-			const float B = end.y - start.y;
-			// pythagorean length of C
-			const float C = std::sqrtf(A * A + B * B);
-			if (C == 0) return;
-
-			// create a perpendicular vector by swaping x, y and negating one. also make it unit length
-			const float px = -B / C;
-			const float py = A / C;
-
-			const int iThickness = static_cast<int>(thickness);
-			// draw lines on both sides perpendicular to original line
-			for (int i = -iThickness / 2; i <= iThickness / 2; ++i)
-			{
-				float offsetX = px * i;
-				float offsetY = py * i;
-				SDL_RenderLine(ren,
-					start.x + offsetX, start.y + offsetY,
-					end.x + offsetX, end.y + offsetY
-				);
-			}
-		}
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 

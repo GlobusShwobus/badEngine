@@ -5,17 +5,17 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="components">
-      <UniqueIdentifier>{94c06247-60fd-4fd4-a748-24d7c8f1df0c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="containers">
       <UniqueIdentifier>{e1ecadca-44e4-47cc-8a5c-1833fc01e813}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ideas">
-      <UniqueIdentifier>{1f6c4ef7-0829-4954-b708-a94b61580d4a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="geometry">
       <UniqueIdentifier>{64998f31-83aa-401a-b66c-f2e7761eefbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{94c06247-60fd-4fd4-a748-24d7c8f1df0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transforms">
+      <UniqueIdentifier>{e2783a83-12b6-40c0-825a-dac60a400f96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -26,10 +26,7 @@
       <Filter>containers</Filter>
     </ClCompile>
     <ClCompile Include="RandomNum.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
-    <ClCompile Include="bad_exceptions.cpp">
-      <Filter>ideas</Filter>
+      <Filter>misc</Filter>
     </ClCompile>
     <ClCompile Include="Collision_test.cpp">
       <Filter>geometry</Filter>
@@ -38,18 +35,18 @@
       <Filter>geometry</Filter>
     </ClCompile>
     <ClCompile Include="Stopwatch.cpp">
-      <Filter>components</Filter>
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="bad_exceptions.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>precomp</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="Color.h">
-      <Filter>components</Filter>
+      <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="UniformGrid.h">
       <Filter>containers</Filter>
@@ -61,16 +58,10 @@
       <Filter>containers</Filter>
     </ClInclude>
     <ClInclude Include="RandomNum.h">
-      <Filter>components</Filter>
+      <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="Stopwatch.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="bad_utility.h">
-      <Filter>ideas</Filter>
-    </ClInclude>
-    <ClInclude Include="bad_concepts.h">
-      <Filter>ideas</Filter>
+      <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
       <Filter>geometry</Filter>
@@ -84,14 +75,17 @@
     <ClInclude Include="Collision_test.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="bad_exceptions.h">
-      <Filter>ideas</Filter>
-    </ClInclude>
     <ClInclude Include="Collision_resolve.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Translate.h">
-      <Filter>components</Filter>
+    <ClInclude Include="bad_concepts.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="bad_exceptions.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="bad_utility.h">
+      <Filter>misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

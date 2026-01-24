@@ -53,13 +53,12 @@ namespace badWindow
 		void draw_AABB(const AABB& aabb, Color color, AABB* other = nullptr, Color* otherCol = nullptr)const noexcept;
 
 		// renders a line on the screen with a given color and thickness
-		void draw_line(const float2& start, const float2& end, std::size_t thickness, Color color);
+		void draw_line(const float2& start, const float2& end, Color color);
 
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(const RenderCommand& command)const noexcept;
 
 		void draw_texture(std::span<const RenderCommand> commands)const noexcept;
-
 
 		// sets target where all drawing operations will take place in. Target texture sould be created as a targetable texture (for example created with create_texture_targetable)
 		// returns true of success, false on failure. call SDL_GetError on failure for details
@@ -70,6 +69,8 @@ namespace badWindow
 
 		SDL_Window* const get_window()const noexcept;
 		SDL_Renderer* const get_render()const noexcept;
+
+		badCore::int2 get_window_size()const noexcept;
 
 	private:
 		/* ORDER MATTERS BECAUSE OF DELETER! ALWAYS DELETE RENDERER BEFORE WINDOW */

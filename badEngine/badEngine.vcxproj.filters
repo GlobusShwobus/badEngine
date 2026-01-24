@@ -10,6 +10,9 @@
     <Filter Include="Validate and load">
       <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
     </Filter>
+    <Filter Include="temp">
+      <UniqueIdentifier>{ae14c5c4-7d4c-42a9-885b-592fff270f61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="validate_data.h">
@@ -23,6 +26,15 @@
     </ClInclude>
     <ClInclude Include="load_data.h">
       <Filter>Validate and load</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformModel.h">
+      <Filter>temp</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>temp</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>temp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

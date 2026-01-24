@@ -143,7 +143,6 @@
     <ClInclude Include="bad_concepts.h" />
     <ClInclude Include="bad_utility.h" />
     <ClInclude Include="bad_geometry.h" />
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision_test.h" />
     <ClInclude Include="Collision_resolve.h" />
     <ClInclude Include="Color.h" />
@@ -153,7 +152,6 @@
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Stopwatch.h" />
-    <ClInclude Include="Translate.h" />
     <ClInclude Include="UniformGrid.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>

@@ -23,6 +23,30 @@
 
 #include <iostream>
 
+#include "TransformModel.h"
+#include "Entity.h"
+
+
+/*
+NEW HEADERS translate.h entity.h
+
+//TODO::camera then
+//TODO::texture map finish then
+//TODO::translation/entity stuff
+
+
+
+TRANSLATION PIPELINE:
+    entity has a static model
+    entity poops out a model, applying its scale and offset (pos)
+
+    the model gets translated related to the camera
+    first subtracting offset (pos) (because top left corner)
+    then scaling the model
+
+    thirdly everything gets translated retated to the center of screen
+    first flipping y axis then applying offset
+*/
 int main() {
 
     using namespace badCore;
@@ -59,6 +83,21 @@ int main() {
         TextureMap testmeplz(textureData2);
 
 
+        
+        Sequence<Entity> entities;
+
+        entities.emplace_back(make_poly(64, 32, 5), float2(460, 0.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(150, 300.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(250, -200.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(-250, 200.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(0, 0.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(-150, -300.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(400, 300.0f));
+        entities.emplace_back(make_poly(64, 32, 5), float2(69, 420.0f));
+
+        const float speed = 20.0f;
+
+        Camera cam;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -77,13 +116,72 @@ int main() {
 
             //LISTEN TO EVENTS
             while (SDL_PollEvent(&EVENT)) {
-                if (EVENT.type == SDL_EVENT_QUIT) {
+
+                switch (EVENT.type) {
+                case SDL_EVENT_QUIT:
                     GAME_RUNNING = false;
-                    continue;
+                    break;
+                case SDL_EVENT_KEY_DOWN:
+                    if (EVENT.key.key == SDLK_W) {
+                        cam.move_by(float2(0,speed));
+                    }
+                    if (EVENT.key.key == SDLK_A) {
+                        cam.move_by(float2(-speed, 0));
+                    }
+                    if (EVENT.key.key == SDLK_S) {
+                        cam.move_by(float2(0, -speed));
+                    }
+                    if (EVENT.key.key == SDLK_D) {
+                        cam.move_by(float2(speed, 0));
+                    }
+                    break;
+                case SDL_EVENT_MOUSE_WHEEL:
+                    if (EVENT.wheel.y > 0) {
+                        // Scrolled up/away from user
+                        cam.set_scale(cam.get_scale() * 1.25f);
+                    }
+                    else if (EVENT.wheel.y < 0) {
+                        // Scrolled down/toward user
+                        cam.set_scale(cam.get_scale() * 0.75f);
+                    }
+                    break;
+                default:break;
                 }
             }
 
-            std::cout << "hello world\n";
+            //collect models
+            Sequence<TransformModel> tModels;
+            for (const auto& e : entities) {
+                tModels.push_back(e.get_model());
+            }
+            //transform models
+            int2 window_size = window.get_window_size();
+            for (auto& e : tModels) {
+                cam.transform_model(e);
+                translate_in_window(e, window_size);
+            }
+
+            //draw models
+            Sequence<Sequence<float2>> models;
+            for (auto& each : models) {
+                for (int i = 0; i < each.size(); i++) {
+
+                    auto& begin = each[i];
+
+                    int next;
+
+                    if (i + 1 == each.size()) {
+                        next = 0;
+                    }
+                    else {
+                        next = i + 1;
+                    }
+
+                    window.draw_line(begin, each[next], Colors::Red);
+                }
+            }
+
+
             window.system_present();
         }
     }
