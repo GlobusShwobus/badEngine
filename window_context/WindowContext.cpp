@@ -45,6 +45,13 @@ namespace badWindow
 		return s;
 	}
 
+	badCore::Mat3 WindowContext::window_transform()const noexcept
+	{
+		int width, height;
+		SDL_GetWindowSize(mWindow.get(), &width, &height);
+		return badCore::Mat3::translation({ width * 0.5f, height * 0.5f }) * badCore::Mat3::scale(1.0f, -1.0f);
+	}
+
 	bool WindowContext::is_good()const noexcept
 	{
 		return mWindow && mRenderer;

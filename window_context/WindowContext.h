@@ -9,6 +9,7 @@
 #include "vector.h"
 #include "Color.h"
 #include "AABB.h"
+#include "Matrix3.h"
 
 namespace badWindow
 {
@@ -71,6 +72,8 @@ namespace badWindow
 		SDL_Renderer* const get_render()const noexcept;
 
 		badCore::int2 get_window_size()const noexcept;
+
+		badCore::Mat3 window_transform()const noexcept;
 
 	private:
 		/* ORDER MATTERS BECAUSE OF DELETER! ALWAYS DELETE RENDERER BEFORE WINDOW */
