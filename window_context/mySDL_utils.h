@@ -15,12 +15,4 @@ namespace badWindow
 	};
 
 	bool MapSDL_Flags_to_size_t_bitwise(const std::string& key, std::size_t& flags)noexcept;
-
-
-	struct RenderCommand
-	{
-		SDL_Texture* texture;
-		SDL_FRect* source;
-		SDL_FRect* dest;
-	};
 }

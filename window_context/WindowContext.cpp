@@ -112,17 +112,27 @@ namespace badWindow
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_texture(const RenderCommand& command)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
-		SDL_RenderTexture(ren, command.texture, command.source, command.dest);
+		SDL_FRect ssrc(src.x, src.y, src.w, src.h);
+		SDL_FRect ddest(dest.x, dest.y, dest.w, dest.h);
+		SDL_RenderTexture(ren, texture, &ssrc, &ddest);
 	}
 
-	void WindowContext::draw_texture(std::span<const RenderCommand> commands)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture, std::span<const std::pair<AABB, AABB>> src_dests)const noexcept
 	{
+		if (!texture)
+			return;
+
 		SDL_Renderer* ren = mRenderer.get();
-		for (const auto& command : commands) {
-			SDL_RenderTexture(ren, command.texture, command.source, command.dest);
+
+		for (const auto& pair : src_dests) {
+			auto& src = pair.first;
+			auto& dest = pair.second;
+			SDL_FRect ssrc(src.x, src.y, src.w, src.h);
+			SDL_FRect ddest(dest.x, dest.y, dest.w, dest.h);
+			SDL_RenderTexture(ren, texture, &ssrc, &ddest);
 		}
 	}
 }

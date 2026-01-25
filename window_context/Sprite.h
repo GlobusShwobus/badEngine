@@ -1,17 +1,18 @@
 #pragma once
 
+#include <SDL3/SDL_render.h>
 #include "Texture.h"
 #include "AABB.h"
 
 namespace badWindow {
 
-	// a base class for all static texture types. only manages the reference of a texture and source info. is not the owner
-	// destination, scale, rotation is all external
+	// Sprite stores a reference to an SDL_Texture. SDL_Texture lifetime is managed externally.
+	// Sprite only manages the source control, the region of the texture to be drawn.
 	class Sprite final
 	{
 	public:
 
-		explicit Sprite(const Texture& texture)noexcept;
+		explicit Sprite(SDL_Texture* texture)noexcept;
 		
 		void set_source_pos(float x, float y)noexcept;
 

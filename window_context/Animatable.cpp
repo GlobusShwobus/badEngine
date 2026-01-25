@@ -3,7 +3,7 @@
 
 namespace badWindow
 {
-	Animation::Animation(const Texture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
+	Animation::Animation(SDL_Texture* texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
 		:mSprite(texture)
 	{
 		float textureW, textureH;
@@ -74,6 +74,6 @@ namespace badWindow
 
 	SDL_Texture* const Animation::get_texture()const noexcept
 	{
-		mSprite.get_texture();
+		return mSprite.get_texture();
 	}
 }

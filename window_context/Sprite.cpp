@@ -3,8 +3,9 @@
 
 namespace badWindow {
 
-	Sprite::Sprite(const Texture& texture)noexcept
-		:mTexture(texture.get()) {
+	Sprite::Sprite(SDL_Texture* texture)noexcept
+		:mTexture(texture)
+	{
 		assert(mTexture != nullptr);
 
 		SDL_GetTextureSize(mTexture, &mTextureW, &mTextureH);

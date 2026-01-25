@@ -56,9 +56,9 @@ namespace badWindow
 		void draw_line(const float2& start, const float2& end, Color color);
 
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
-		void draw_texture(const RenderCommand& command)const noexcept;
+		void draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept;
 
-		void draw_texture(std::span<const RenderCommand> commands)const noexcept;
+		void draw_texture(SDL_Texture* texture, std::span<const std::pair<AABB,AABB>> src_dests)const noexcept;
 
 		// sets target where all drawing operations will take place in. Target texture sould be created as a targetable texture (for example created with create_texture_targetable)
 		// returns true of success, false on failure. call SDL_GetError on failure for details

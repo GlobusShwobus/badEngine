@@ -6,12 +6,13 @@
 
 namespace badWindow
 {
-	// animatable object. manages the source texture by outputing a single source at a time by traversing via time steps
+	// Extension of sprite. Manages the source control by updating the source on a given time interval.
+	// Subdivide the whole image supporting multiple different animations, or only specific region. Does not support different sized frames.
 	class Animation final
 	{
 		using Frames = badCore::Sequence<badCore::float2>;
 	public:
-		Animation(const Texture& texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
+		Animation(SDL_Texture* texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
 
 		// update step
 		void update(float step)noexcept;

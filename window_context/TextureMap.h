@@ -2,77 +2,55 @@
 
 #include <unordered_map>
 #include <string>
-#include <span>
 #include "Texture.h"
-#include "bad_exceptions.h"
 #include "Sequence.h"
-
-//TODO::load single texture
-//		remove a single texture
-//		review exception logic
-//		documentation and cleaup
 
 namespace badWindow
 {
-	class TextureMap
+	class TextureMap final
 	{
-		// required to avoid look up bs with const char*. by default std::equal_to<std::string>, so set it manually turn it off
+		//turn off std::equal_to<std::string> default to allow lookups with const char*
 		using Map = std::unordered_map<
 			std::string,
 			Texture,
 			std::hash<std::string>,
 			std::equal_to<>
 		>;
+
 	public:
 		TextureMap() = default;
 
-		TextureMap(std::span<std::pair<std::string, Texture>> textures)
-		{
-			load_bulk(textures);
-		}
+		// removes all elements from the map. all references to textures get invalidated. 
+		void clear();
 
-		void clear() noexcept
+		// Creates a textures, or takes ownership if passed as rvalue.
+		// if the given texture is not nullptr tries to insert it. 
+		// no insertion done if there is a tag collision.
+		template <typename... Args>
+		bool add(const std::string& tag, Args&&... args)
+			requires std::constructible_from<Texture, Args...>
 		{
-			mTextures.clear();
-		}
-
-		void load_bulk(std::span<std::pair<std::string, Texture>> textures)noexcept
-		{
-			for (auto& [tag, texture] : textures) {
-				if (texture.get() != nullptr) {
-					mTextures.try_emplace(tag, std::move(texture));
-				}
+			Texture texture(std::forward<Args>(args)...);
+			auto find = mTextures.find(tag);
+			if (texture.get() != nullptr && find != mTextures.end()) {
+				mTextures.emplace(tag, std::move(texture));
+				return true;
 			}
-		}
-		// can throw
-		const Texture& get(const char* tag)const
-		{
-			auto it = mTextures.find(tag);
-			if (it == mTextures.end()) {
-				throw badCore::BadException("Missing or invalid tag: ", tag);
-			}
-			return it->second;
+			return false;
 		}
 
-		// returns nullptr on fail
-		const Texture* const try_get(const char* tag) const noexcept {
-			auto it = mTextures.find(tag);
-			return it == mTextures.end() ? nullptr : &it->second;
-		}
+		// deletes the texture associated with the tag, any references to the texture become invalidated.
+		void remove(const char* tag)noexcept;
 
-		bool has(const char* tag)const noexcept
-		{
-			return mTextures.find(tag) != mTextures.end();
-		}
+		// returns SDL_Texture pointer. Given pointer should be used as a reference. Map owns the resource.
+		// returns nullptr if tag does not exist in the map.
+		SDL_Texture* get_texture(const char* tag)const noexcept;
 
-		badCore::Sequence<std::string> get_tags()const noexcept {
-			badCore::Sequence<std::string> tags;
-			tags.set_capacity(mTextures.size());
-			for (const auto& pair : mTextures) {
-				tags.push_back(pair.first);
-			}
-			return tags;
-		}
+		// check if the given tag exists in the map
+		bool has(const char* tag)const noexcept;
+
+		// returns all currently stored tags in a heap array
+		badCore::Sequence<std::string> get_tags()const;
 
 	private:
 		Map mTextures;

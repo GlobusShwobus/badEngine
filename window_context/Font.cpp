@@ -3,7 +3,7 @@
 
 namespace badWindow
 {
-	Font::Font(const Texture& texture, uint32_t columnsCount, uint32_t rowsCount)
+	Font::Font(SDL_Texture* texture, uint32_t columnsCount, uint32_t rowsCount)
 		:mSprite(texture),
 		mColumnsCount(columnsCount)
 	{

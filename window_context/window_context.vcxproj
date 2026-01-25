@@ -166,6 +166,7 @@
     <ClCompile Include="mySDL_utils.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureMap.cpp" />
     <ClCompile Include="WindowContext.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
