@@ -143,9 +143,12 @@
     <ClInclude Include="bad_concepts.h" />
     <ClInclude Include="bad_utility.h" />
     <ClInclude Include="bad_geometry.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision_test.h" />
     <ClInclude Include="Collision_resolve.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Make_Shape.h" />
+    <ClInclude Include="Matrix3.h" />
     <ClInclude Include="RandomNum.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="AABB.h" />
@@ -159,6 +162,7 @@
     <ClCompile Include="bad_exceptions.cpp" />
     <ClCompile Include="Collision_resolve.cpp" />
     <ClCompile Include="Collision_test.cpp" />
+    <ClCompile Include="Make_Shape.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

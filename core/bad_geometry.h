@@ -1,12 +1,11 @@
 #pragma once
 #include <cmath>
 #include <limits>
-#include "bad_utility.h"
 #include "vector.h"
 #include "AABB.h"
 
-namespace badCore {
-
+namespace badCore
+{
 	template<typename T>
 	inline vector<T> absolute(const vector<T>& vec)noexcept
 	{
@@ -75,23 +74,8 @@ namespace badCore {
 		return 2.0f * (aabb.w + aabb.h);
 	}
 
-	constexpr AABB union_aabb(const AABB& a, const AABB& b)noexcept
-	{
-		const float minx = core_min(a.x, b.x);
-		const float miny = core_min(a.y, b.y);
-		const float maxx = core_max(a.x + a.w, b.x + b.w);
-		const float maxy = core_max(a.y + a.h, b.y + b.h);
-
-		return { minx, miny, maxx - minx, maxy - miny };
-	}
-
 	constexpr float2 center_point(const AABB& a) noexcept
 	{
 		return { a.x + (a.w * 0.5f), a.y + (a.h * 0.5f) };
-	}
-
-	constexpr AABB expand(const float2& center, float radius)noexcept
-	{
-		return{ center.x - radius, center.y - radius, radius + radius, radius + radius };
 	}
 }

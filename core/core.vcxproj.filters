@@ -40,6 +40,9 @@
     <ClCompile Include="bad_exceptions.cpp">
       <Filter>misc</Filter>
     </ClCompile>
+    <ClCompile Include="Make_Shape.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -85,6 +88,15 @@
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="bad_utility.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Make_Shape.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix3.h">
+      <Filter>Transforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>misc</Filter>
     </ClInclude>
   </ItemGroup>
