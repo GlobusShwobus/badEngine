@@ -23,9 +23,8 @@
 
 #include <iostream>
 
-#include "TransformModel.h"
 #include "Entity.h"
-
+#include "Collision_test.h"
 
 /*
 NEW HEADERS translate.h entity.h
@@ -78,26 +77,35 @@ int main() {
         validate_json_file("../Configs/textures.json");
         nlohmann::json texture_loader_config = load_json("../Configs/textures.json");
         auto extractDescriptions = extract_texture_descs(texture_loader_config, "texture_set1");
-        auto textureData2 = load_textures(extractDescriptions, window.get_render());
+        auto loaded_textures = load_textures(extractDescriptions, window.get_render());
 
-        TextureMap testmeplz(textureData2);
+        TextureMap texture_map;
 
+        for (auto& texture : loaded_textures) {
+            bool is_nullptr = texture.second.get() == nullptr;
+            bool is_good = texture_map.add(texture.first, std::move(texture.second));
+        }
 
-        
-        Sequence<Entity> entities;
+        auto texture_map_check = texture_map.get_tags();
 
-        entities.emplace_back(make_poly(64, 32, 5), float2(460, 0.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(150, 300.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(250, -200.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(-250, 200.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(0, 0.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(-150, -300.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(400, 300.0f));
-        entities.emplace_back(make_poly(64, 32, 5), float2(69, 420.0f));
+        for (auto& e : texture_map_check) {
+            std::cout << e << '\n';
+        }
 
-        const float speed = 20.0f;
-
+        RandomNum rng;
         Camera cam;
+        float cam_speed = 50;
+        Sequence<StarBro> entities;
+
+        for (int i = 0; i < 500; i++) {
+            float rad = rng.rFloat(80, 120);
+            float rat = rng.rFloat(0.15, 0.8);
+            auto model = make_poly(rad, rad*rat, rng.rFloat(3, 33));
+            auto pos = float2(rng.rFloat(-5000, 5000), rng.rFloat(-5000, 5000));
+            auto col = Color(rng.rInt(0,255), rng.rInt(0, 255), rng.rInt(0, 255), 255);
+            float vel = rng.rFloat(0.4, 1.6);
+            entities.emplace_back(std::move(model),rad, pos, col, vel);
+        }
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -123,57 +131,69 @@ int main() {
                     break;
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
-                        cam.move_by(float2(0,speed));
+                        cam.move_by(float2(0, cam_speed));
                     }
                     if (EVENT.key.key == SDLK_A) {
-                        cam.move_by(float2(-speed, 0));
+                        cam.move_by(float2(-cam_speed, 0));
                     }
                     if (EVENT.key.key == SDLK_S) {
-                        cam.move_by(float2(0, -speed));
+                        cam.move_by(float2(0, -cam_speed));
                     }
                     if (EVENT.key.key == SDLK_D) {
-                        cam.move_by(float2(speed, 0));
+                        cam.move_by(float2(cam_speed, 0));
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
                     if (EVENT.wheel.y > 0) {
                         // Scrolled up/away from user
-                        cam.set_scale(cam.get_scale() * 1.25f);
+                        cam.set_zoom(cam.get_zoom() * 1.25f);
                     }
                     else if (EVENT.wheel.y < 0) {
                         // Scrolled down/toward user
-                        cam.set_scale(cam.get_scale() * 0.75f);
+                        cam.set_zoom(cam.get_zoom() * 0.75f);
                     }
+                    break;
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                    //TODO mouse scrolling
                     break;
                 default:break;
                 }
             }
 
             //collect models
-            Sequence<TransformModel> tModels;
-            for (const auto& e : entities) {
-                tModels.push_back(e.get_model());
+            for (auto& e : entities) {
+                e.update(dt);
             }
+
             //transform models
             int2 window_size = window.get_window_size();
-            for (auto& e : tModels) {
-                cam.transform_model(e);
-                translate_in_window(e, window_size);
-                e.finalize();
-            }
+
+            Mat3 window_matrix = window.window_transform();
+            Mat3 camera_matrix = cam.get_transform();
+            Mat3 static_matrix = window_matrix * camera_matrix;
 
             //draw models
-            for (auto& tm : tModels) {
-                const auto& model = tm.get_model();
+            int draws = 0;
+            for (auto& entity : entities) {
+                
+                if (intersects(entity.get_aabb(), cam.get_viewport(window_size))) {
+                    Mat3 final = static_matrix * entity.get_transform();
 
-                for (int i = 0; i < model.size(); i++) {
-                    const auto& a = model[i];
-                    const auto& b = model[(i + 1) % model.size()];
-                    window.draw_line(a, b, Colors::Red);
+                    const auto& model = entity.get_model();
+
+                    for (int i = 0; i < model.size(); i++) {
+
+                        float2 a = final.transform(model[i]);
+                        float2 b = final.transform(model[(i + 1) % model.size()]);
+
+                        window.draw_line(a, b, entity.get_color());
+                    }
+                    draws++;
                 }
+                
             }
 
-
+            std::cout << "i draw " << draws << '\n';
             window.system_present();
         }
     }

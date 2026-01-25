@@ -5,7 +5,6 @@
 #include "Sequence.h"
 #include "Texture.h"
 #include "SDL3/SDL_render.h"
-#include "Sequence.h"
 
 namespace badEngine {
 	// assumes path if verified, provides no checks and can throw anything if malformed input

@@ -27,13 +27,7 @@
     <ClInclude Include="load_data.h">
       <Filter>Validate and load</Filter>
     </ClInclude>
-    <ClInclude Include="TransformModel.h">
-      <Filter>temp</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>temp</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
       <Filter>temp</Filter>
     </ClInclude>
   </ItemGroup>
