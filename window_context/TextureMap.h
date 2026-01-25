@@ -32,7 +32,7 @@ namespace badWindow
 		{
 			Texture texture(std::forward<Args>(args)...);
 			auto find = mTextures.find(tag);
-			if (texture.get() != nullptr && find != mTextures.end()) {
+			if (texture.get() != nullptr && find == mTextures.end()) {
 				mTextures.emplace(tag, std::move(texture));
 				return true;
 			}
