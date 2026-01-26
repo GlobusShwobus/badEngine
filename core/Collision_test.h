@@ -3,20 +3,12 @@
 #include "bad_geometry.h"
 #include "vector.h"
 #include "AABB.h"
-
+#include "Ray.h"
 
 namespace badCore
 {
 	using Overlap = float2;
 	using Hit_Entry_Exit = float2;
-
-	struct Ray
-	{
-		Ray(const float2& origin_point, const float2& vector);
-		float2 origin;
-		float2 dir;
-		float max_dist;
-	};
 
 	template<typename T>
 	constexpr bool contains(const AABB& aabb, const vector<T>& pos) noexcept
@@ -59,5 +51,5 @@ namespace badCore
 	Hit_Entry_Exit sweep_test(const Ray& ray, const AABB& target)noexcept;
 
 	// returns entry and exit points
-	Hit_Entry_Exit sweep_dynamic_test(const AABB& dynamicBox, const float2& dynamicVector, const AABB& staticBox) noexcept;
+	Hit_Entry_Exit sweep_dynamic_test(const AABB& dynamicBox, const Ray& ray, const AABB& staticBox) noexcept;
 }

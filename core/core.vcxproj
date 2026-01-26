@@ -152,6 +152,7 @@
     <ClInclude Include="RandomNum.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Stopwatch.h" />

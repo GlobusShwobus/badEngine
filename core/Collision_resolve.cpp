@@ -13,7 +13,7 @@ namespace badCore
 		if (t_near <= t_far && t_far >= 0.0f) {
 			hit.t = (t_near < 0.0f) ? t_far : t_near;
 			hit.impact_point = ray.origin + hit.t * ray.dir;
-			hit.is_hit = hit.t >= 0.0f && (hit.t * hit.t) < ray.max_dist;
+			hit.is_hit = hit.t >= 0.0f && (hit.t * hit.t) < ray.magnitude;
 		}
 
 		return hit;

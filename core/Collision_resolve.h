@@ -1,6 +1,7 @@
 #pragma once
 #include "Collision_test.h"
 #include "vector.h"
+#include "Ray.h"
 
 namespace badCore
 {

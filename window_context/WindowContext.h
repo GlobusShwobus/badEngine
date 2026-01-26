@@ -9,6 +9,7 @@
 #include "vector.h"
 #include "Color.h"
 #include "AABB.h"
+#include "Ray.h"
 #include "Matrix3.h"
 
 namespace badWindow
@@ -54,7 +55,7 @@ namespace badWindow
 		void draw_AABB(const AABB& aabb, Color color, AABB* other = nullptr, Color* otherCol = nullptr)const noexcept;
 
 		// renders a line on the screen with a given color and thickness
-		void draw_line(const float2& start, const float2& end, Color color);
+		void draw_line(const badCore::Ray& ray, Color color);
 
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.
 		void draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept;

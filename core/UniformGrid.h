@@ -3,6 +3,7 @@
 #include "Sequence.h"
 #include "AABB.h"
 #include "vector.h"
+#include "Ray.h"
 
 namespace badCore 
 {
@@ -53,7 +54,7 @@ namespace badCore
 		// queries a line against the grid
 		// IMPORTANT: if the length of [lineEnd - lineOrigin] is 0, it could still be inside the grid but it will NOT be queried
 		// returns cell indices, not individual elements
-		void query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept;
+		void query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept;
 
 		// sets the capacity of each cell to specified number
 		// intended use: on a cleared grid (otherwise would delete elements unknown to user)

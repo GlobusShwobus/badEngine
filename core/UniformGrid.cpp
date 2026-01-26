@@ -128,16 +128,14 @@ namespace badCore
 		}
 	}
 
-	void UniformGrid::query_ray(const float2& lineOrigin, const float2& lineEnd, Sequence<int>& cell_indices)const noexcept
+	void UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
 	{
-		//1) compute ray direction and segment length, if segment legth is 0 then there is no ray, could still mean a point intersection though...
-		const float2 dir = lineEnd - lineOrigin;
-		const float segmentLength = length(dir);
-		if (segmentLength == 0.0f) return;
+		//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
+		const float& segmentLength = ray.magnitude;
+		if (segmentLength == 0.0f)
+			return;
 
 		//2) create a ray and check if the origin is inside grid bounds
-		const Ray ray(lineOrigin, dir / segmentLength);
-
 		const bool originInside =
 			ray.origin.x >= mBounds.x &&
 			ray.origin.x < mBounds.x + mBounds.w &&

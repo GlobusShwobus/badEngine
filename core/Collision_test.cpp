@@ -3,11 +3,6 @@
 
 namespace badCore
 {
-	Ray::Ray(const float2& origin_point, const float2& vector)
-		:origin(origin_point), dir(normalized(vector)), max_dist(length_squared(vector))
-	{
-	}
-
 	// returns the distance between the centers of 2 AABB's
 	Overlap overlap_test(const AABB& a, const AABB& b)noexcept
 	{
@@ -38,7 +33,7 @@ namespace badCore
 	}
 
 	// returns entry and exit points
-	Hit_Entry_Exit sweep_dynamic_test(const AABB& dynamicBox, const float2& dynamicVector, const AABB& staticBox) noexcept
+	Hit_Entry_Exit sweep_dynamic_test(const AABB& dynamicBox, const Ray& ray, const AABB& staticBox) noexcept
 	{
 		//expanded rectangle must also be with the consideration of relative velocity
 		const AABB expandedTarget = AABB(
@@ -47,10 +42,7 @@ namespace badCore
 			staticBox.w + dynamicBox.w,
 			staticBox.h + dynamicBox.h
 		);
-		Ray ray = Ray(
-			center_point(dynamicBox),
-			dynamicVector
-		);
+
 		return sweep_test(ray, expandedTarget);
 	}
 }

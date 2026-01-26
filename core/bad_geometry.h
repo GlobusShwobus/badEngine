@@ -12,12 +12,6 @@ namespace badCore
 		return { std::abs(vec.x), std::abs(vec.y) };
 	}
 
-	template <typename T>
-	constexpr auto dot(const vector<T>& v1, const vector<T>& v2)noexcept
-	{
-		return (v1.x * v2.x) + (v1.y * v2.y);
-	}
-
 	template<typename T>
 	constexpr auto length_squared(const vector<T>& vec)noexcept
 	{
@@ -31,15 +25,28 @@ namespace badCore
 	}
 
 	template <typename T>
+	constexpr auto dot(const vector<T>& a, const vector<T>& b)noexcept
+	{
+		return (a.x * b.x) + (a.y * b.y);
+	}
+
+	template <typename T>
 	inline float2 normalized(const vector<T>& v) noexcept
 	{
-		const float len2 = static_cast<float>(length_squared(v));
+		auto len = length(v);
+		return { v.x / len, v.y / len };
+	}
 
-		if (len2 <= std::numeric_limits<float>::epsilon())
-			return { 0.0f, 0.0f };
+	template <typename T>
+	inline auto projection(const vector<T>& i, const vector<T>& unit_vector)noexcept
+	{
+		return dot(i, unit_vector) * unit_vector;
+	}
 
-		const float invlen = 1.0f / std::sqrt(len2);
-		return { v.x * invlen, v.y * invlen };
+	template <typename T>
+	inline auto reflection(const vector<T>& i, const vector<T>& unit_vector)noexcept
+	{
+		return i - (2.0f * projection(i, unit_vector));
 	}
 
 	template <typename T>

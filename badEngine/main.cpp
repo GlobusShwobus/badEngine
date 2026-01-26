@@ -185,8 +185,13 @@ int main() {
 
                         float2 a = final.transform(model[i]);
                         float2 b = final.transform(model[(i + 1) % model.size()]);
+                        
+                        float2 dir = normalized(b - a);
+                        float mag = length(b - a);
 
-                        window.draw_line(a, b, entity.get_color());
+                        Ray ray(a, dir, mag);
+
+                        window.draw_line(ray, entity.get_color());
                     }
                     draws++;
                 }
