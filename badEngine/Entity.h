@@ -5,6 +5,7 @@
 #include "Matrix3.h"
 #include "Color.h"
 #include "AABB.h"
+#include "Ray.h"
 #include "bad_geometry.h"
 
 namespace badEngine
@@ -62,78 +63,51 @@ namespace badEngine
 	};
 
 
-	class StarBro : public Entity
+	class PlankBro
 	{
-		using Color = badCore::Color;
 	public:
-		StarBro(badCore::Sequence<badCore::float2> model, float rad, badCore::float2 pos = badCore::float2(0.0f, 0.0f), Color c = badCore::Colors::Magenta, float vel = 1.0f)
-			:Entity(std::move(model), pos), mColor(c), mVelocity(vel), radius(rad)
+		PlankBro(badCore::float2 pos, badCore::vec2f vector)
+			:pos(pos), vector(vector)
 		{
-
 		}
 
-		Color get_color()const noexcept
+
+		void move_vector_x(float x) {
+			vector.x += x;
+		}
+
+		void move_vector_y(float y) {
+			vector.y += y;
+		}
+
+		badCore::Color get_color()const noexcept
 		{
-			return mColor;
+			return col;
 		}
 
-		void set_color(Color color)noexcept
+		badCore::float2 get_pos()const noexcept
 		{
-			mColor = color;
+			return pos;
 		}
-		void update(float dt) noexcept
+
+		badCore::float2 get_vector()const noexcept
 		{
-			float s = get_scale();
-			s += mVelocity * dt;
-
-			set_scale(s);
-			if (s >= 2) {
-				set_scale(2.f);
-				mVelocity = -std::abs(mVelocity);
-			}
-			if (s <= 0.1) {
-				set_scale(0.1f);
-				mVelocity = std::abs(mVelocity);
-			}
+			return vector;
 		}
 
-		badCore::AABB get_aabb()const {
-			return badCore::make_aabb(get_pos(), radius, radius);
+
+		badCore::Ray get_ray()const noexcept
+		{
+			float magnitude = badCore::length(vector);
+
+			return badCore::Ray(pos, badCore::normalized(vector, magnitude), magnitude);
 		}
+
 
 	private:
-		float radius;
-		Color mColor;
-		float mVelocity = 1.0f;
+		badCore::float2 pos;
+		badCore::float2 vector;
+		badCore::Color col = badCore::Colors::Magenta;
 	};
-}
 
-// For not store it here, this has to be handeled somewhere here
-//	void Font::update()noexcept
-//	{
-//		if (mLetterPos.isEmpty()) {
-//			return;
-//		}
-//		// store original base
-//		const AABB originalBase = mLetterPos.front().second;
-//
-//		// calculate scale factors RELATIVE to original base
-//		const float sx = mDest.w / originalBase.w;
-//		const float sy = mDest.h / originalBase.h;
-//
-//		// calculate translation based on original base
-//		const float dx = mDest.x - originalBase.x;
-//		const float dy = mDest.y - originalBase.y;
-//
-//		for (auto& pair : mLetterPos) {
-//			auto& d = pair.second;
-//
-//			// Apply transformation relative to original base
-//			d.x = mDest.x + (d.x - originalBase.x) * sx;
-//			d.y = mDest.y + (d.y - originalBase.y) * sy;
-//
-//			// Scale width and height
-//			d.w = originalBase.w * sx;
-//			d.h = originalBase.h * sy;
-//		}
-//	}
+}

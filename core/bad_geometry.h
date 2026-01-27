@@ -38,6 +38,12 @@ namespace badCore
 	}
 
 	template <typename T>
+	constexpr float2 normalized(const vector<T>& v, float magnitude) noexcept
+	{
+		return { v.x / magnitude, v.y / magnitude };
+	}
+
+	template <typename T>
 	inline auto projection(const vector<T>& i, const vector<T>& unit_vector)noexcept
 	{
 		return dot(i, unit_vector) * unit_vector;
@@ -56,24 +62,6 @@ namespace badCore
 			(v.x > 0) - (v.x < 0),
 			(v.y > 0) - (v.y < 0)
 		);
-	}
-
-	template <typename T>
-	inline float angle(const vector<T>& v1, const vector<T>& v2)noexcept
-	{
-		const float len1 = length(v1);
-		const float len2 = length(v2);
-
-		if (len1 <= std::numeric_limits<float>::epsilon() ||
-			len2 <= std::numeric_limits<float>::epsilon())
-			return std::numeric_limits<float>::quiet_NaN();
-
-
-		float cosAlpha = dot(v1, v2) / (len1 * len2);
-
-		cosAlpha = core_clamp(cosAlpha, -1.0f, 1.0f);
-
-		return std::acos(cosAlpha);
 	}
 
 	constexpr float perimeter(const AABB& aabb) noexcept

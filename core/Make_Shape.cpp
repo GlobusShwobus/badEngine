@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Make_Shape.h"
-
+#include "bad_utility.h"
+#include <assert.h>
 namespace badCore
 {
 	AABB make_union(const AABB& a, const AABB& b)noexcept

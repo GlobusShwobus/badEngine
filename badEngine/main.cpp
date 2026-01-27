@@ -24,7 +24,7 @@
 #include <iostream>
 
 #include "Entity.h"
-#include "Collision_test.h"
+#include "Collision.h"
 
 /*
 NEW HEADERS translate.h entity.h
@@ -58,11 +58,6 @@ int main() {
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
     {
-        //#####################################################################################################################################################################
-        //#####################################################################################################################################################################
-        //#####################################################################################################################################################################
-        //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
-
         using namespace badEngine;
         //using namespace badEngine;
         validate_json_file("../Configs/system_config.json");
@@ -72,41 +67,19 @@ int main() {
         WindowContext window(windowContextData.heading.c_str(), windowContextData.width, windowContextData.height, windowContextData.flags);
 
 
+        //#####################################################################################################################################################################
+        //#####################################################################################################################################################################
+        //#####################################################################################################################################################################
+        //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
 
-        validate_json_file("../Configs/textures.json");
-        nlohmann::json texture_loader_config = load_json("../Configs/textures.json");
-        auto extractDescriptions = extract_texture_descs(texture_loader_config, "texture_set1");
-        auto loaded_textures = load_textures(extractDescriptions, window.get_render());
-
-        TextureMap texture_map;
-
-        for (auto& texture : loaded_textures) {
-            bool is_nullptr = texture.second.get() == nullptr;
-            bool is_good = texture_map.add(texture.first, std::move(texture.second));
-        }
-
-        auto texture_map_check = texture_map.get_tags();
-
-        for (auto& e : texture_map_check) {
-            std::cout << e << '\n';
-        }
 
         RandomNum rng;
         Camera cam;
         float cam_speed = 50;
-        Sequence<StarBro> entities;
 
-        for (int i = 0; i < 500; i++) {
-            float rad = rng.rFloat(80, 120);
-            float rat = rng.rFloat(0.15, 0.8);
-            auto model = make_poly(rad, rad*rat, rng.rFloat(3, 33));
-            auto pos = float2(rng.rFloat(-5000, 5000), rng.rFloat(-5000, 5000));
-            auto col = Color(rng.rInt(0,255), rng.rInt(0, 255), rng.rInt(0, 255), 255);
-            float vel = rng.rFloat(0.4, 1.6);
-            entities.emplace_back(std::move(model),rad, pos, col, vel);
-        }
-
+        PlankBro bro(float2(100, 100), float2(600, 0));
+        static constexpr int kekL = 1;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -131,16 +104,16 @@ int main() {
                     break;
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
-                        cam.move_by(float2(0, cam_speed));
+                        bro.move_vector_y(-10);
                     }
                     if (EVENT.key.key == SDLK_A) {
-                        cam.move_by(float2(-cam_speed, 0));
+                        bro.move_vector_x(-10);
                     }
                     if (EVENT.key.key == SDLK_S) {
-                        cam.move_by(float2(0, -cam_speed));
+                        bro.move_vector_y(10);
                     }
                     if (EVENT.key.key == SDLK_D) {
-                        cam.move_by(float2(cam_speed, 0));
+                        bro.move_vector_x(10);
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
@@ -161,44 +134,16 @@ int main() {
             }
 
             //collect models
-            for (auto& e : entities) {
-                e.update(dt);
-            }
+            auto ray = bro.get_ray();
 
             //transform models
-            int2 window_size = window.get_window_size();
 
-            Mat3 window_matrix = window.window_transform();
-            Mat3 camera_matrix = cam.get_transform();
-            Mat3 static_matrix = window_matrix * camera_matrix;
 
             //draw models
-            int draws = 0;
-            for (auto& entity : entities) {
-                
-                if (intersects(entity.get_aabb(), cam.get_viewport(window_size))) {
-                    Mat3 final = static_matrix * entity.get_transform();
+            window.draw_line(ray, bro.get_color());
 
-                    const auto& model = entity.get_model();
 
-                    for (int i = 0; i < model.size(); i++) {
 
-                        float2 a = final.transform(model[i]);
-                        float2 b = final.transform(model[(i + 1) % model.size()]);
-                        
-                        float2 dir = normalized(b - a);
-                        float mag = length(b - a);
-
-                        Ray ray(a, dir, mag);
-
-                        window.draw_line(ray, entity.get_color());
-                    }
-                    draws++;
-                }
-                
-            }
-
-            std::cout << "i draw " << draws << '\n';
             window.system_present();
         }
     }

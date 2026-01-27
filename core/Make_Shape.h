@@ -3,8 +3,6 @@
 #include "vector.h"
 #include "AABB.h"
 #include "Sequence.h"
-#include "bad_utility.h"
-#include <assert.h>
 
 namespace badCore
 {

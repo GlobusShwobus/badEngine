@@ -28,12 +28,6 @@
     <ClCompile Include="RandomNum.cpp">
       <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="Collision_test.cpp">
-      <Filter>geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Collision_resolve.cpp">
-      <Filter>geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Stopwatch.cpp">
       <Filter>misc</Filter>
     </ClCompile>
@@ -41,6 +35,9 @@
       <Filter>misc</Filter>
     </ClCompile>
     <ClCompile Include="Make_Shape.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,12 +72,6 @@
     <ClInclude Include="vector.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Collision_test.h">
-      <Filter>geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision_resolve.h">
-      <Filter>geometry</Filter>
-    </ClInclude>
     <ClInclude Include="bad_concepts.h">
       <Filter>misc</Filter>
     </ClInclude>
@@ -100,6 +91,9 @@
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
       <Filter>geometry</Filter>
     </ClInclude>
   </ItemGroup>

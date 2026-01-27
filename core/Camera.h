@@ -5,6 +5,8 @@
 #include "AABB.h"
 #include "Make_Shape.h"
 
+//TODO::add .cpp
+
 namespace badCore
 {
 	class Camera final

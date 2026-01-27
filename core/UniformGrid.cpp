@@ -2,7 +2,7 @@
 #include "UniformGrid.h"
 #include "bad_utility.h"
 #include "bad_geometry.h"
-#include "Collision_test.h"
+#include "Collision.h"
 
 namespace badCore 
 {
@@ -148,10 +148,8 @@ namespace badCore
 		if (!originInside) {
 			
 			auto result = sweep_test(ray, mBounds);
-			const float& t_near = result.x;
-			const float& t_far = result.y;
-			if (t_near <= t_far && t_far >= 0.0f) {
-				entryT = (t_near < 0.0f) ? t_far : t_near;
+			if (is_sweep_collision(result)) {
+				entryT = (result.tNear < 0.0f) ? result.tFar : result.tNear;
 			}
 		}
 
