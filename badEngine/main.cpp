@@ -25,6 +25,7 @@
 
 #include "Entity.h"
 #include "Collision.h"
+#include "Circle.h"
 
 /*
 NEW HEADERS translate.h entity.h
@@ -80,6 +81,8 @@ int main() {
 
         PlankBro bro(float2(100, 100), float2(600, 0));
         static constexpr int kekL = 1;
+
+        Circle circle(float2(200, 200), 32, window.get_render());
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -141,8 +144,8 @@ int main() {
 
             //draw models
             window.draw_line(ray, bro.get_color());
-
-
+            auto dest = circle.get_dest();
+            SDL_RenderTexture(window.get_render(), circle.get(), nullptr, &dest);
 
             window.system_present();
         }

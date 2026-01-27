@@ -31,4 +31,50 @@ namespace badCore
 		}
 		return polyline;
 	}
+
+	Sequence<float2> make_circle(const float2& center, float radius)
+	{
+		int size = radius * 8 * 35 / 49;
+		int arrsize = (size + (8 - 1)) & -8;
+
+		Sequence<float2> circle;
+		circle.set_capacity(arrsize);
+
+		const int32_t diameter = (radius * 2);
+
+		int32_t x = (radius - 1);
+		int32_t y = 0;
+		int32_t tx = 1;
+		int32_t ty = 1;
+		int32_t error = (tx - diameter);
+
+		while (x >= y)
+		{
+			// Each of the following renders an octant of the circle
+			circle.emplace_back(float2(center.x + x, center.y - y));
+			circle.emplace_back(float2(center.x + x, center.y + y));
+			circle.emplace_back(float2(center.x - x, center.y - y));
+			circle.emplace_back(float2(center.x - x, center.y + y));
+			circle.emplace_back(float2(center.x + y, center.y - x));
+			circle.emplace_back(float2(center.x + y, center.y + x));
+			circle.emplace_back(float2(center.x - y, center.y - x));
+			circle.emplace_back(float2(center.x - y, center.y + x));
+
+			if (error <= 0)
+			{
+				++y;
+				error += ty;
+				ty += 2;
+			}
+
+			if (error > 0)
+			{
+				--x;
+				tx += 2;
+				error += (tx - diameter);
+			}
+		}
+
+		return circle;
+	}
 }

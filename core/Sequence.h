@@ -205,6 +205,15 @@ namespace badCore
 			return mArray + mSize;
 		}
 
+		constexpr pointer data() noexcept
+		{
+			return mArray;
+		}
+
+		constexpr const_pointer data() const noexcept
+		{
+			return mArray;
+		}
 
 		
 		//UB if container is empty, otherwise returns reference to the first element

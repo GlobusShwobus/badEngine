@@ -14,4 +14,6 @@ namespace badCore
 	AABB make_union(const AABB& a, const AABB& b)noexcept;
 
 	Sequence<float2> make_poly(float outerRadius, float innerRadius, int nFlares);
+
+	Sequence<float2> make_circle(const float2& center, float radius);
 }
