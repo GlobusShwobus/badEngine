@@ -40,6 +40,9 @@
     <ClCompile Include="Collision.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

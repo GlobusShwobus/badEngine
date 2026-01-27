@@ -98,9 +98,7 @@ namespace badEngine
 
 		badCore::Ray get_ray()const noexcept
 		{
-			float magnitude = badCore::length(vector);
-
-			return badCore::Ray(pos, badCore::normalized(vector, magnitude), magnitude);
+			return badCore::Ray(pos, vector);
 		}
 
 
