@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <exception>
+#include <assert.h>
 
 namespace badCore
 {

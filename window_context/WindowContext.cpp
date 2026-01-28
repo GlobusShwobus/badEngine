@@ -109,7 +109,7 @@ namespace badWindow
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_line(const badCore::Ray& ray, Color color)
+	void WindowContext::draw_line(const badCore::Ray& ray, Color color)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());

@@ -4,12 +4,16 @@
 #include "Canvas.h"
 #include "Color.h"
 #include "SDL3/SDL_render.h"
+#include "Make_Shape.h"
 #include "Sequence.h"
 
 namespace badEngine
 {
 	class Circle
 	{
+		//NOTE:: SCALING MAKES THE CIRCLE LOOK BLURRY
+		//		 A FIX WOULD BE TO RENDER THE CIRLCE AT A MAX SIZE FIRST, THEN ONLY DOWNSCALE.
+		//NOTE2: yeah this is good but not flexible AT ALL. or at least only fexible if it only ever changes size rarely. pos is fine
 	public:
 
 		Circle(badCore::float2 pos, float radius, SDL_Renderer* const renderer)
@@ -76,6 +80,11 @@ namespace badEngine
 			return {pos.x, pos.y, radius*2, radius*2};
 		}
 
+		void translate_by(const badCore::float2& offset)noexcept
+		{
+			pos += offset;
+		}
+
 
 	private:
 		badWindow::Canvas mCirlce;
@@ -83,4 +92,41 @@ namespace badEngine
 		badCore::Color color = badCore::Colors::Magenta;//default for now, doesn't matter
 		float radius;
 	};
+
+
+	class Circle2
+	{
+		using Model = badCore::Sequence<badCore::float2>;
+	public:
+		Circle2(badCore::float2 pos, float radius)
+			:radius(radius), pos(pos)
+		{
+			mModel = badCore::make_poly(radius, radius, 16);
+		}
+
+		void translate_by(const badCore::float2& offset)noexcept
+		{
+			pos += offset;
+
+			for (auto& p : mModel) {
+				p += offset;
+			}
+		}
+
+		const Model& get_model()const noexcept
+		{
+			return mModel;
+		}
+
+		badCore::Color get_col()const noexcept {
+			return color;
+		}
+
+	private:
+		Model mModel;
+		badCore::float2 pos;
+		badCore::Color color = badCore::Colors::Cyan;//default for now, doesn't matter
+		float radius;
+	};
+
 }
