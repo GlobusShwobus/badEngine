@@ -12,6 +12,7 @@
 #include "Ray.h"
 #include "Matrix3.h"
 #include "Sequence.h"
+#include <bit>
 
 namespace badWindow
 {
@@ -77,6 +78,19 @@ namespace badWindow
 
 			for (auto& p : points) {
 				tosdl.emplace_back(p.x, p.y);
+			}
+
+			SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());
+			SDL_RenderLines(mRenderer.get(), tosdl.data(), points.size());
+			SDL_SetRenderDrawColor(mRenderer.get(), mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
+		}
+
+		void draw_lines3(std::span<const float2> points, Color color)const noexcept {
+			badCore::Sequence<SDL_FPoint> tosdl;
+			tosdl.set_capacity(points.size());
+
+			for (auto& p : points) {
+				tosdl.emplace_back(std::bit_cast<SDL_FPoint>(p));
 			}
 
 			SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());

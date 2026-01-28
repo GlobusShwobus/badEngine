@@ -92,6 +92,7 @@ int main() {
 
         std::size_t circle1findaverage = 0;
         std::size_t circle2findaverage = 0;
+        std::size_t circle3findaverage = 0;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -206,12 +207,16 @@ int main() {
             window.draw_lines2(circle2.get_model(), circle2.get_col());
             circle2findaverage += t4.dt_nanosec();
 
+            Stopwatch t5;
+            window.draw_lines3(circle2.get_model(), circle2.get_col());
+            circle3findaverage += t5.dt_nanosec();
+
             
 
             frames++;
 
-            //std::cout << "renderlines reinterpret cast: " << circle1findaverage / frames << " manual convert: " << circle2findaverage / frames << '\n';
-            std::cout << "canvas: " << circle1time / frames << " points: " << circle2time / frames << " diff: " << (circle2time / circle1time)<<'\n';
+            std::cout << "renderlines reinterpret cast: " << circle1findaverage / frames << " manual convert: " << circle2findaverage / frames << " bit cast: "<< circle3findaverage/frames<<'\n';
+           // std::cout << "canvas: " << circle1time / frames << " points: " << circle2time / frames << " diff: " << (circle2time / circle1time)<<'\n';
             window.system_present();
         }
     }
