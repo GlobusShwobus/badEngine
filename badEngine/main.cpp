@@ -81,12 +81,8 @@ int main() {
 
         PlankBro bro(float2(100, 100), float2(600, 0));
 
-        Circle2 circle2(float2(300, 300), 50);
+        Circle circle(float2(300, 300), 50);
 
-        int frames = 0;
-
-        std::size_t bitcastTime = 0;
-        std::size_t recastTime = 0;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -113,15 +109,19 @@ int main() {
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
                         bro.move_vector_y(-10);
+                        circle.translate_by(float2(0,-10));
                     }
                     if (EVENT.key.key == SDLK_A) {
                         bro.move_vector_x(-10);
+                        circle.translate_by(float2(-10, 0));
                     }
                     if (EVENT.key.key == SDLK_S) {
                         bro.move_vector_y(10);
+                        circle.translate_by(float2(0, 10));
                     }
                     if (EVENT.key.key == SDLK_D) {
                         bro.move_vector_x(10);
+                        circle.translate_by(float2(10, 0));
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
@@ -149,23 +149,8 @@ int main() {
 
             //draw models
             window.draw_line(ray, bro.get_color());
+            window.draw_lines(circle.get_model(), circle.get_col());
 
-
-           Stopwatch rc;
-           window.draw_lines2(circle2.get_model(), circle2.get_col());
-           recastTime += rc.dt_nanosec();
-
-           Stopwatch bc;
-           window.draw_lines(circle2.get_model(), circle2.get_col());
-           bitcastTime += bc.dt_nanosec();
-
-
-
-
-
-            frames++;
-
-            std::cout << "bit cast: " << bitcastTime / frames << " reinterpret cast: "<< recastTime /frames<<'\n';
             window.system_present();
         }
     }

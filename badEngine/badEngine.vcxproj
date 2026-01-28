@@ -135,6 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="CircleCanvas.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
     <ClInclude Include="validate_data.h" />
