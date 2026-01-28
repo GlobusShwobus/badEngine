@@ -81,18 +81,13 @@ int main() {
 
         PlankBro bro(float2(100, 100), float2(600, 0));
 
-
-        Circle circle1(float2(200, 200), 100, window.get_render());
         Circle2 circle2(float2(300, 300), 50);
-
-        std::size_t circle1time = 0;
-        std::size_t circle2time = 0;
 
         int frames = 0;
 
-        std::size_t circle1findaverage = 0;
-        std::size_t circle2findaverage = 0;
-        std::size_t circle3findaverage = 0;
+        std::size_t bitcastTime = 0;
+        std::size_t recastTime = 0;
+
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -118,46 +113,15 @@ int main() {
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
                         bro.move_vector_y(-10);
- 
-                        Stopwatch t1;
-                        circle1.translate_by(float2(0, -10));
-                        circle1time += t1.dt_nanosec();
-
-                        Stopwatch t2;
-                        circle2.translate_by(float2(0,-10));
-                        circle2time += t2.dt_nanosec();
                     }
                     if (EVENT.key.key == SDLK_A) {
                         bro.move_vector_x(-10);
-
-                        Stopwatch t1;
-                        circle1.translate_by(float2(-10, 0));
-                        circle1time += t1.dt_nanosec();
-
-                        Stopwatch t2;
-                        circle2.translate_by(float2(-10, 0));
-                        circle2time += t2.dt_nanosec();
                     }
                     if (EVENT.key.key == SDLK_S) {
                         bro.move_vector_y(10);
-                        Stopwatch t1;
-                        circle1.translate_by(float2(0, 10));
-                        circle1time += t1.dt_nanosec();
-
-                        Stopwatch t2;
-                        circle2.translate_by(float2(0, 10));
-                        circle2time += t2.dt_nanosec();
                     }
                     if (EVENT.key.key == SDLK_D) {
                         bro.move_vector_x(10);
-
-                        Stopwatch t1;
-                        circle1.translate_by(float2(10, 0));
-                        circle1time += t1.dt_nanosec();
-
-                        Stopwatch t2;
-                        circle2.translate_by(float2(10, 0));
-                        circle2time += t2.dt_nanosec();
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
@@ -185,38 +149,23 @@ int main() {
 
             //draw models
             window.draw_line(ray, bro.get_color());
-            
-            Stopwatch t1;
-            auto dest = circle1.get_dest();
-            SDL_RenderTexture(window.get_render(), circle1.get(), nullptr, &dest);
-            circle1time += t1.dt_nanosec();
-
-            Stopwatch t;
-            window.draw_lines(circle2.get_model(), circle2.get_col());
-            circle2time += t.dt_nanosec();
 
 
+           Stopwatch rc;
+           window.draw_lines2(circle2.get_model(), circle2.get_col());
+           recastTime += rc.dt_nanosec();
+
+           Stopwatch bc;
+           window.draw_lines(circle2.get_model(), circle2.get_col());
+           bitcastTime += bc.dt_nanosec();
 
 
 
-            Stopwatch t3;
-            window.draw_lines(circle2.get_model(), circle2.get_col());
-            circle1findaverage += t3.dt_nanosec();
 
-            Stopwatch t4;
-            window.draw_lines2(circle2.get_model(), circle2.get_col());
-            circle2findaverage += t4.dt_nanosec();
-
-            Stopwatch t5;
-            window.draw_lines3(circle2.get_model(), circle2.get_col());
-            circle3findaverage += t5.dt_nanosec();
-
-            
 
             frames++;
 
-            std::cout << "renderlines reinterpret cast: " << circle1findaverage / frames << " manual convert: " << circle2findaverage / frames << " bit cast: "<< circle3findaverage/frames<<'\n';
-           // std::cout << "canvas: " << circle1time / frames << " points: " << circle2time / frames << " diff: " << (circle2time / circle1time)<<'\n';
+            std::cout << "bit cast: " << bitcastTime / frames << " reinterpret cast: "<< recastTime /frames<<'\n';
             window.system_present();
         }
     }

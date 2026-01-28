@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WindowContext.h"
+#include "Sequence.h"
 
 namespace badWindow
 {
@@ -94,7 +95,7 @@ namespace badWindow
 		//set the drawing color
 		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 		//convert aabb to sdl type and draw it
-		SDL_FRect sdlArea = SDL_FRect(aabb.x, aabb.y, aabb.w, aabb.h);
+		SDL_FRect sdlArea = sdl_cast(aabb);
 		SDL_RenderFillRect(ren, &sdlArea);
 
 		//if other draw the other doing the same thing
@@ -102,7 +103,7 @@ namespace badWindow
 			if (otherCol) {
 				SDL_SetRenderDrawColor(ren, otherCol->get_r(), otherCol->get_g(), otherCol->get_b(), otherCol->get_a());
 			}
-			SDL_FRect sdlOther = SDL_FRect(other->x, other->y, other->w, other->h);
+			SDL_FRect sdlOther = sdl_cast(*other);
 			SDL_RenderFillRect(ren, &sdlOther);
 		}
 		//reset the color
@@ -114,22 +115,36 @@ namespace badWindow
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 
-		const float& sx = ray.origin.x;
-		const float& sy = ray.origin.y;
-		
-		float ex = ray.origin.x + ray.dir.x * ray.magnitude;
-		float ey = ray.origin.y + ray.dir.y * ray.magnitude;
-
-		SDL_RenderLine(ren, sx, sy, ex, ey);
+		SDL_RenderLine(
+			ren, 
+			ray.origin.x,
+			ray.origin.y,
+			ray.origin.x + ray.dir.x * ray.magnitude,
+			ray.origin.y + ray.dir.y * ray.magnitude
+			);
 
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
+	}
+
+	void WindowContext::draw_lines(std::span<const float2> points, Color color)const noexcept
+	{
+		badCore::Sequence<SDL_FPoint> tosdl;
+		tosdl.set_capacity(points.size());
+
+		for (auto& p : points) {
+			tosdl.emplace_back(sdl_cast(p));
+		}
+
+		SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());
+		SDL_RenderLines(mRenderer.get(), tosdl.data(), points.size());
+		SDL_SetRenderDrawColor(mRenderer.get(), mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
 	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
-		SDL_FRect ssrc(src.x, src.y, src.w, src.h);
-		SDL_FRect ddest(dest.x, dest.y, dest.w, dest.h);
+		SDL_FRect ssrc  = sdl_cast(src);
+		SDL_FRect ddest = sdl_cast(dest);
 		SDL_RenderTexture(ren, texture, &ssrc, &ddest);
 	}
 
@@ -141,10 +156,8 @@ namespace badWindow
 		SDL_Renderer* ren = mRenderer.get();
 
 		for (const auto& pair : src_dests) {
-			auto& src = pair.first;
-			auto& dest = pair.second;
-			SDL_FRect ssrc(src.x, src.y, src.w, src.h);
-			SDL_FRect ddest(dest.x, dest.y, dest.w, dest.h);
+			SDL_FRect ssrc  = sdl_cast(pair.first);
+			SDL_FRect ddest = sdl_cast(pair.second);
 			SDL_RenderTexture(ren, texture, &ssrc, &ddest);
 		}
 	}
