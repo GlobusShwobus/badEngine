@@ -52,6 +52,7 @@ namespace badCore
 		return entry <= exit && exit >= 0.0f;
 	}
 
-	bool intersection_test(const Ray& target_surface, const float2& point, float radius, float2& difference, float& distance_squared)noexcept;
+	bool intersection_test(const Ray& target_surface, const float2& point, float radius)noexcept;
 
+	bool intersection_test(const Ray& target_surface, const float2& point, float radius, float2& difference, float& distance_squared)noexcept;
 };

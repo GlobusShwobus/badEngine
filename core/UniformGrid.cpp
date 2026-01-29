@@ -147,9 +147,10 @@ namespace badCore
 		float entryT = 0.0f;
 		if (!originInside) {
 			
-			auto result = sweep_test(ray, mBounds);
-			if (is_sweep_collision(result)) {
-				entryT = (result.tNear < 0.0f) ? result.tFar : result.tNear;
+			float near, far;
+			sweep_test(mBounds, ray, near, far);
+			if (is_sweep_hit(near, far)) {
+				entryT = (near < 0.0f) ? far : near;
 			}
 		}
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <limits>
+#include "bad_utility.h"
 #include "Ray.h"
 #include "vector.h"
 #include "AABB.h"

@@ -7,6 +7,6 @@ namespace badCore
 		:origin(origin)
 	{
 		magnitude = length(vector);
-		dir = normalized(vector, magnitude);
+		dir = normalize(vector, magnitude);
 	}
 }

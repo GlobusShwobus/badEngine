@@ -108,33 +108,18 @@ int main() {
             auto plank_ray = bro.get_ray();
 
             for (auto& b : balls) {
-                float2 closest = closest_point(plank_ray, b.get_pos());
-               
-                
-                float2 diff = b.get_pos() - closest;
-                float distSq = length_squared(diff);
 
-                if (distSq <= b.get_radius() * b.get_radius())
-                {
-                    // 1 normal
-                    float2 normal = normalized(diff);
+                float2 normal;
+                float penetration;
 
-                    // 2? check direction
+                if (intersection_test(plank_ray, b.get_pos(), b.get_radius(), normal, penetration)) {
                     float2 v = b.get_vel();
                     if (dot(v, normal) < 0.0f)
                     {
-                        // 3? reflect velocity
-                        float2 reflected = reflection(v, normal);
-                        b.set_vel(reflected);
-
-                        // 4? resolve penetration
-                        float dist = std::sqrt(distSq);
-                        float penetration = b.get_radius() - dist;
-
+                        b.set_vel(reflection(v, normal));
                         b.translate_by(normal * penetration);
                     }
                 }
-  
             }
 
 

@@ -46,6 +46,17 @@ namespace badCore
 		return is_hit;
 	}
 
+	bool intersection_test(const Ray& target_surface, const float2& point, float radius)noexcept
+	{
+		float2 closest = closest_point(target_surface, point);
+
+
+		float2 diff = point - closest;
+		float distSq = length_squared(diff);
+		
+		return distSq <= radius * radius;
+	}
+
 	bool intersection_test(const Ray& target_surface, const float2& point, float radius, float2& out_normal, float& out_penetration)noexcept
 	{
 		float2 closest = closest_point(target_surface, point);
