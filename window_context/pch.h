@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <span>
 #include <assert.h>
+#include <bit>
 
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>

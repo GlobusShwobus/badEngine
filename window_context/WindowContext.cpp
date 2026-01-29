@@ -128,6 +128,9 @@ namespace badWindow
 
 	void WindowContext::draw_lines(std::span<const float2> points, Color color)const noexcept
 	{
+		if (points.size() < 2)
+			return;
+
 		badCore::Sequence<SDL_FPoint> tosdl;
 		tosdl.set_capacity(points.size());
 
@@ -137,6 +140,24 @@ namespace badWindow
 
 		SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());
 		SDL_RenderLines(mRenderer.get(), tosdl.data(), points.size());
+		SDL_SetRenderDrawColor(mRenderer.get(), mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
+	}
+
+	void WindowContext::draw_poly_lines(std::span<const float2> points, Color color)const noexcept
+	{
+		if (points.size() < 2)
+			return;
+
+		badCore::Sequence<SDL_FPoint> tosdl;
+		tosdl.set_capacity(points.size() + 1);
+
+		for (auto& p : points) {
+			tosdl.emplace_back(sdl_cast(p));
+		}
+		tosdl.emplace_back(sdl_cast(points.front()));
+
+		SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());
+		SDL_RenderLines(mRenderer.get(), tosdl.data(), tosdl.size());
 		SDL_SetRenderDrawColor(mRenderer.get(), mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
