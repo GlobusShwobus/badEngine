@@ -40,37 +40,18 @@ namespace badCore
 			a.y + a.h > b.y;
 	}
 
-	// returns true if there is overlap. modifies given overlap
-	float2 overlap_test(const AABB& a, const AABB& b)noexcept;
 
-	constexpr bool is_overlap(const float2& overlap) noexcept
+	bool overlap_test(const AABB& a, const AABB& b, float& overlapWidth, float& overlapHeight)noexcept;
+
+	void sweep_test(const AABB& target, const Ray& ray, float& t_entry, float& t_exit)noexcept;
+
+	bool sweep_test(const AABB& target, const Ray& ray, float& t, float2& contact_point)noexcept;
+
+	constexpr bool is_sweep_hit(float entry, float exit)noexcept
 	{
-		return overlap.x > 0.0f && overlap.y > 0.0f;
+		return entry <= exit && exit >= 0.0f;
 	}
 
-	struct Sweep
-	{
-		float tNear;
-		float tFar;
-	};
+	bool intersection_test(const Ray& target_surface, const float2& point, float radius, float2& difference, float& distance_squared)noexcept;
 
-	Sweep sweep_test(const Ray& ray, const AABB& target)noexcept;
-
-	Sweep sweep_test_dynamic(const AABB& dynamicBox, const Ray& ray, const AABB& staticBox) noexcept;
-
-	constexpr bool is_sweep_collision(const Sweep& result)noexcept
-	{
-		return result.tNear <= result.tFar && result.tFar >= 0.0f;
-	}
-
-	struct SweepHitInfo
-	{
-		float2 impact_point;
-		float t = 1.0f;
-		bool is_hit = false;
-		//float2 hit_normal;
-		//int materialID = -1;// invalid index = -1
-	};
-
-	SweepHitInfo make_sweep_hit_info(const Sweep& result, const Ray& ray)noexcept;
 };

@@ -32,14 +32,14 @@ namespace badCore
 	}
 
 	template <typename T>
-	inline float2 normalized(const vector<T>& v) noexcept
+	inline float2 normalize(const vector<T>& v) noexcept
 	{
 		auto len = length(v);
 		return { v.x / len, v.y / len };
 	}
 
 	template <typename T>
-	constexpr float2 normalized(const vector<T>& v, float magnitude) noexcept
+	constexpr float2 normalize(const vector<T>& v, float magnitude) noexcept
 	{
 		return { v.x / magnitude, v.y / magnitude };
 	}

@@ -5,19 +5,18 @@
 
 namespace badCore
 {
-	float2 overlap_test(const AABB& a, const AABB& b)noexcept
+	bool overlap_test(const AABB& a, const AABB& b, float& overlapWidth, float& overlapHeight)noexcept
 	{
 		const float2 distance_between_centers = absolute(center_point(a) - center_point(b));
 
-		return float2(
-			(a.w * 0.5f) + (b.w * 0.5f) - distance_between_centers.x,
-			(a.h * 0.5f) + (b.h * 0.5f) - distance_between_centers.y
-		);
+		overlapWidth = (a.w * 0.5f) + (b.w * 0.5f) - distance_between_centers.x;
+		overlapHeight = (a.h * 0.5f) + (b.h * 0.5f) - distance_between_centers.y;
+
+		return overlapWidth > 0.0f && overlapHeight > 0.0f;
 	}
 
-	Sweep sweep_test(const Ray& ray, const AABB& target)noexcept
+	void sweep_test(const AABB& target, const Ray& ray, float& t_entry, float& t_exit)noexcept
 	{
-		//inv dir
 		float2 invdir(
 			(ray.dir.x == 0.0f) ? INFINITY : 1.0f / ray.dir.x,
 			(ray.dir.y == 0.0f) ? INFINITY : 1.0f / ray.dir.y
@@ -27,35 +26,40 @@ namespace badCore
 		float t_near_y = (target.y - ray.origin.y) * invdir.y;
 		float t_far_y = (target.y + target.h - ray.origin.y) * invdir.y;
 
-		return {
-			core_max(core_min(t_near_x, t_far_x), core_min(t_near_y, t_far_y)),
-			core_min(core_max(t_near_x, t_far_x), core_max(t_near_y, t_far_y))
-		};
+		t_entry = core_max(core_min(t_near_x, t_far_x), core_min(t_near_y, t_far_y));
+		t_exit = core_min(core_max(t_near_x, t_far_x), core_max(t_near_y, t_far_y));
 	}
 
-	Sweep sweep_test_dynamic(const AABB& dynamicBox, const Ray& ray, const AABB& staticBox) noexcept
+	bool sweep_test(const AABB& target, const Ray& ray, float& time, float2& contact_point)noexcept
 	{
-		//expanded rectangle must also be with the consideration of relative velocity
-		const AABB expandedTarget = AABB(
-			staticBox.x - (dynamicBox.w / 2),
-			staticBox.y - (dynamicBox.h / 2),
-			staticBox.w + dynamicBox.w,
-			staticBox.h + dynamicBox.h
-		);
+		float tNear, tFar;
+		sweep_test(target, ray, tNear, tFar);
 
-		return sweep_test(ray, expandedTarget);
+		bool is_hit = false;
+
+		if (is_sweep_hit(tNear, tFar)) {
+			time = (tNear < 0.0f) ? tFar : tNear;
+			contact_point = ray.origin + time * ray.dir;
+			is_hit = time >= 0.0f && (time * time) < ray.magnitude;
+		}
+
+		return is_hit;
 	}
 
-	SweepHitInfo make_sweep_hit_info(const Sweep& result, const Ray& ray)noexcept
+	bool intersection_test(const Ray& target_surface, const float2& point, float radius, float2& out_normal, float& out_penetration)noexcept
 	{
-		SweepHitInfo info;
-		const float& t_near = result.tNear;
-		const float& t_far = result.tFar;
+		float2 closest = closest_point(target_surface, point);
+	
+		float2 difference = point - closest;
+		float dist = length(difference);
 
-		info.t = (t_near < 0.0f) ? t_far : t_near;
-		info.impact_point = ray.origin + info.t * ray.dir;
-		info.is_hit = info.t >= 0.0f && (info.t * info.t) < ray.magnitude;
+		if (dist > radius) {
+			return false;
+		}
 
-		return info;
+		out_normal = normalize(difference, dist);
+		out_penetration = radius - dist;
+
+		return true;
 	}
 }

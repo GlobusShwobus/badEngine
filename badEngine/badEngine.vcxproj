@@ -138,6 +138,7 @@
     <ClInclude Include="CircleCanvas.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
+    <ClInclude Include="SpawnPoint.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
     <ClInclude Include="Dumpster.h" />

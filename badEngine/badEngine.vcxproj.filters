@@ -36,6 +36,9 @@
     <ClInclude Include="CircleCanvas.h">
       <Filter>temp</Filter>
     </ClInclude>
+    <ClInclude Include="SpawnPoint.h">
+      <Filter>temp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

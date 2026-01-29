@@ -26,6 +26,7 @@
 #include "Entity.h"
 #include "Collision.h"
 #include "Circle.h"
+#include "SpawnPoint.h"
 
 /*
 NEW HEADERS translate.h entity.h
@@ -79,10 +80,11 @@ int main() {
         Camera cam;
         float cam_speed = 50;
 
-        PlankBro bro(float2(100, 100), float2(600, 0));
+        PlankBro bro(float2(0, 100), float2(600, 0));
 
-        Circle circle(float2(300, 300), 50);
 
+        Sequence<Circle> balls;
+        SpawnPoint spawn(balls, 15, 1);
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -99,6 +101,47 @@ int main() {
             //CLEAR RENDERING
             window.system_refresh();
 
+            for (auto& b : balls) {
+                b.update(dt);
+            }
+
+            auto plank_ray = bro.get_ray();
+
+            for (auto& b : balls) {
+                float2 closest = closest_point(plank_ray, b.get_pos());
+               
+                
+                float2 diff = b.get_pos() - closest;
+                float distSq = length_squared(diff);
+
+                if (distSq <= b.get_radius() * b.get_radius())
+                {
+                    // 1 normal
+                    float2 normal = normalized(diff);
+
+                    // 2? check direction
+                    float2 v = b.get_vel();
+                    if (dot(v, normal) < 0.0f)
+                    {
+                        // 3? reflect velocity
+                        float2 reflected = reflection(v, normal);
+                        b.set_vel(reflected);
+
+                        // 4? resolve penetration
+                        float dist = std::sqrt(distSq);
+                        float penetration = b.get_radius() - dist;
+
+                        b.translate_by(normal * penetration);
+                    }
+                }
+  
+            }
+
+
+
+
+            spawn.update(dt);
+
             //LISTEN TO EVENTS
             while (SDL_PollEvent(&EVENT)) {
 
@@ -109,19 +152,15 @@ int main() {
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
                         bro.move_vector_y(-10);
-                        circle.translate_by(float2(0,-10));
                     }
                     if (EVENT.key.key == SDLK_A) {
                         bro.move_vector_x(-10);
-                        circle.translate_by(float2(-10, 0));
                     }
                     if (EVENT.key.key == SDLK_S) {
                         bro.move_vector_y(10);
-                        circle.translate_by(float2(0, 10));
                     }
                     if (EVENT.key.key == SDLK_D) {
                         bro.move_vector_x(10);
-                        circle.translate_by(float2(10, 0));
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
@@ -149,9 +188,15 @@ int main() {
 
             //draw models
             window.draw_line(ray, bro.get_color());
-            window.draw_lines(circle.get_model(), circle.get_col());
+            for (const auto& b : balls) {
+                window.draw_poly_lines(b.get_model(), b.get_col());
+            }
 
             window.system_present();
+
+            if (balls.size() > 20) {
+                balls.erase(balls.begin());
+            }
         }
     }
     _CrtDumpMemoryLeaks();
