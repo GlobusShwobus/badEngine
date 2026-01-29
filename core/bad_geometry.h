@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <limits>
+#include "Ray.h"
 #include "vector.h"
 #include "AABB.h"
 
@@ -41,6 +42,15 @@ namespace badCore
 	constexpr float2 normalized(const vector<T>& v, float magnitude) noexcept
 	{
 		return { v.x / magnitude, v.y / magnitude };
+	}
+
+	template <typename T>
+	constexpr auto closest_point(const Ray& ray, const vector<T>& point)noexcept
+	{
+		auto vector_between_objects = point - ray.origin;
+		float t = dot(vector_between_objects, ray.dir);
+		t = core_clamp(t, 0.0f, ray.magnitude);
+		return ray.origin + ray.dir * t;
 	}
 
 	template <typename T>
