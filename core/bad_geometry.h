@@ -1,6 +1,5 @@
 #pragma once
 #include <cmath>
-#include <limits>
 #include "bad_utility.h"
 #include "Ray.h"
 #include "vector.h"
@@ -9,9 +8,15 @@
 namespace badCore
 {
 	template<typename T>
-	inline vector<T> absolute(const vector<T>& vec)noexcept
+	constexpr vector<T> absolute(const vector<T>& vec)noexcept
 	{
-		return { std::abs(vec.x), std::abs(vec.y) };
+		return { core_abs(vec.x), core_abs(vec.y) };
+	}
+
+	template<typename T>
+	constexpr vector<T> perpendicular(const vector<T>& vec)noexcept
+	{
+		return { -vec.y, vec.x };
 	}
 
 	template<typename T>
@@ -21,7 +26,7 @@ namespace badCore
 	}
 
 	template <typename T>
-	inline auto length(const vector<T>& v)noexcept
+	auto length(const vector<T>& v)noexcept
 	{
 		return std::sqrt((v.x * v.x) + (v.y * v.y));
 	}
@@ -35,14 +40,13 @@ namespace badCore
 	template <typename T>
 	inline float2 normalize(const vector<T>& v) noexcept
 	{
-		auto len = length(v);
-		return { v.x / len, v.y / len };
+		return v / length(v);
 	}
 
 	template <typename T>
 	constexpr float2 normalize(const vector<T>& v, float magnitude) noexcept
 	{
-		return { v.x / magnitude, v.y / magnitude };
+		return v / magnitude;
 	}
 
 	template <typename T>

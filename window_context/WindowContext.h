@@ -60,7 +60,7 @@ namespace badWindow
 		// renders multiple lines
 		void draw_lines(std::span<const float2> points, Color color)const noexcept;
 
-		// draws a poly line, same as draw_lines except it connects the last point to the first
+		// draws a poly line. same as draw_lines except it connects the last point to the first
 		void draw_poly_lines(std::span<const float2> points, Color color)const noexcept;
 
 		// draws a texture with specified source and dest locations. SDL does automatic cliping.

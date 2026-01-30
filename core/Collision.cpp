@@ -40,7 +40,7 @@ namespace badCore
 		if (is_sweep_hit(tNear, tFar)) {
 			time = (tNear < 0.0f) ? tFar : tNear;
 			contact_point = ray.origin + time * ray.dir;
-			is_hit = time >= 0.0f && (time * time) < ray.magnitude;
+			is_hit = time >= 0.0f && time < ray.magnitude;
 		}
 
 		return is_hit;
@@ -68,9 +68,32 @@ namespace badCore
 			return false;
 		}
 
-		out_normal = normalize(difference, dist);
+		out_normal = (dist > CORE_EPSILON) ? normalize(difference, dist) : perpendicular(target_surface.dir);
 		out_penetration = radius - dist;
 
 		return true;
+	}
+
+	Resolution reflection_routine_resolved(const Ray& target_surface, const float2& point, const float2& velocity, float radius) noexcept
+	{
+		float2 normal;
+		float penetration;
+		Resolution resolution;
+
+		if (intersection_test(target_surface, point, radius, normal, penetration)) {
+			float2 v = velocity;
+
+			// contact normal must oppose the relative motion
+			if (dot(v, normal) > 0.0f)
+				normal = -normal;
+			// reflect velocity and assign offset
+			if (dot(v, normal) < 0.0f)
+			{
+				resolution.new_velocity = reflection(v, normal);
+				resolution.position_offset = normal * penetration;
+				resolution.is_hit = true;
+			}
+		}
+		return resolution;
 	}
 }

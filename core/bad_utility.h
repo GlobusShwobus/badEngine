@@ -7,6 +7,14 @@ static constexpr std::size_t CORE_ZERO = 0;
 
 namespace badCore
 {
+	// UB if invoked with numeric_limits< MIN >, same as STL
+	template <typename T>
+	constexpr T core_abs(T val)noexcept
+		requires MATHEMATICAL_PRIMITIVE<T>
+	{
+		return val < 0 ? val * -1 : val;
+	}
+
 	template <typename T> 
 	constexpr auto core_max(const T& x, const T& y)noexcept 
 		requires LESS_THAN_COMPARE<T>
@@ -49,6 +57,7 @@ namespace badCore
 	constexpr void core_swap(T& a, T& b)noexcept
 		requires std::is_move_constructible_v<T>&& std::is_move_assignable_v<T>
 	{
+		//NOTE:: may require manual rref casting if something breaks
 		T temp = std::move(a);
 		a = std::move(b);
 		b = std::move(temp);

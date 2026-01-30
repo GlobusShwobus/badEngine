@@ -4,14 +4,14 @@
     <Filter Include="Main">
       <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scripts">
-      <UniqueIdentifier>{62c8ec14-40fa-48bc-a630-d17736ac2b57}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Validate and load">
       <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
     </Filter>
     <Filter Include="temp">
       <UniqueIdentifier>{ae14c5c4-7d4c-42a9-885b-592fff270f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ideas">
+      <UniqueIdentifier>{62c8ec14-40fa-48bc-a630-d17736ac2b57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,7 +19,7 @@
       <Filter>Validate and load</Filter>
     </ClInclude>
     <ClInclude Include="Dumpster.h">
-      <Filter>Scripts</Filter>
+      <Filter>ideas</Filter>
     </ClInclude>
     <ClInclude Include="badEngine.h">
       <Filter>Main</Filter>
@@ -33,11 +33,11 @@
     <ClInclude Include="Circle.h">
       <Filter>temp</Filter>
     </ClInclude>
-    <ClInclude Include="CircleCanvas.h">
-      <Filter>temp</Filter>
-    </ClInclude>
     <ClInclude Include="SpawnPoint.h">
       <Filter>temp</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleCanvas.h">
+      <Filter>ideas</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

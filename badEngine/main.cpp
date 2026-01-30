@@ -84,7 +84,7 @@ int main() {
 
 
         Sequence<Circle> balls;
-        SpawnPoint spawn(balls, 15, 1);
+        SpawnPoint spawn(balls, 15, 0.1);
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -100,32 +100,6 @@ int main() {
             float dt = steper.dt_float();
             //CLEAR RENDERING
             window.system_refresh();
-
-            for (auto& b : balls) {
-                b.update(dt);
-            }
-
-            auto plank_ray = bro.get_ray();
-
-            for (auto& b : balls) {
-
-                float2 normal;
-                float penetration;
-
-                if (intersection_test(plank_ray, b.get_pos(), b.get_radius(), normal, penetration)) {
-                    float2 v = b.get_vel();
-                    if (dot(v, normal) < 0.0f)
-                    {
-                        b.set_vel(reflection(v, normal));
-                        b.translate_by(normal * penetration);
-                    }
-                }
-            }
-
-
-
-
-            spawn.update(dt);
 
             //LISTEN TO EVENTS
             while (SDL_PollEvent(&EVENT)) {
@@ -165,11 +139,28 @@ int main() {
                 }
             }
 
+            for (auto& b : balls) {
+                b.update(dt);
+            }
+
+            auto plank_ray = bro.get_ray();
+
+            for (auto& b : balls) {
+
+                auto resolution = reflection_routine_resolved(plank_ray, b.get_pos(), b.get_vel(), b.get_radius());
+                if (resolution.is_hit) {
+                    b.set_vel(resolution.new_velocity);
+                    b.translate_by(resolution.position_offset);
+                }
+   
+            }
+
+            spawn.update(dt);
+
             //collect models
             auto ray = bro.get_ray();
 
             //transform models
-
 
             //draw models
             window.draw_line(ray, bro.get_color());
@@ -179,7 +170,7 @@ int main() {
 
             window.system_present();
 
-            if (balls.size() > 20) {
+            if (balls.size() > 150) {
                 balls.erase(balls.begin());
             }
         }
