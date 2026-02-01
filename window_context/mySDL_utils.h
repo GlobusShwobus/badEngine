@@ -7,6 +7,7 @@
 #include <bit>
 #include "vector.h"
 #include "AABB.h"
+#include "Matrix3.h"
 
 namespace badWindow
 {
@@ -25,8 +26,18 @@ namespace badWindow
 		return std::bit_cast<SDL_FRect>(aabb);
 	}
 
-	constexpr SDL_FPoint sdl_cast(const badCore::vector<float>& point)noexcept
+	constexpr SDL_FPoint sdl_cast(const badCore::float2& point)noexcept
 	{
 		return std::bit_cast<SDL_FPoint>(point);
 	}
+
+	constexpr SDL_FPoint sdl_transform(const badCore::float2& point, const badCore::Mat3& transform)noexcept
+	{
+		return
+		{
+		transform.a * point.x + transform.b * point.y + transform.tx,
+		transform.c * point.x + transform.d * point.y + transform.ty
+		};
+	}
+
 }

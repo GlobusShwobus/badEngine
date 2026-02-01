@@ -110,7 +110,7 @@ int main() {
             float2 pos = { rng.rFloat(wminx,wmaxx), rng.rFloat(wminy,wmaxy) };
             float angular_vel = rng.rFloat(minrv, maxrv);
             Color col(rng.rFloat(1, 255), rng.rFloat(1, 255), rng.rFloat(1, 255), 255);
-            float scalr_differential = rng.rFloat(0.01f, 0.05);
+            float scalr_differential = rng.rFloat(0.005f, 0.01f);
 
             entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
         }
@@ -182,17 +182,9 @@ int main() {
             Mat3 camera_mat = cam.get_transform();
 
             for (auto& e : entities) {
-                auto& model = e.get_model();
                 Mat3 world = window_mat * camera_mat * e.get_transform();
 
-                Sequence<float2> transformed_points;
-                transformed_points.set_capacity(model.size());
-
-                for (const auto& point : model) {
-                    //transform the point
-                    transformed_points.emplace_back(world.transform(point));
-                }
-                window.draw_poly_lines(transformed_points, e.get_color());
+                window.draw_closed_model(e.get_model(), world, e.get_color());
             }
 
 
