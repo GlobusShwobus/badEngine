@@ -33,9 +33,6 @@
     <ClInclude Include="Circle.h">
       <Filter>temp</Filter>
     </ClInclude>
-    <ClInclude Include="SpawnPoint.h">
-      <Filter>temp</Filter>
-    </ClInclude>
     <ClInclude Include="CircleCanvas.h">
       <Filter>ideas</Filter>
     </ClInclude>

@@ -26,7 +26,7 @@
 #include "Entity.h"
 #include "Collision.h"
 #include "Circle.h"
-#include "SpawnPoint.h"
+
 
 /*
 NEW HEADERS translate.h entity.h
@@ -74,17 +74,48 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
-
-
         RandomNum rng;
         Camera cam;
         float cam_speed = 50;
+        int ent_count = 500;
 
-        PlankBro bro(float2(0, 100), float2(600, 0));
+        float maxo = 128;
+        float mino = 96;
+
+        float maxi = 96;
+        float mini = 32;
+
+        float maxf = 16;
+        float minf = 4;
+
+        float maxrv = 4;
+        float minrv = -4;
 
 
-        Sequence<Circle> balls;
-        SpawnPoint spawn(balls, 15, 0.1);
+        float wminx = -5000;
+        float wmaxx = 5000;
+
+        float wminy = -5000;
+        float wmaxy = 5000;
+
+
+        Sequence<Entity> entities;
+        entities.set_capacity(ent_count);
+        for (int i = 0; i < ent_count; i++) {
+            Sequence<float2> model = make_poly(
+                rng.rFloat(mino, maxo),
+                rng.rFloat(mini, maxi),
+                rng.rFloat(minf, maxf)
+            );
+            float2 pos = { rng.rFloat(wminx,wmaxx), rng.rFloat(wminy,wmaxy) };
+            float angular_vel = rng.rFloat(minrv, maxrv);
+            Color col(rng.rFloat(1, 255), rng.rFloat(1, 255), rng.rFloat(1, 255), 255);
+            float scalr_differential = rng.rFloat(0.01f, 0.05);
+
+            entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
+        }
+
+
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -110,16 +141,16 @@ int main() {
                     break;
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
-                        bro.move_vector_y(-10);
+                        cam.move_by(float2(0,-10));
                     }
                     if (EVENT.key.key == SDLK_A) {
-                        bro.move_vector_x(-10);
+                        cam.move_by(float2(-10, 0));
                     }
                     if (EVENT.key.key == SDLK_S) {
-                        bro.move_vector_y(10);
+                        cam.move_by(float2(0, 10));
                     }
                     if (EVENT.key.key == SDLK_D) {
-                        bro.move_vector_x(10);
+                        cam.move_by(float2(10, 0));
                     }
                     break;
                 case SDL_EVENT_MOUSE_WHEEL:
@@ -139,40 +170,33 @@ int main() {
                 }
             }
 
-            for (auto& b : balls) {
-                b.update(dt);
-            }
-
-            auto plank_ray = bro.get_ray();
-
-            for (auto& b : balls) {
-
-                auto resolution = reflection_routine_resolved(plank_ray, b.get_pos(), b.get_vel(), b.get_radius());
-                if (resolution.is_hit) {
-                    b.set_vel(resolution.new_velocity);
-                    b.translate_by(resolution.position_offset);
-                }
-   
-            }
-
-            spawn.update(dt);
 
             //collect models
-            auto ray = bro.get_ray();
+            for (auto& e : entities) {
+                e.rotate(dt);
 
-            //transform models
-
-            //draw models
-            window.draw_line(ray, bro.get_color());
-            for (const auto& b : balls) {
-                window.draw_poly_lines(b.get_model(), b.get_col());
+                e.pulse_scale();
             }
+
+            Mat3 window_mat = window.get_transform();
+            Mat3 camera_mat = cam.get_transform();
+
+            for (auto& e : entities) {
+                auto& model = e.get_model();
+                Mat3 world = window_mat * camera_mat * e.get_transform();
+
+                Sequence<float2> transformed_points;
+                transformed_points.set_capacity(model.size());
+
+                for (const auto& point : model) {
+                    //transform the point
+                    transformed_points.emplace_back(world.transform(point));
+                }
+                window.draw_poly_lines(transformed_points, e.get_color());
+            }
+
 
             window.system_present();
-
-            if (balls.size() > 150) {
-                balls.erase(balls.begin());
-            }
         }
     }
     _CrtDumpMemoryLeaks();

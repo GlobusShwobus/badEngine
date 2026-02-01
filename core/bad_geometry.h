@@ -4,6 +4,7 @@
 #include "Ray.h"
 #include "vector.h"
 #include "AABB.h"
+#include "Matrix3.h"
 
 namespace badCore
 {
@@ -17,6 +18,20 @@ namespace badCore
 	constexpr vector<T> perpendicular(const vector<T>& vec)noexcept
 	{
 		return { -vec.y, vec.x };
+	}
+
+	inline float2 angle_to_dir(float angle) noexcept
+	{
+		return float2(std::cos(angle), std::sin(angle));
+	}
+
+	template <typename T>
+	constexpr vector<T> rotate(const vector<T>& v, const float2& rot)noexcept
+	{
+		return {
+			v.x * rot.x - v.y * rot.y,
+			v.x * rot.y + v.y * rot.x
+		};
 	}
 
 	template<typename T>
@@ -54,6 +69,7 @@ namespace badCore
 	{
 		auto vector_between_objects = point - ray.origin;
 		float t = dot(vector_between_objects, ray.dir);
+		// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
 		t = core_clamp(t, 0.0f, ray.magnitude);
 		return ray.origin + ray.dir * t;
 	}

@@ -46,7 +46,7 @@ namespace badWindow
 		return s;
 	}
 
-	badCore::Mat3 WindowContext::window_transform()const noexcept
+	badCore::Mat3 WindowContext::get_transform()const noexcept
 	{
 		int width, height;
 		SDL_GetWindowSize(mWindow.get(), &width, &height);

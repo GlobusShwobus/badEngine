@@ -81,15 +81,13 @@ namespace badCore
 		Resolution resolution;
 
 		if (intersection_test(target_surface, point, radius, normal, penetration)) {
-			float2 v = velocity;
-
 			// contact normal must oppose the relative motion
-			if (dot(v, normal) > 0.0f)
+			if (dot(velocity, normal) > 0.0f)
 				normal = -normal;
 			// reflect velocity and assign offset
-			if (dot(v, normal) < 0.0f)
+			if (dot(velocity, normal) < 0.0f)
 			{
-				resolution.new_velocity = reflection(v, normal);
+				resolution.new_velocity = reflection(velocity, normal);
 				resolution.position_offset = normal * penetration;
 				resolution.is_hit = true;
 			}

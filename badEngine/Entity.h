@@ -16,9 +16,10 @@ namespace badEngine
 		using Position = badCore::float2;
 	public:
 		//by val so we can either copy/move
-		Entity(Model model, Position pos = Position(0.0f,0.0f))
-		:mModel(std::move(model)), mPos(pos)
+		Entity(Model model, Position pos, float av, badCore::Color col, float scalr_differential)
+		:mModel(std::move(model)), mPos(pos), angular_velocity(av), col(col), scalr_differential(scalr_differential)
 		{
+			scalar_velocity = 1 + scalr_differential;
 		}
 
 		const Position& get_pos()const noexcept
@@ -46,65 +47,48 @@ namespace badEngine
 			mScale = scale;
 		}
 
+		void pulse_scale() {
+			mScale *= scalar_velocity;
+			if (mScale > 3) {
+				mScale = 3;
+				scalar_velocity = 1 - scalr_differential;;
+			}
+			if (mScale < 1) {
+				mScale = 1;
+				scalar_velocity = 1+ scalr_differential;
+			}
+		}
+
 		badCore::Mat3 get_transform()const noexcept
 		{
-			return badCore::Mat3::translation(mPos) * badCore::Mat3::scale(mScale, mScale);
+			//ORDER MATTERS
+			return badCore::Mat3::translation(mPos) * badCore::Mat3::rotation(angle) * badCore::Mat3::scale(mScale, mScale);
 		}
 
 		const Model& get_model()const noexcept
 		{
 			return mModel;
 		}
-
-	private:
-		float mScale = 1.0f;
-		Position mPos;
-		Model mModel;
-	};
-
-
-	class PlankBro
-	{
-	public:
-		PlankBro(badCore::float2 pos, badCore::vec2f vector)
-			:pos(pos), vector(vector)
-		{
-		}
-
-
-		void move_vector_x(float x) {
-			vector.x += x;
-		}
-
-		void move_vector_y(float y) {
-			vector.y += y;
-		}
-
 		badCore::Color get_color()const noexcept
 		{
 			return col;
 		}
 
-		badCore::float2 get_pos()const noexcept
+		void rotate(float dt)
 		{
-			return pos;
+			angle += angular_velocity * dt;
 		}
-
-		badCore::float2 get_vector()const noexcept
-		{
-			return vector;
-		}
-
-
-		badCore::Ray get_ray()const noexcept
-		{
-			return badCore::Ray(pos, vector);
-		}
-
 
 	private:
-		badCore::float2 pos;
-		badCore::float2 vector;
+		float mScale = 1.0f;
+		float scalar_velocity = 1.0;
+		float scalr_differential = 0;
+
+
+		Position mPos;
+		float angular_velocity = 1;
+		float angle= 0;
+		Model mModel;
 		badCore::Color col = badCore::Colors::Magenta;
 	};
 

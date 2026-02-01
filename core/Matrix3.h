@@ -30,7 +30,7 @@ namespace badCore
 				c * v.x + d * v.y + ty
 			};
 		}
-
+		
 		constexpr static Mat3 translation(float2 t) noexcept
 		{
 			Mat3 m;
@@ -44,6 +44,20 @@ namespace badCore
 			Mat3 m;
 			m.a = sx;
 			m.d = sy;
+			return m;
+		}
+
+		static Mat3 rotation(float angle)noexcept
+		{
+			float s = std::sin(angle);
+			float c = std::cos(angle);
+
+			Mat3 m;
+			m.a = c;
+			m.b = -s;
+			m.c = s;
+			m.d = c;
+
 			return m;
 		}
 	};

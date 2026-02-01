@@ -59,10 +59,6 @@ namespace badEngine
 		}
 	private:
 
-
-
-
-
 		Model mModel;
 		badCore::float2 pos;
 		badCore::float2 vel;

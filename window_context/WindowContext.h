@@ -80,7 +80,7 @@ namespace badWindow
 
 		badCore::int2 get_window_size()const noexcept;
 
-		badCore::Mat3 window_transform()const noexcept;
+		badCore::Mat3 get_transform()const noexcept;
 
 	private:
 		/* ORDER MATTERS BECAUSE OF DELETER! ALWAYS DELETE RENDERER BEFORE WINDOW */
