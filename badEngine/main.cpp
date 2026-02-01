@@ -116,7 +116,8 @@ int main() {
         }
 
 
-
+        std::size_t stresst = 0;
+        std::size_t  framesc = 0;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -181,12 +182,17 @@ int main() {
             Mat3 window_mat = window.get_transform();
             Mat3 camera_mat = cam.get_transform();
 
+
+            Stopwatch t;
             for (auto& e : entities) {
                 Mat3 world = window_mat * camera_mat * e.get_transform();
 
                 window.draw_closed_model(e.get_model(), world, e.get_color());
             }
+            stresst += t.dt_microsec();
+            framesc++;
 
+            std::cout << "average draw model t: " << static_cast<double>(stresst) / framesc << '\n';
 
             window.system_present();
         }

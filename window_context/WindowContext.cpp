@@ -131,20 +131,41 @@ namespace badWindow
 
 	void WindowContext::draw_closed_model(std::span<const float2> model, const badCore::Mat3& transformation, Color color)const noexcept
 	{
-		if (model.size() < 3)
+		static constexpr std::size_t MAX_MODEL_SIZE = 64;
+
+		const std::size_t size = model.size();
+		if (size < 3)
 			return;
 
-		badCore::Sequence<SDL_FPoint> tosdl;
-		tosdl.set_capacity(model.size() + 1);
+		SDL_Renderer* renderer = mRenderer.get();
+		SDL_SetRenderDrawColor(renderer,
+			color.get_r(), color.get_g(),
+			color.get_b(), color.get_a());
 
-		for (auto& point : model) {
-			tosdl.emplace_back(sdl_transform(point, transformation));
+		auto draw = [&](SDL_FPoint* pts)
+			{
+				for (std::size_t i = 0; i < size; ++i)
+					pts[i] = sdl_transform(model[i], transformation);
+
+				pts[size] = pts[0];
+				SDL_RenderLines(renderer, pts, static_cast<int>(size + 1));
+			};
+
+		if (size <= MAX_MODEL_SIZE)
+		{
+			SDL_FPoint stack_pts[MAX_MODEL_SIZE + 1];
+			draw(stack_pts);
 		}
-		tosdl.emplace_back(tosdl.front());
+		else
+		{
+			badCore::Sequence<SDL_FPoint> heap_pts;
+			heap_pts.resize(size + 1);
+			draw(heap_pts.data());
+		}
 
-		SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a());
-		SDL_RenderLines(mRenderer.get(), tosdl.data(), tosdl.size());
-		SDL_SetRenderDrawColor(mRenderer.get(), mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
+		SDL_SetRenderDrawColor(renderer,
+			mDrawColor.get_r(), mDrawColor.get_g(),
+			mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
 	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept
