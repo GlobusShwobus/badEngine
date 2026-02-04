@@ -9,7 +9,7 @@ namespace badCore
 	{
 	public:
 
-		BadException(const char* my_message, const char* extra = nullptr);
+		explicit BadException(const char* my_message, const char* extra = nullptr);
 
 		const char* what() const noexcept override;
 

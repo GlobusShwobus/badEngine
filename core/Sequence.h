@@ -21,7 +21,7 @@ namespace badCore
 		using difference_type     = std::ptrdiff_t;
 
 		//allocator/deallocator functions
-		constexpr pointer alloc_memory(size_type count)const
+		pointer alloc_memory(size_type count)const
 		{
 			assert(count < max_size());
 			return static_cast<pointer>(::operator new(count * sizeof(value_type)));
@@ -47,7 +47,7 @@ namespace badCore
 		//NOTE:: does not take size
 		//NOTE2:: forever trust me bro function
 		template<typename LambdaFunc>
-		constexpr void reConstructAllocate(size_type newSize, LambdaFunc constructor)
+		void reConstructAllocate(size_type newSize, LambdaFunc constructor)
 		{
 			//allocate new chunck of memory of size newSize and move [from -> to] data into it (always move) 
 			iterator thisBegin = begin();
@@ -313,14 +313,14 @@ namespace badCore
 		}
 
 		//copies elements
-		constexpr void push_back(const_reference value)
+		void push_back(const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			emplace_back(value);
 		}
 
 		//moves elements
-		constexpr void push_back(value_type&& value)
+		void push_back(value_type&& value)
 			requires std::constructible_from<value_type, value_type&&>
 		{
 			emplace_back(std::move(value));
@@ -328,7 +328,7 @@ namespace badCore
 
 		//creates elements in place
 		template<typename... Args>
-		constexpr void emplace_back(Args&&... args)
+		void emplace_back(Args&&... args)
 			requires std::constructible_from<value_type, Args...>
 		{
 			//if at capacity, reallocate with extra memory
@@ -338,6 +338,15 @@ namespace badCore
 			new(mArray + mSize)value_type(std::forward<Args>(args)...);
 			++mSize;
 		}
+
+		template<std::input_iterator It>
+		void insert_back(It first, It last)
+			requires std::constructible_from<value_type, std::iter_reference_t<It>>
+		{
+			for (; first != last; ++first)
+				emplace_back(*first);
+		}
+
 
 		//UB if the container is empty, otherwise erases the last element
 		constexpr void pop_back()noexcept
@@ -408,7 +417,7 @@ namespace badCore
 		}
 
 		//acts as both a reserver or trimmer. if n is more than current cappacity, sets new capacity to given, if less then destroys the difference amount
-		constexpr void set_capacity(size_type n)
+		void set_capacity(size_type n)
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			pointer oldBegin = begin();
@@ -420,7 +429,7 @@ namespace badCore
 			mSize = moveCount;
 		}
 		//default constructs or erases elements by the difference amount of current size and given count
-		constexpr void resize(size_type count)
+		void resize(size_type count)
 			requires std::default_initializable<value_type>
 		{
 			value_type def = value_type{};
@@ -428,7 +437,7 @@ namespace badCore
 		}
 
 		//default constructs or erases elements by the difference amount of current size and given count
-		constexpr void resize(size_type count, const_reference value)
+		void resize(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			if (count < mSize) {

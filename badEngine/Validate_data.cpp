@@ -11,6 +11,12 @@ namespace badEngine {
 
 		std::filesystem::path p(path);
 
+		if (!std::filesystem::exists(p))
+			throw badCore::BadException("File does not exist", path);
+
+		if (!std::filesystem::is_regular_file(p))
+			throw badCore::BadException("Path is not a regular file", path);
+
 		if (!p.has_extension())
 			throw badCore::BadException("File has no extension", path);
 		std::string ext = p.extension().string();
@@ -18,12 +24,6 @@ namespace badEngine {
 
 		if (ext != ".json")
 			throw badCore::BadException("File is not a .json", path);
-
-		if (!std::filesystem::exists(p))
-			throw badCore::BadException("File does not exist", path);
-
-		if (!std::filesystem::is_regular_file(p))
-			throw badCore::BadException("Path is not a regular file", path);
 
 		if (std::filesystem::file_size(p) == 0)
 			throw badCore::BadException("File is empty", path);
