@@ -60,28 +60,32 @@ namespace badCore {
 			return *this;
 		}
 
-		template<typename U> requires MATHEMATICAL_PRIMITIVE<U>
+		template<typename U>
 		constexpr auto operator*(U scalar)const noexcept
+			requires MATHEMATICAL_PRIMITIVE<U>
 		{
 			return vector<decltype(x*scalar)>(x * scalar, y * scalar);
 		}
 
-		template<typename U> requires MATHEMATICAL_PRIMITIVE<U>
+		template<typename U> 
 		constexpr vector& operator*=(U scalar)noexcept
+			requires MATHEMATICAL_PRIMITIVE<U>
 		{
 			x *= scalar;
 			y *= scalar;
 			return *this;
 		}
 
-		template<typename U> requires MATHEMATICAL_PRIMITIVE<U>
+		template<typename U> 
 		constexpr auto operator/(U scalar)const noexcept
+			requires MATHEMATICAL_PRIMITIVE<U>
 		{
 			return vector<decltype(x * scalar)>(x / scalar, y / scalar);
 		}
 
-		template<typename U> requires MATHEMATICAL_PRIMITIVE<U>
+		template<typename U> 
 		constexpr vector& operator/=(U scalar)noexcept
+			requires MATHEMATICAL_PRIMITIVE<U>
 		{
 			x /= scalar;
 			y /= scalar;
@@ -104,14 +108,16 @@ namespace badCore {
 		T y = 0;
 	};
 	
-	template<typename T, typename U> requires MATHEMATICAL_PRIMITIVE<T>
+	template<typename T, typename U> 
 	constexpr auto operator*(T scalar, const vector<U>& v)noexcept
+		requires MATHEMATICAL_PRIMITIVE<T>
 	{
 		return vector<decltype(scalar * v.x)>(v.x * scalar, v.y * scalar);
 	}
 
-	template<typename T, typename U> requires MATHEMATICAL_PRIMITIVE<T>
+	template<typename T, typename U> 
 	constexpr auto operator/(T scalar, const vector<U>& v)noexcept
+		requires MATHEMATICAL_PRIMITIVE<T>
 	{
 		return vector<decltype(scalar / v.x)>(v.x / scalar, v.y / scalar);
 	}
