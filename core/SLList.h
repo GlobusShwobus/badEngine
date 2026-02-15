@@ -158,33 +158,38 @@ namespace badCore
 		using const_iterator    = SLList::const_iterator;
 
 		SLList() = default;
-		constexpr explicit SLList(size_type count) noexcept requires std::default_initializable<value_type>
+		constexpr explicit SLList(size_type count)
+			noexcept requires std::default_initializable<value_type>
 		{
 			for (size_type i = 0; i < count; ++i) {
 				emplace_after(before_begin(), value_type{});
 			}
 		}
 
-		constexpr SLList(size_type count, const_reference value) requires std::constructible_from<value_type, const_reference>
+		constexpr SLList(size_type count, const_reference value) 
+			requires std::constructible_from<value_type, const_reference>
 		{
 			for (size_type i = 0; i < count; ++i) {
 				emplace_after(before_begin(), value);
 			}
 		}
 
-		template<std::input_iterator InputIt> requires std::constructible_from<value_type, std::iter_reference_t<InputIt>>
+		template<std::input_iterator InputIt>
 		constexpr SLList(InputIt first, InputIt last)
+			requires std::constructible_from<value_type, std::iter_reference_t<InputIt>>
 		{
 			insert_after(before_begin(), first, last);
 		}
 
-		template<std::ranges::input_range R> requires std::constructible_from<value_type, std::ranges::range_reference_t<R>>
+		template<std::ranges::input_range R> 
 		constexpr SLList(R&& range)
+			requires std::constructible_from<value_type, std::ranges::range_reference_t<R>>
 		{
 			insert_range_after(before_begin(), std::move(range));
 		}
 
-		constexpr SLList(const SLList& other) requires std::constructible_from<value_type, const_reference>
+		constexpr SLList(const SLList& other) 
+			requires std::constructible_from<value_type, const_reference>
 		{
 			auto curr = before_begin();
 			for (const auto& v : other)
@@ -199,7 +204,8 @@ namespace badCore
 			other.mSentinel.next = nullptr;
 		}
 
-		constexpr SLList(std::initializer_list<value_type> init) requires std::constructible_from<value_type, const_reference>
+		constexpr SLList(std::initializer_list<value_type> init) 
+			requires std::constructible_from<value_type, const_reference>
 		{
 			auto curr = before_begin();
 			for (const auto& v : init)
@@ -286,7 +292,7 @@ namespace badCore
 		}
 
 		//UB if empty
-		constexpr const_reference front()const
+		constexpr const_reference front()const noexcept
 		{
 			return *begin();
 		}
@@ -307,7 +313,7 @@ namespace badCore
 		//does not guarantee ANY exception safety
 		//returns iterator to the new element
 		template<typename... Args>
-		constexpr iterator emplace_after(const_iterator pos, Args&&...args)noexcept
+		constexpr iterator emplace_after(const_iterator pos, Args&&...args)
 			requires std::constructible_from<value_type, Args...>
 		{
 			NodeBase* given = pos.mPtr;
@@ -318,14 +324,14 @@ namespace badCore
 		}
 
 		//internally emplace_after
-		constexpr iterator insert_after(const_iterator pos, const_reference value)noexcept 
+		constexpr iterator insert_after(const_iterator pos, const_reference value) 
 			requires std::constructible_from<value_type, const_reference>
 		{
 			return emplace_after(pos, value);
 		}
 
 		//internally emplace_after
-		constexpr iterator insert_after(const_iterator pos, value_type&& value)noexcept
+		constexpr iterator insert_after(const_iterator pos, value_type&& value)
 			requires std::constructible_from<value_type, value_type&&>
 		{
 			return emplace_after(pos, std::move(value));
@@ -333,7 +339,7 @@ namespace badCore
 
 		//internally emplace_after
 		//returns iterator to the the last element inserted or pos if range is 0
-		constexpr iterator insert_after(const_iterator pos, size_type count, const_reference value)noexcept
+		constexpr iterator insert_after(const_iterator pos, size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			iterator ret = iterator(pos.mPtr);
@@ -346,7 +352,7 @@ namespace badCore
 		//internally emplace_after
 		//returns iterator to the the last element inserted or pos if range is 0
 		template<std::input_iterator InputIt>
-		constexpr iterator insert_after(const_iterator pos, InputIt first, InputIt last)noexcept
+		constexpr iterator insert_after(const_iterator pos, InputIt first, InputIt last)
 			requires std::constructible_from<value_type, std::iter_reference_t<InputIt>>
 		{
 			iterator ret = iterator(pos.mPtr);
@@ -357,14 +363,14 @@ namespace badCore
 		}
 
 		//internally insert_after(const_iterator pos, InputIt first, InputIt last)
-		constexpr iterator insert_after(const_iterator pos, std::initializer_list<value_type> ilist)noexcept
+		constexpr iterator insert_after(const_iterator pos, std::initializer_list<value_type> ilist)
 		{
 			return insert_after(pos, ilist.begin(), ilist.end());
 		}
 
 		//internally insert_after(const_iterator pos, InputIt first, InputIt last)
 		template<std::ranges::input_range R>
-		constexpr iterator insert_range_after(const_iterator pos, R&& range)noexcept
+		constexpr iterator insert_range_after(const_iterator pos, R&& range)
 			requires std::constructible_from<value_type, std::ranges::range_reference_t<R>>
 		{
 			return insert_after(pos, std::ranges::begin(range), std::ranges::end(range));
@@ -404,14 +410,14 @@ namespace badCore
 		}
 
 		//internally emplace_after
-		constexpr void push_front(const_reference value)noexcept
+		constexpr void push_front(const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			emplace_after(before_begin(), value);
 		}
 
 		//internally emplace_after
-		constexpr void push_front(value_type&& value)noexcept
+		constexpr void push_front(value_type&& value)
 			requires std::constructible_from<value_type, value_type&&>
 		{
 			emplace_after(before_begin(), std::move(value));
@@ -419,7 +425,7 @@ namespace badCore
 
 		//internally insert_range_after
 		template<std::ranges::input_range R>
-		constexpr void push_front_range(R&& range)noexcept
+		constexpr void push_front_range(R&& range)
 		{
 			insert_range_after(before_begin(), std::forward<R>(range));
 		}

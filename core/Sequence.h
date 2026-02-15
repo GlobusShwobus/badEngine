@@ -88,17 +88,15 @@ namespace badCore
 
 		constexpr Sequence()noexcept = default;
 
-		Sequence(size_type count) requires std::default_initializable<value_type>
+		explicit Sequence(size_type count)
+			requires std::default_initializable<value_type>
+		:Sequence(count, value_type())
 		{
-			if (count > CORE_ZERO) {
-				reConstructAllocate(count, [](pointer dest, size_type n) {
-					return std::uninitialized_value_construct_n(dest, n);
-					});
-				mSize = count;
-			}
+
 		}
 
-		Sequence(size_type count, const_reference value) requires std::constructible_from<value_type, const_reference>
+		explicit Sequence(size_type count, const_reference value) 
+			requires std::constructible_from<value_type, const_reference>
 		{
 			if (count > CORE_ZERO) {
 				reConstructAllocate(count, [&value](pointer dest, size_type n) {
@@ -108,7 +106,8 @@ namespace badCore
 			}
 		}
 
-		Sequence(std::initializer_list<value_type> init) requires std::constructible_from<value_type, const_reference>
+		Sequence(std::initializer_list<value_type> init) 
+			requires std::constructible_from<value_type, const_reference>
 		{
 			const size_type size = init.size();
 			if (size > CORE_ZERO) {
@@ -119,7 +118,8 @@ namespace badCore
 			}
 		}
 
-		Sequence(const Sequence& rhs) requires std::constructible_from<value_type, const_reference>
+		Sequence(const Sequence& rhs)
+			requires std::constructible_from<value_type, const_reference>
 		{
 			size_type size = rhs.size();
 			if (size > CORE_ZERO) {

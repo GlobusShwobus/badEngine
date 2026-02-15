@@ -31,9 +31,6 @@
     <ClCompile Include="Stopwatch.cpp">
       <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="bad_exceptions.cpp">
-      <Filter>misc</Filter>
-    </ClCompile>
     <ClCompile Include="Make_Shape.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
     <ClInclude Include="bad_concepts.h">
       <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="bad_exceptions.h">
-      <Filter>misc</Filter>
-    </ClInclude>
     <ClInclude Include="bad_utility.h">
       <Filter>misc</Filter>
     </ClInclude>
@@ -98,6 +92,9 @@
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="NoThrowException.h">
+      <Filter>misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
