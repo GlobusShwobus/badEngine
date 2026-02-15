@@ -2,9 +2,13 @@
 
 #include <memory>
 #include <limits>
-#include "bad_exceptions.h"
+#include <assert.h>
+#include <stdexcept>
 #include "bad_concepts.h"
 #include "bad_utility.h"
+
+//TODO: proper insert and all pushes/emplaces hierarchy
+//TODO: range constructors
 
 namespace badCore 
 {
@@ -262,7 +266,7 @@ namespace badCore
 		constexpr reference at(size_type index)
 		{
 			if (index >= mSize)
-				throw BadException("out of range access element access at index", std::to_string(index).c_str());
+				throw std::out_of_range("out of range index");
 			return mArray[index];
 		}
 
@@ -270,7 +274,7 @@ namespace badCore
 		constexpr const_reference at(size_type index)const
 		{
 			if (index >= mSize)
-				throw BadException("out of range access element access at index", std::to_string(index).c_str());
+				throw std::out_of_range("out of range index");
 			return mArray[index];
 		}
 
@@ -310,6 +314,22 @@ namespace badCore
 		{
 			destroy_objects(begin(), end());
 			mSize = 0;
+		}
+
+		//clears and sets to nullptr
+		void wipe()noexcept
+		{
+			if (!mArray || mCapacity == 0)
+				return;
+
+			destroy_objects(begin(), end());
+			secure_zero_bytes(mArray, mCapacity * sizeof(value_type));
+
+			::operator delete(mArray);
+
+			mArray = nullptr;
+			mSize = 0;
+			mCapacity = 0;;
 		}
 
 		//copies elements

@@ -1,17 +1,12 @@
 #include "pch.h"
 #include "RandomNum.h"
-#include "bad_exceptions.h"
+#include <assert.h>
 
 namespace badCore
 {
 	RandomNum::RandomNum()
 	{
-		try {
-			rng = std::make_unique<std::mt19937>(std::random_device{}());
-		}
-		catch (const std::runtime_error& e) {
-			throw BadException("Number Generator random_device error", e.what());
-		}
+		rng = std::make_unique<std::mt19937>(std::random_device{}());
 	}
 
 	int RandomNum::rInt(int min, int max)const noexcept
