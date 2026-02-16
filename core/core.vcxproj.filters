@@ -14,9 +14,6 @@
     <Filter Include="misc">
       <UniqueIdentifier>{94c06247-60fd-4fd4-a748-24d7c8f1df0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Transforms">
-      <UniqueIdentifier>{e2783a83-12b6-40c0-825a-dac60a400f96}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -81,12 +78,6 @@
     <ClInclude Include="Make_Shape.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix3.h">
-      <Filter>Transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>misc</Filter>
-    </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>geometry</Filter>
     </ClInclude>
@@ -95,6 +86,12 @@
     </ClInclude>
     <ClInclude Include="NoThrowException.h">
       <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix3.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>geometry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

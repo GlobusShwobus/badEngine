@@ -30,11 +30,11 @@
     <ClInclude Include="Entity.h">
       <Filter>temp</Filter>
     </ClInclude>
-    <ClInclude Include="Circle.h">
-      <Filter>temp</Filter>
-    </ClInclude>
     <ClInclude Include="CircleCanvas.h">
       <Filter>ideas</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseCameraController.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +46,12 @@
     </ClCompile>
     <ClCompile Include="load_data.cpp">
       <Filter>Validate and load</Filter>
+    </ClCompile>
+    <ClCompile Include="badEngine.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseCameraController.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 #include "WindowContext.h"
 #include "RandomNum.h"
 #include "Stopwatch.h"
-#include "UniformGrid.h"
+#include "MouseCameraController.h"
 
 namespace badEngine {
 
@@ -16,38 +16,34 @@ namespace badEngine {
 	public:
 
 		badEngine(const WindowContextDescription& window)
-			:window(window.heading.c_str(), window.width, window.height, window.flags)
+			:window(window.heading.c_str(), window.width, window.height, window.flags), is_active(true)
 		{
 
 		}
 
 		void run() {
-			window.system_refresh();
-			advance_state();
-			resolve_state();
-			render();
-			window.system_present();
-			prepare_next_frame();
+
 		}
 	
 	private:
 
-		void process_input();     //event reading
+		void process_input(float dt);      //event reading
 		void advance_state();      //updates states, moves, generally unconditional
 		void resolve_state();      //handles the results of state update, like collision
-		void render();            //drawing logic
-		void prepare_next_frame();//cleanup, support
+		void render();             //drawing logic
+		void prepare_next_frame(); //cleanup, support
 
 	private:
+		//meta
+		bool is_active = false;
 		//current min
 		WindowContext window;
 		RandomNum rng;
 		Stopwatch frametimer;
 
-		//probably required/important but for now idk
-		
-		//UniformGrid staticObjects;
-		//UniformGrid dynamicObjects;
+
+		//
+		MouseCameraController mCam;
 	};
 
 }

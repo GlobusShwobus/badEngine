@@ -18,14 +18,13 @@
 #include "RandomNum.h"
 
 #include "Color.h"
-#include "Camera.h"
 #include "TextureMap.h"
 
 #include <iostream>
-
+#include "Make_Shape.h"
 #include "Entity.h"
 #include "Collision.h"
-#include "Circle.h"
+#include "MouseCameraController.h"
 
 
 /*
@@ -75,7 +74,7 @@ int main() {
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
         RandomNum rng;
-        Camera cam;
+        MouseCameraController cam;
         float cam_speed = 50;
         int ent_count = 500;
 
@@ -117,8 +116,6 @@ int main() {
 
         bool am_i_rushing_or_am_i_dragging = false;
 
-        float2 last_mouse_pos;
-
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -141,70 +138,11 @@ int main() {
                 case SDL_EVENT_QUIT:
                     GAME_RUNNING = false;
                     break;
-                case SDL_EVENT_KEY_DOWN:
-                    if (EVENT.key.key == SDLK_W) {
-                        cam.rotate(dt);
-                    }
-                    if (EVENT.key.key == SDLK_A) {
-                        cam.move_by(float2(-1, 0));
-                    }
-                    if (EVENT.key.key == SDLK_S) {
-                        cam.rotate(-dt);
-                    }
-                    if (EVENT.key.key == SDLK_D) {
-                        cam.move_by(float2(1, 0));
-                    }
-                    break;
-
-                case SDL_EVENT_MOUSE_WHEEL:
-                    if (EVENT.wheel.y > 0) {
-                        // Scrolled up/away from user
-                        cam.set_zoom(cam.get_zoom() * 1.25f);
-                    }
-                    else if (EVENT.wheel.y < 0) {
-                        // Scrolled down/toward user
-                        cam.set_zoom(cam.get_zoom() * 0.75f);
-                    }
-                    break;
-
-                case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                    if (EVENT.button.button == SDL_BUTTON_LEFT)
-                    {
-                        am_i_rushing_or_am_i_dragging = true;
-                        last_mouse_pos = float2(EVENT.button.x, EVENT.button.y);
-                    }
-                    break;
-                case SDL_EVENT_MOUSE_BUTTON_UP:
-                
-                    if (EVENT.button.button == SDL_BUTTON_LEFT)
-                    {
-                        am_i_rushing_or_am_i_dragging = false;
-                    }
-                
-                    break;
-
-                case SDL_EVENT_MOUSE_MOTION:
-                {
-                    if (am_i_rushing_or_am_i_dragging)
-                    {
-                        float2 mouse_pos(EVENT.motion.x, EVENT.motion.y);
-                        float2 delta = mouse_pos - last_mouse_pos;
-
-                        // Convert screen movement to world movement
-                        float zoom = cam.get_zoom();
-
-                        cam.move_by(float2(
-                            -delta.x / zoom,
-                            -delta.y / zoom
-                        ));
-
-                        last_mouse_pos = mouse_pos;
-                    }
-                }
-                break;
 
                 default:break;
                 }
+
+                cam.update(dt, EVENT);
             }
 
 
@@ -216,7 +154,7 @@ int main() {
             }
 
             Mat3 window_mat = window.get_transform();
-            Mat3 camera_mat = cam.get_transform_rotated();
+            Mat3 camera_mat = cam.get_camera().transform_inverse();
 
 
             for (auto& e : entities) {
@@ -227,6 +165,8 @@ int main() {
 
 
             window.system_present();
+
+            std::cout << "FPS: " << 1 / dt<<'\n';
         }
     }
     _CrtDumpMemoryLeaks();
