@@ -20,10 +20,10 @@ namespace badEngine
 		case SDL_EVENT_MOUSE_WHEEL:
 
 			if (events.wheel.y > 0) {
-				mCamera.scale_by(ZOOM_IN);
+				mCamera.scale_by(ZOOM_OUT);
 			}
 			else if (events.wheel.y < 0) {
-				mCamera.scale_by(ZOOM_OUT);
+				mCamera.scale_by(ZOOM_IN);
 			}
 			break;
 
