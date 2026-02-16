@@ -115,9 +115,10 @@ int main() {
             entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
         }
 
+        bool am_i_rushing_or_am_i_dragging = false;
 
-        std::size_t stresst = 0;
-        std::size_t  framesc = 0;
+        float2 last_mouse_pos;
+
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -142,18 +143,19 @@ int main() {
                     break;
                 case SDL_EVENT_KEY_DOWN:
                     if (EVENT.key.key == SDLK_W) {
-                        cam.move_by(float2(0,-10));
+                        cam.rotate(dt);
                     }
                     if (EVENT.key.key == SDLK_A) {
-                        cam.move_by(float2(-10, 0));
+                        cam.move_by(float2(-1, 0));
                     }
                     if (EVENT.key.key == SDLK_S) {
-                        cam.move_by(float2(0, 10));
+                        cam.rotate(-dt);
                     }
                     if (EVENT.key.key == SDLK_D) {
-                        cam.move_by(float2(10, 0));
+                        cam.move_by(float2(1, 0));
                     }
                     break;
+
                 case SDL_EVENT_MOUSE_WHEEL:
                     if (EVENT.wheel.y > 0) {
                         // Scrolled up/away from user
@@ -164,9 +166,43 @@ int main() {
                         cam.set_zoom(cam.get_zoom() * 0.75f);
                     }
                     break;
+
                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                    //TODO mouse scrolling
+                    if (EVENT.button.button == SDL_BUTTON_LEFT)
+                    {
+                        am_i_rushing_or_am_i_dragging = true;
+                        last_mouse_pos = float2(EVENT.button.x, EVENT.button.y);
+                    }
                     break;
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+                
+                    if (EVENT.button.button == SDL_BUTTON_LEFT)
+                    {
+                        am_i_rushing_or_am_i_dragging = false;
+                    }
+                
+                    break;
+
+                case SDL_EVENT_MOUSE_MOTION:
+                {
+                    if (am_i_rushing_or_am_i_dragging)
+                    {
+                        float2 mouse_pos(EVENT.motion.x, EVENT.motion.y);
+                        float2 delta = mouse_pos - last_mouse_pos;
+
+                        // Convert screen movement to world movement
+                        float zoom = cam.get_zoom();
+
+                        cam.move_by(float2(
+                            -delta.x / zoom,
+                            -delta.y / zoom
+                        ));
+
+                        last_mouse_pos = mouse_pos;
+                    }
+                }
+                break;
+
                 default:break;
                 }
             }
@@ -180,19 +216,15 @@ int main() {
             }
 
             Mat3 window_mat = window.get_transform();
-            Mat3 camera_mat = cam.get_transform();
+            Mat3 camera_mat = cam.get_transform_rotated();
 
 
-            Stopwatch t;
             for (auto& e : entities) {
                 Mat3 world = window_mat * camera_mat * e.get_transform();
 
                 window.draw_closed_model(e.get_model(), world, e.get_color());
             }
-            stresst += t.dt_microsec();
-            framesc++;
 
-            std::cout << "average draw model t: " << static_cast<double>(stresst) / framesc << '\n';
 
             window.system_present();
         }

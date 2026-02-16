@@ -30,10 +30,6 @@ namespace badCore
 			mPos = pos;
 		}
 
-		Mat3 get_transform() const {
-			return Mat3::scale(mScale, mScale) * Mat3::translation(-mPos);
-		}
-
 		float get_zoom()const noexcept
 		{
 			return mScale;
@@ -44,14 +40,43 @@ namespace badCore
 			mScale = scale;
 		}
 
+		void set_angular_velocity(float velocity)
+		{
+			angular_velocity = velocity;
+		}
+
+		void set_angle(float angle_)
+		{
+			angle = angle_;
+		}
+
+		void rotate(float dt)
+		{
+			angle += angular_velocity * dt;
+		}
+
+		Mat3 get_transform() const {
+			return Mat3::scale(mScale, mScale) * Mat3::translation(-mPos);
+		}
+
+		Mat3 get_transform_rotated() const {
+			//NOTE:: camera mat3 is the inverse of what entities experience
+			return Mat3::scale(mScale, mScale) * Mat3::rotation(-angle) * Mat3::translation(-mPos);
+		}
+
 		AABB get_viewport(const int2& window_size)const noexcept
 		{
 			const float zoom = 1.0f / mScale;
 			return make_aabb(mPos, (window_size.x * 0.5f) * zoom, (window_size.y * 0.5f) * zoom);
 		}
 
+
+
+
 	private:
 		float2 mPos;
 		float mScale = 1.0f;
+		float angular_velocity = 1;
+		float angle = 0;
 	};
 }

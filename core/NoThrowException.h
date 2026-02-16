@@ -6,24 +6,24 @@ namespace badEngine
 {
 	struct NoThrowException
 	{
+		bool isGood;
+		std::string message;
+
 		NoThrowException(bool is_good, const std::string& msg)
 			:isGood(is_good), message(msg)
 		{
 		}
 
 
-		static NoThrowException success()noexcept
+		static NoThrowException success(std::string msg = {})noexcept
 		{
-			return { true, "" };
+			return { true, std::move(msg) };
 		}
 
 		static NoThrowException failure(std::string msg)noexcept
 		{
 			return { false, std::move(msg) };
 		}
-
-		bool isGood;
-		std::string message;
 
 		explicit operator bool() const noexcept
 		{
