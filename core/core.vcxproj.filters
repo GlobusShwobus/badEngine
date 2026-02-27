@@ -84,7 +84,7 @@
     <ClInclude Include="Collision.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="NoThrowException.h">
+    <ClInclude Include="bString.h">
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="Matrix3.h">
@@ -92,6 +92,9 @@
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="AsyncLogger.h">
+      <Filter>misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

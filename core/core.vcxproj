@@ -139,8 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncLogger.h" />
     <ClInclude Include="bad_concepts.h" />
-    <ClInclude Include="NoThrowException.h" />
+    <ClInclude Include="bString.h" />
     <ClInclude Include="bad_utility.h" />
     <ClInclude Include="bad_geometry.h" />
     <ClInclude Include="Transform.h" />

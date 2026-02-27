@@ -1,8 +1,7 @@
 
 #include "load_data.h"
 #include <fstream>
-#include "mySDL_utils.h"
-
+#include "validate_data.h"
 namespace badEngine {
 
 	nlohmann::json load_json(const char* path)
@@ -25,7 +24,7 @@ namespace badEngine {
 
 		desc.flags = 0;
 		for (const auto& flag : config.at("flags")) {
-			badWindow::MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>().c_str(), desc.flags);
+			MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>().c_str(), desc.flags);
 		}
 		return desc;
 	}

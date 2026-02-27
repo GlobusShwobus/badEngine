@@ -11,8 +11,9 @@ GUIDE:
 The following are the tags:
 
 sdl3
-sdl3-image
 sdl3-image [jpeg, png]
+
+// (not actually required currently)
 imgui
 imgui[sdl3-binding]
 imgui[sdl3-renderer-binding]

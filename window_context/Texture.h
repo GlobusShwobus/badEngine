@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <SDL3/SDL_render.h>
-#include "mySDL_utils.h"
 
 namespace badWindow
 {
@@ -10,7 +9,12 @@ namespace badWindow
 	// SDL_Texture should never be deleted externally and Texture should outlive the use case.
 	class Texture final
 	{
-		using Texture_type = std::unique_ptr<SDL_Texture, SDLDeleter<SDL_Texture, SDL_DestroyTexture>>;
+		struct TDeleter {
+			void operator()(SDL_Texture* t) {
+				if (t)
+					SDL_DestroyTexture(t);
+			}
+		};
 
 	public:
 
@@ -21,6 +25,7 @@ namespace badWindow
 		SDL_Texture* const get()const noexcept;
 
 	private:
-		Texture_type mTexture;
+
+		std::unique_ptr<SDL_Texture, TDeleter> mTexture;
 	};
 }

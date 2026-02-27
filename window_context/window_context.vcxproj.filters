@@ -19,9 +19,6 @@
     <ClInclude Include="pch.h">
       <Filter>precomp</Filter>
     </ClInclude>
-    <ClInclude Include="mySDL_utils.h">
-      <Filter>window_context</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>textures_types</Filter>
     </ClInclude>
@@ -47,9 +44,6 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>precomp</Filter>
-    </ClCompile>
-    <ClCompile Include="mySDL_utils.cpp">
-      <Filter>window_context</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>textures_types</Filter>

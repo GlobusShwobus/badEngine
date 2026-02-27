@@ -146,7 +146,6 @@
     <ClInclude Include="Animatable.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Font.h" />
-    <ClInclude Include="mySDL_utils.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture.h" />
@@ -163,7 +162,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="mySDL_utils.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureMap.cpp" />

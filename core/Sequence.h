@@ -10,19 +10,19 @@
 //TODO: proper insert and all pushes/emplaces hierarchy
 //TODO: range constructors
 
-namespace badCore 
+namespace badCore
 {
 	template<typename T> requires IS_SEQUENCE_COMPATIBLE<T>
 	class Sequence final
 	{
-		using type                = Sequence<T>;
-		using value_type          = T;
-		using pointer             = T*;
-		using const_pointer       = const T*;
-		using reference           = T&;
-		using const_reference     = const T&;
-		using size_type           = std::size_t;
-		using difference_type     = std::ptrdiff_t;
+		using type = Sequence<T>;
+		using value_type = T;
+		using pointer = T*;
+		using const_pointer = const T*;
+		using reference = T&;
+		using const_reference = const T&;
+		using size_type = std::size_t;
+		using difference_type = std::ptrdiff_t;
 
 		//allocator/deallocator functions
 		pointer alloc_memory(size_type count)const
@@ -55,7 +55,7 @@ namespace badCore
 		{
 			//allocate new chunck of memory of size newSize and move [from -> to] data into it (always move) 
 			iterator thisBegin = begin();
-			iterator thisEnd   = end();
+			iterator thisEnd = end();
 
 			iterator destination = nullptr;
 			iterator initialized = nullptr;
@@ -95,7 +95,7 @@ namespace badCore
 
 		}
 
-		explicit Sequence(size_type count, const_reference value) 
+		explicit Sequence(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			if (count > CORE_ZERO) {
@@ -106,7 +106,7 @@ namespace badCore
 			}
 		}
 
-		Sequence(std::initializer_list<value_type> init) 
+		Sequence(std::initializer_list<value_type> init)
 			requires std::constructible_from<value_type, const_reference>
 		{
 			const size_type size = init.size();
@@ -176,15 +176,15 @@ namespace badCore
 			std::swap(mAdditive, rhs.mAdditive);
 		}
 
-		using iterator       = pointer;
+		using iterator = pointer;
 		using const_iterator = const_pointer;
 
-		constexpr iterator begin()noexcept 
+		constexpr iterator begin()noexcept
 		{
 			return  mArray;
 		}
 
-		constexpr iterator end()noexcept 
+		constexpr iterator end()noexcept
 		{
 			return  mArray + mSize;
 		}
@@ -199,7 +199,7 @@ namespace badCore
 			return mArray + mSize;
 		}
 
-		constexpr const_iterator cbegin()const noexcept 
+		constexpr const_iterator cbegin()const noexcept
 		{
 			return mArray;
 		}
@@ -219,7 +219,7 @@ namespace badCore
 			return mArray;
 		}
 
-		
+
 		//UB if container is empty, otherwise returns reference to the first element
 		constexpr reference front() noexcept
 		{
@@ -279,15 +279,15 @@ namespace badCore
 		}
 
 		//number of constructed elements
-		constexpr size_type size()const noexcept 
+		constexpr size_type size()const noexcept
 		{
 			return mSize;
 		}
 
-		//maximum number elements depending on sizeof(T)
+		// maximum number elements depending on sizeof(T)
 		constexpr size_type max_size()const noexcept
 		{
-			return std::numeric_limits<size_type>::max() / sizeof(value_type);
+			return (std::numeric_limits<size_type>::max)() / sizeof(value_type);
 		}
 
 		//current size of allocated memory
@@ -303,7 +303,7 @@ namespace badCore
 		}
 
 		//set addative for growth calculation, can't go lower than 1 in debug, otherwise all types of memes will happen
-		constexpr void set_additive(size_type additive)noexcept 
+		constexpr void set_additive(size_type additive)noexcept
 		{
 			assert(additive >= 1);
 			mAdditive = additive;
@@ -376,18 +376,19 @@ namespace badCore
 		}
 
 		//UB if pos is not in the range of [begin -> end) and if container is empty (probably terminate)
-		constexpr void erase(const_iterator pos) noexcept
+		constexpr iterator erase(const_iterator pos) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			assert(!isEmpty() && pos >= begin() && pos < end());
-			erase(pos, pos + 1);
+			return erase(pos, pos + 1);
 		}
 
 		//UB if given range is not in the range of [begin -> end) and if container is empty (probably terminate)
-		constexpr void erase(const_iterator first, const_iterator last) noexcept
+		constexpr iterator erase(const_iterator first, const_iterator last) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
-			if (first == last)return;
+			if (first == last)
+				return const_cast<iterator>(first);
 
 			iterator targetBegin = const_cast<iterator>(first);
 			iterator targetEnd = const_cast<iterator>(last);
@@ -405,6 +406,8 @@ namespace badCore
 
 			mSize -= destroy_size;
 			destroy_objects(end(), thisEnd);
+
+			return const_cast<iterator>(first);
 		}
 
 		//swaps given element with last and pops back. UB if pos is not in the range of [begin -> end)
@@ -420,8 +423,8 @@ namespace badCore
 		{
 			if (first == last)return;
 			iterator destination = const_cast<iterator>(first);
-			iterator targetEnd   = const_cast<iterator>(last);
-			iterator thisEnd     = end();
+			iterator targetEnd = const_cast<iterator>(last);
+			iterator thisEnd = end();
 			assert(!isEmpty());
 			assert(begin() <= destination && thisEnd >= targetEnd && destination <= targetEnd);
 			//get distance
@@ -490,163 +493,3 @@ namespace badCore
 		size_type mAdditive = 1;
 	};
 }
-
-/*
-DEPRICATED ITERATORS
-
-		class const_iterator;
-
-		class iterator {
-		public:
-			using value_type = T;
-			using difference_type = std::ptrdiff_t;
-			using reference = T&;
-			using pointer = T*;
-			using iterator_category = std::random_access_iterator_tag;
-			using self_type = iterator;
-
-			constexpr iterator() = default;
-			constexpr iterator(T* p) :ptr(p) {}
-
-			constexpr reference operator*()noexcept {
-				return *ptr;
-			}
-			constexpr pointer   operator->()noexcept {
-				return ptr;
-			}
-			constexpr reference operator[](difference_type n)noexcept {
-				return ptr[n];
-			}
-
-			constexpr const reference operator*() const noexcept {
-				return *ptr;
-			}
-			constexpr const pointer   operator->() const noexcept {
-				return ptr;
-			}
-			constexpr const reference operator[](difference_type n) const noexcept {
-				return ptr[n];
-			}
-
-			constexpr self_type& operator++()noexcept {
-				++ptr;
-				return *this;
-			}
-			constexpr self_type  operator++(int)noexcept {
-				self_type temp = *this;
-				++ptr;
-				return temp;
-			}
-			constexpr self_type& operator--()noexcept {
-				--ptr;
-				return *this;
-			}
-			constexpr self_type  operator--(int)noexcept {
-				self_type temp = *this;
-				--ptr;
-				return temp;
-			}
-
-			constexpr self_type& operator+=(difference_type n)noexcept {
-				ptr += n;
-				return *this;
-			}
-			constexpr self_type& operator-=(difference_type n)noexcept {
-				ptr -= n;
-				return *this;
-			}
-			constexpr self_type  operator+(difference_type n)const noexcept {
-				return ptr + n;
-			}
-			constexpr self_type  operator-(difference_type n)const noexcept {
-				return ptr - n;
-			}
-			constexpr difference_type operator-(const self_type& rhs)const noexcept {
-				return ptr - rhs.ptr;
-			}
-
-			constexpr bool operator==(const self_type& rhs)const noexcept {
-				return ptr == rhs.ptr;
-			}
-			constexpr std::strong_ordering operator<=>(const self_type& rhs)const noexcept {
-				return ptr <=> rhs.ptr;
-			}
-
-		private:
-			friend class const_iterator;
-			friend class Sequence;
-			T* ptr = nullptr;
-		};
-
-		class const_iterator {
-		public:
-			using value_type = T;
-			using difference_type = std::ptrdiff_t;
-			using reference = const T&;
-			using pointer = const T*;
-			using iterator_category = std::random_access_iterator_tag;
-			using self_type = const_iterator;
-
-			constexpr const_iterator() = default;
-			constexpr const_iterator(T* p) :ptr(p) {}
-			constexpr const_iterator(const iterator& rp) : ptr(rp.ptr) {}
-
-			constexpr reference operator*()const noexcept {
-				return *ptr;
-			}
-			constexpr pointer   operator->()const noexcept {
-				return ptr;
-			}
-			constexpr reference operator[](difference_type n)const noexcept {
-				return ptr[n];
-			}
-
-			constexpr self_type& operator++() noexcept {
-				++ptr;
-				return *this;
-			}
-			constexpr self_type  operator++(int) noexcept {
-				self_type temp = *this;
-				++ptr;
-				return temp;
-			}
-			constexpr self_type& operator--() noexcept {
-				--ptr;
-				return *this;
-			}
-			constexpr self_type  operator--(int) noexcept {
-				self_type temp = *this;
-				--ptr;
-				return temp;
-			}
-
-			constexpr self_type& operator+=(difference_type n) noexcept {
-				ptr += n;
-				return *this;
-			}
-			constexpr self_type& operator-=(difference_type n) noexcept {
-				ptr -= n;
-				return *this;
-			}
-			constexpr self_type  operator+(difference_type n)const noexcept {
-				return ptr + n;
-			}
-			constexpr self_type  operator-(difference_type n)const noexcept {
-				return ptr - n;
-			}
-			constexpr difference_type operator-(const self_type& rhs)const noexcept {
-				return ptr - rhs.ptr;
-			}
-
-			constexpr bool operator==(const self_type& rhs)const noexcept {
-				return ptr == rhs.ptr;
-			}
-			constexpr std::strong_ordering operator<=>(const self_type& rhs)const noexcept {
-				return ptr <=> rhs.ptr;
-			}
-
-		private:
-			friend class Sequence;
-			T* ptr = nullptr;
-		};
-*/

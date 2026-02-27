@@ -2,14 +2,20 @@
 
 #include <memory>
 #include <SDL3/SDL_render.h>
-#include "mySDL_utils.h"
 
 namespace badWindow
 {
 	// Canvas is a texture type that is modifiable by rendering onto it. call start_drawing - > render something - > end_drawing
 	class Canvas final
 	{
-		using CanvasType = std::unique_ptr<SDL_Texture, SDLDeleter<SDL_Texture, SDL_DestroyTexture>>;
+		struct CDeleter {
+			void operator()(SDL_Texture* c) {
+				if (c)
+					SDL_DestroyTexture(c);
+			}
+		};
+
+		using CanvasType = std::unique_ptr<SDL_Texture, CDeleter>;
 
 	public:
 		// constructs a blank canvas

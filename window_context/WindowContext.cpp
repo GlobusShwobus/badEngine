@@ -83,13 +83,13 @@ namespace badWindow
 		return SDL_SetRenderTarget(mRenderer.get(), target);
 	}
 
-	void WindowContext::set_default_color(Color color)noexcept
+	void WindowContext::set_default_color(badCore::Color color)noexcept
 	{
 		if (SDL_SetRenderDrawColor(mRenderer.get(), color.get_r(), color.get_g(), color.get_b(), color.get_a()))
 			mDrawColor = color;
 	}
 
-	void WindowContext::draw_filled_AABB(const AABB& aabb, Color color)const noexcept
+	void WindowContext::draw_filled_AABB(const badCore::AABB& aabb, badCore::Color color)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		//set the drawing color
@@ -102,7 +102,7 @@ namespace badWindow
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_line(float x1, float y1, float x2, float y2, Color color)const noexcept
+	void WindowContext::draw_line(float x1, float y1, float x2, float y2, badCore::Color color)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_SetRenderDrawColor(ren, color.get_r(), color.get_g(), color.get_b(), color.get_a());
@@ -114,12 +114,12 @@ namespace badWindow
 		SDL_SetRenderDrawColor(ren, mDrawColor.get_r(), mDrawColor.get_g(), mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_line(const badCore::float2& start, const badCore::float2& end, Color color)const noexcept
+	void WindowContext::draw_line(const badCore::float2& start, const badCore::float2& end, badCore::Color color)const noexcept
 	{
 		draw_line(start.x, start.y, end.x, end.y, color);
 	}
 
-	void WindowContext::draw_line(const badCore::Ray& ray, Color color)const noexcept
+	void WindowContext::draw_line(const badCore::Ray& ray, badCore::Color color)const noexcept
 	{
 		draw_line(
 			ray.origin.x,
@@ -129,7 +129,7 @@ namespace badWindow
 		);
 	}
 
-	void WindowContext::draw_closed_model(std::span<const float2> model, const badCore::Mat3& transformation, Color color)const noexcept
+	void WindowContext::draw_closed_model(std::span<const badCore::float2> model, const badCore::Mat3& transformation, badCore::Color color)const noexcept
 	{
 		static constexpr std::size_t MAX_MODEL_SIZE = 64;
 
@@ -168,7 +168,7 @@ namespace badWindow
 			mDrawColor.get_b(), mDrawColor.get_a());
 	}
 
-	void WindowContext::draw_texture(SDL_Texture* texture, const AABB& src, const AABB& dest)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture, const badCore::AABB& src, const badCore::AABB& dest)const noexcept
 	{
 		SDL_Renderer* ren = mRenderer.get();
 		SDL_FRect ssrc  = sdl_cast(src);
@@ -176,7 +176,7 @@ namespace badWindow
 		SDL_RenderTexture(ren, texture, &ssrc, &ddest);
 	}
 
-	void WindowContext::draw_texture(SDL_Texture* texture, std::span<const std::pair<AABB, AABB>> src_dests)const noexcept
+	void WindowContext::draw_texture(SDL_Texture* texture, std::span<const std::pair<badCore::AABB, badCore::AABB>> src_dests)const noexcept
 	{
 		if (!texture)
 			return;
