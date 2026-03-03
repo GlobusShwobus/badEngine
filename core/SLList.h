@@ -5,7 +5,10 @@
 
 namespace badCore
 {
-	template <typename T> requires IS_SLLIST_COMPATIBLE<T>
+	template <typename T> 
+		requires
+			std::destructible<T> && 
+			std::same_as<T, std::remove_cvref_t<T>>
 	class SLList final
 	{
 		struct NodeBase

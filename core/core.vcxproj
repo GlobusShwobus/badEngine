@@ -140,10 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AsyncLogger.h" />
-    <ClInclude Include="bad_concepts.h" />
     <ClInclude Include="bString.h" />
-    <ClInclude Include="bad_utility.h" />
-    <ClInclude Include="bad_geometry.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Color.h" />
@@ -157,7 +155,7 @@
     <ClInclude Include="SLList.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="UniformGrid.h" />
-    <ClInclude Include="vector.h" />
+    <ClInclude Include="Float2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Collision.cpp" />

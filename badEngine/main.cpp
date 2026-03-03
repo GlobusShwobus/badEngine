@@ -114,7 +114,6 @@ int main() {
             entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
         }
 
-        bool am_i_rushing_or_am_i_dragging = false;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################

@@ -63,16 +63,10 @@
     <ClInclude Include="AABB.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="bad_geometry.h">
+    <ClInclude Include="Float2.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="vector.h">
-      <Filter>geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="bad_concepts.h">
-      <Filter>misc</Filter>
-    </ClInclude>
-    <ClInclude Include="bad_utility.h">
+    <ClInclude Include="Utility.h">
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="Make_Shape.h">

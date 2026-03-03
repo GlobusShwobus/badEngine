@@ -19,6 +19,11 @@
 #include <random>
 #include <cmath>
 #include <chrono>
-
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
+#include <atomic>
 
 #endif //PCH_H

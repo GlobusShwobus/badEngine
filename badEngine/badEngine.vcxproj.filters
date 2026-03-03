@@ -18,9 +18,6 @@
     <ClInclude Include="validate_data.h">
       <Filter>Validate and load</Filter>
     </ClInclude>
-    <ClInclude Include="Dumpster.h">
-      <Filter>ideas</Filter>
-    </ClInclude>
     <ClInclude Include="badEngine.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -32,9 +29,6 @@
     </ClInclude>
     <ClInclude Include="CircleCanvas.h">
       <Filter>ideas</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseCameraController.h">
-      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -48,9 +42,6 @@
       <Filter>Validate and load</Filter>
     </ClCompile>
     <ClCompile Include="badEngine.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseCameraController.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

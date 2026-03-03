@@ -4,7 +4,7 @@
 #include <SDL3/SDL_events.h>
 #include "AABB.h"
 
-namespace badEngine
+namespace badWindow
 {
 	class MouseCameraController
 	{

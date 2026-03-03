@@ -4,7 +4,7 @@
 #include <limits>
 #include <assert.h>
 #include <stdexcept>
-#include "bad_concepts.h"
+#include <concepts>
 #include "bad_utility.h"
 
 //TODO: proper insert and all pushes/emplaces hierarchy
@@ -12,7 +12,11 @@
 
 namespace badCore
 {
-	template<typename T> requires IS_SEQUENCE_COMPATIBLE<T>
+	template<typename T> 
+		requires
+			std::destructible<T> &&
+			std::is_nothrow_move_constructible_v<T> &&
+			std::same_as<T, std::remove_cvref_t<T>>
 	class Sequence final
 	{
 		using type = Sequence<T>;
