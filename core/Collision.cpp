@@ -5,15 +5,6 @@
 
 namespace badCore
 {
-	bool overlap_test(const AABB& a, const AABB& b, float& overlapWidth, float& overlapHeight)noexcept
-	{
-		const float2 distance_between_centers = absolute(center_point(a) - center_point(b));
-
-		overlapWidth = (a.w * 0.5f) + (b.w * 0.5f) - distance_between_centers.x;
-		overlapHeight = (a.h * 0.5f) + (b.h * 0.5f) - distance_between_centers.y;
-
-		return overlapWidth > 0.0f && overlapHeight > 0.0f;
-	}
 
 	void sweep_test(const AABB& target, const Ray& ray, float& t_entry, float& t_exit)noexcept
 	{

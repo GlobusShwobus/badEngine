@@ -8,11 +8,13 @@ namespace badCore
 	{
 	public:
 
-		float x = 0;
-		float y = 0;
+		float x;
+		float y;
 
-		constexpr float2()noexcept = default;
-
+		constexpr float2()noexcept 
+			:x(0.f), y(0.f)
+		{
+		}
 		constexpr float2(float X, float Y)noexcept
 			:x(X), y(Y) 
 		{
