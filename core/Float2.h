@@ -12,7 +12,7 @@ namespace badCore
 		float y;
 
 		constexpr float2()noexcept 
-			:x(0.f), y(0.f)
+			:x(0.0f), y(0.0f)
 		{
 		}
 		constexpr float2(float X, float Y)noexcept
@@ -38,44 +38,51 @@ namespace badCore
 		constexpr bool operator ==    (const float2& rhs)const noexcept    { return x == rhs.x && y == rhs.y; }
 		constexpr bool operator!=     (const float2& rhs)const noexcept    { return !(*this == rhs);          }
 
-
-		inline float magnitude()const noexcept 
+		constexpr float length_sq()const noexcept
 		{
-			return std::sqrt((x * x) + (y * y));
+			return (x * x) + (y * y);
 		}
 
-		inline float2 normal()const noexcept
+		inline float length()const noexcept 
 		{
-			auto len = magnitude();
+			return std::sqrt(length_sq());
+		}
+
+		inline float2 get_normalized()const noexcept
+		{
+			auto len = length();
 			return { x / len, y / len };
 		}
 
-		constexpr float2 perpendicular_ccw() noexcept
+		inline float2& normalize()noexcept
 		{
-			return { -y, x };
-		}
-
-		constexpr float2 perpendicular_cw() noexcept
-		{
-			return { y, -x };
+			auto len = length();
+			*this /= len;
+			return *this;
 		}
 
 		constexpr float2 sign()noexcept
 		{
-			return { (x > 0) - (x < 0), (y > 0) - (y < 0) };
+			return { (x > 0.0f) - (x < 0.0f), (y > 0.0f) - (y < 0.0f) };
 		}
 	};
-	
+
 	constexpr float2 operator*(float scalar, const float2& v)noexcept
 	{
 		return float2{ v.x * scalar, v.y * scalar };
 	}
 
-	constexpr float magnitude_sq(const float2& v) noexcept
+
+	constexpr float2 perpendicular_ccw(const float2& v) noexcept
 	{
-		return (v.x * v.x) + (v.y * v.y);
+		return { -v.y, v.x };
 	}
 
+	constexpr float2 perpendicular_cw(const float2& v) noexcept
+	{
+		return { v.y, -v.x };
+	}
+	
 	constexpr float2 normal_optimized(const float2& v, float pre_calculated_magnitude) noexcept
 	{
 		return { v.x / pre_calculated_magnitude ,v.y / pre_calculated_magnitude };
@@ -86,15 +93,16 @@ namespace badCore
 		return  (a.x * b.x) + (a.y * b.y);
 	}
 
-	constexpr float2 projection(const float2& v, const float2& unit_vector)noexcept
+	constexpr float2 projection(const float2& incoming_vec, const float2& target_surface_normal)noexcept
 	{
-		return dot_product(v, unit_vector) * unit_vector;
+		return dot_product(incoming_vec, target_surface_normal) * target_surface_normal;
 	}
 
-	constexpr float2 reflection(const float2& i, const float2& unit_vector)noexcept
+	constexpr float2 reflection(const float2& incoming_vec, const float2& target_surface_normal)noexcept
 	{
-		return i - (2.0f * projection(i, unit_vector));
+		return incoming_vec - (2.0f * projection(incoming_vec, target_surface_normal));
 	}
+
 
 
 	//maybe poopoo caakaa and needs depricating because mat3 does rotation anyway.

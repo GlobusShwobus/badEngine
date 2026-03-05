@@ -31,9 +31,6 @@
     <ClCompile Include="Make_Shape.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
-    <ClCompile Include="Collision.cpp">
-      <Filter>geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
@@ -60,7 +57,7 @@
     <ClInclude Include="Stopwatch.h">
       <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h">
+    <ClInclude Include="Rect.h">
       <Filter>geometry</Filter>
     </ClInclude>
     <ClInclude Include="Float2.h">
@@ -73,9 +70,6 @@
       <Filter>geometry</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
-      <Filter>geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.h">
       <Filter>geometry</Filter>
     </ClInclude>
     <ClInclude Include="bString.h">

@@ -2,14 +2,15 @@
 
 #include "Float2.h"
 #include "Utility.h"
+#include <assert.h>
 
 namespace badCore
 {
 	class Rect
 	{
 	public:
-		float2 min;
-		float2 max;
+		struct float2 min;
+		struct float2 max;
 
 		constexpr Rect()noexcept
 			:min{}, max{}
@@ -36,13 +37,13 @@ namespace badCore
 
 		constexpr void set_width(float w)noexcept 
 		{
-			assert(w >= 0);
+			assert(w >= 0.0f);
 			max.x = min.x + w;
 		}
 
 		constexpr void set_height(float h)noexcept 
 		{
-			assert(h >= 0);
+			assert(h >= 0.0f);
 			max.y = min.y + h;
 		}
 
@@ -86,21 +87,6 @@ namespace badCore
 		}
 	};
 
-
-	constexpr bool contains(const Rect& box, const float2& point) noexcept
-	{
-		return box.contains(point);
-	}
-
-	constexpr bool contains(const Rect& this__, const Rect& other) noexcept
-	{
-		return this__.contains(other);
-	}
-
-	constexpr bool intersects(const Rect& this__, const Rect& other) noexcept
-	{
-		return this__.intersects(other);
-	}
 
 	constexpr bool overlap_test(const Rect& a, const Rect& b, float& overlapWidth, float& overlapHeight)noexcept
 	{

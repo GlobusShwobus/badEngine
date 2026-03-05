@@ -4,8 +4,8 @@
 
 namespace badCore
 {
-	static constexpr float CORE_EPSILON = 0.0001f;
-	static constexpr std::size_t CORE_ZERO = 0;
+	static constexpr float EPSILON_core = 0.0001f;
+
 
 	// UB if invoked with numeric_limits< MIN >, same as STL
 	template <std::signed_integral T>
