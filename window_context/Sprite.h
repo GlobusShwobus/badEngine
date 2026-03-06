@@ -2,7 +2,6 @@
 
 #include <SDL3/SDL_render.h>
 #include "Texture.h"
-#include "AABB.h"
 
 namespace badWindow {
 
@@ -18,9 +17,9 @@ namespace badWindow {
 
 		void set_source_size(float w, float h)noexcept;
 
-		void set_source(const badCore::AABB& aabb)noexcept;
+		void set_source(const SDL_FRect& aabb)noexcept;
 
-		const badCore::AABB& get_source()const noexcept;
+		const struct SDL_FRect& get_source()const noexcept;
 
 		float get_width()const noexcept;
 
@@ -30,7 +29,7 @@ namespace badWindow {
 
 	private:
 		SDL_Texture* const mTexture = nullptr;
-		badCore::AABB mSource;
+		SDL_FRect mSource;
 		float mTextureW;
 		float mTextureH;
 	};

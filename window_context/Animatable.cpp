@@ -16,7 +16,7 @@ namespace badWindow
 		assert(textureW >= (columnCount * frameWidth) && textureH >= (rowCount * frameHeight));
 
 		//setup a 2D array
-		mFrames.set_capacity(static_cast<std::size_t>(rowCount * columnCount));
+		mFrames.reserve(static_cast<std::size_t>(rowCount * columnCount));
 		for (uint16_t y = 0; y < rowCount; ++y) {
 			for (uint16_t x = 0; x < columnCount; ++x) {
 				mFrames.emplace_back(x * frameWidth, y * frameHeight);
@@ -52,7 +52,7 @@ namespace badWindow
 
 	void Animation::set_hold_time(float length)noexcept
 	{
-		assert(length > CORE_EPSILON);
+		assert(length > 0.0001f);
 		mFrameLength = length;
 	}
 
@@ -67,7 +67,7 @@ namespace badWindow
 		mCurrentRow = line;
 	}
 
-	const badCore::AABB& Animation::get_source()const noexcept
+	const SDL_FRect& Animation::get_source()const noexcept
 	{
 		return mSprite.get_source();
 	}

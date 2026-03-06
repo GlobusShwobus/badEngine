@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Sprite.h"
+#include <assert.h>
 
 namespace badWindow {
 
@@ -9,7 +10,7 @@ namespace badWindow {
 		assert(mTexture != nullptr);
 
 		SDL_GetTextureSize(mTexture, &mTextureW, &mTextureH);
-		mSource = badCore::AABB(0, 0, mTextureW, mTextureH);
+		mSource = SDL_FRect(0, 0, mTextureW, mTextureH);
 	}
 
 	void Sprite::set_source_pos(float x, float y)noexcept
@@ -32,16 +33,16 @@ namespace badWindow {
 		mSource.h = h;
 	}
 
-	void Sprite::set_source(const  badCore::AABB& aabb)noexcept
+	void Sprite::set_source(const SDL_FRect& aabb)noexcept
 	{
 		assert(aabb.x >= 0 && aabb.y >= 0);
-		assert(aabb.w > 0 && aabb.h > 0);
+		assert(aabb.w >  0 && aabb.h >  0);
 		assert(aabb.x + aabb.w <= mTextureW);
 		assert(aabb.y + aabb.h <= mTextureH);
 		mSource = aabb;
 	}
 
-	const badCore::AABB& Sprite::get_source()const noexcept
+	const SDL_FRect& Sprite::get_source()const noexcept
 	{
 		return mSource;
 	}

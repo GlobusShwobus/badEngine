@@ -1,8 +1,8 @@
 #pragma once
 
-#include "vector.h"
 #include "Sprite.h"
-#include "Sequence.h"
+#include <SDL3/SDL_rect.h>
+#include <vector>
 
 namespace badWindow
 {
@@ -10,7 +10,6 @@ namespace badWindow
 	// Subdivide the whole image supporting multiple different animations, or only specific region. Does not support different sized frames.
 	class Animation final
 	{
-		using Frames = badCore::Sequence<badCore::float2>;
 	public:
 		Animation(SDL_Texture* texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
 
@@ -26,13 +25,13 @@ namespace badWindow
 		//get the count for lines total
 		void set_line(uint16_t line)noexcept;
 
-		const badCore::AABB& get_source()const noexcept;
+		const SDL_FRect& get_source()const noexcept;
 
 		SDL_Texture* const get_texture()const noexcept;
 
 	private:
-		Sprite mSprite;
-		Frames mFrames;
+		class Sprite mSprite;
+		std::vector<SDL_FPoint> mFrames;
 
 		float mFrameLength = 0.08f;
 		float mCurrFrameDuration = 0.0f;

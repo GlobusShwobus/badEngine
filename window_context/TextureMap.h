@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include "Texture.h"
-#include "Sequence.h"
+#include <vector>
 
 namespace badWindow
 {
@@ -50,7 +50,7 @@ namespace badWindow
 		bool has(const char* tag)const noexcept;
 
 		// returns all currently stored tags in a heap array
-		badCore::Sequence<std::string> get_tags()const;
+		std::vector<std::string> get_tags()const;
 
 	private:
 		Map mTextures;

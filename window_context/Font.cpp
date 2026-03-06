@@ -36,13 +36,11 @@ namespace badWindow
 
 				const uint32_t sourceX = glyphIndex % mColumnsCount; //unflatten 2D to 1D
 				const uint32_t sourceY = glyphIndex / mColumnsCount; //unflatten 2D to 1D
-				mLetterPos.emplace_back(
-					badCore::AABB(
-						static_cast<float>(sourceX * glyphW), //source x
-						static_cast<float>(sourceY * glyphH), //source y
+				mLetters.emplace_back(
+						static_cast<float>(sourceX) * glyphW, //source x
+						static_cast<float>(sourceY) * glyphH, //source y
 						static_cast<float>(glyphW),           //source w
 						static_cast<float>(glyphH)            //source h
-					)
 				);
 			}
 		}
@@ -50,6 +48,6 @@ namespace badWindow
 
 	void Font::clear()noexcept
 	{
-		mLetterPos.clear();
+		mLetters.clear();
 	}
 }

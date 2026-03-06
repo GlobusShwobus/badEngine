@@ -24,10 +24,10 @@ namespace badWindow
 		return mTextures.find(tag) != mTextures.end();
 	}
 
-	badCore::Sequence<std::string> TextureMap::get_tags()const 
+	std::vector<std::string> TextureMap::get_tags()const 
 	{
-		badCore::Sequence<std::string> tags;
-		tags.set_capacity(mTextures.size());
+		std::vector<std::string> tags;
+		tags.reserve(mTextures.size());
 		for (const auto& pair : mTextures) {
 			tags.push_back(pair.first);
 		}

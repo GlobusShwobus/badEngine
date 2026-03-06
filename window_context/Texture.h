@@ -5,27 +5,33 @@
 
 namespace badWindow
 {
-	// Static texture type. Owns SDL_Texture and shares raw SDL_Texture pointer.
-	// SDL_Texture should never be deleted externally and Texture should outlive the use case.
-	class Texture final
-	{
-		struct TDeleter {
-			void operator()(SDL_Texture* t) {
-				if (t)
-					SDL_DestroyTexture(t);
-			}
-		};
-
-	public:
-
-		Texture(SDL_Surface* surface, SDL_Renderer* renderer);
-
-		Texture(const char* path, SDL_Renderer* renderer);
-
-		SDL_Texture* const get()const noexcept;
-
-	private:
-
-		std::unique_ptr<SDL_Texture, TDeleter> mTexture;
+	struct TextureDeleter {
+		void operator()(SDL_Texture* t) {
+			if (t)
+				SDL_DestroyTexture(t);
+		}
 	};
+
+	using Texture = std::unique_ptr<SDL_Texture, TextureDeleter>;
 }
+
+/*
+REMINDERS:
+
+	Texture::Texture(SDL_Surface* surface, SDL_Renderer* renderer)
+	{
+		if (surface && renderer) {
+			SDL_Texture* txtr = SDL_CreateTextureFromSurface(renderer, surface);
+			mTexture.reset(txtr);
+		}
+	}
+
+	Texture::Texture(const char* path, SDL_Renderer* renderer)
+	{
+		if (path && renderer) {
+			SDL_Texture* txtr = IMG_LoadTexture(renderer, path);
+			mTexture.reset(txtr);
+		}
+	}
+
+*/
