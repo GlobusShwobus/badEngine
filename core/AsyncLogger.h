@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <thread>
 #include <mutex>
 #include <queue>
@@ -25,43 +24,13 @@ namespace badCore
 			return logger;
 		}
 
-		AsyncLogger() {
-			mWorker = std::thread([this]() { this->process(); });
-		}
+		AsyncLogger();
 
-		~AsyncLogger() {
-			mRunning = false;
-			mCondition.notify_all();
-			mWorker.join();
-		}
+		~AsyncLogger();
 
-		void log(std::string msg) {
-			{
-				std::lock_guard<std::mutex> lock(mSync);
-				mQueue.push(std::move(msg));
-			}
-			mCondition.notify_one();
-		}
+		void log(std::string msg);
 
 	private:
-
-		void process() {
-			while (mRunning || !mQueue.empty()) {
-				std::unique_lock<std::mutex> lock(mSync);
-
-				mCondition.wait(lock, [this]() {
-					return !mQueue.empty() || !mRunning;
-					});
-
-				while (!mQueue.empty()) {
-					std::string msg = std::move(mQueue.front());
-					mQueue.pop();
-
-					lock.unlock();
-					std::cout << msg << '\n';
-					lock.lock();
-				}
-			}
-		}
+		void process();
 	};
 }
