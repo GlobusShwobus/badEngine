@@ -61,9 +61,12 @@ namespace badCore
 			return *this;
 		}
 
-		constexpr float2 sign()noexcept
+		constexpr float2 sign()const noexcept
 		{
-			return { (x > 0.0f) - (x < 0.0f), (y > 0.0f) - (y < 0.0f) };
+			return {
+				static_cast<float>((x > 0.0f) - (x < 0.0f)), 
+				static_cast<float>((y > 0.0f) - (y < 0.0f)) 
+			};
 		}
 	};
 
