@@ -136,16 +136,16 @@ namespace badCore
 	void UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
 	{
 		//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
-		const float& segmentLength = ray.rayLen;
+		const float& segmentLength = ray.length;
 		if (segmentLength == 0.0f)
 			return;
 
 		//2) create a ray and check if the origin is inside grid bounds
 		const bool originInside =
-			ray.rayOrigin.x >= mBounds.min.x &&
-			ray.rayOrigin.x <  mBounds.max.x &&
-			ray.rayOrigin.y >= mBounds.min.y &&
-			ray.rayOrigin.y <  mBounds.max.y;
+			ray.origin.x >= mBounds.min.x &&
+			ray.origin.x <  mBounds.max.x &&
+			ray.origin.y >= mBounds.min.y &&
+			ray.origin.y <  mBounds.max.y;
 
 		//3) the point origin can be in the grid or out. if it is inside, by default entry MUST be 0. Doing a sweep blindly will result in not quering inner cells. 
 		//otherwise do a sweep test if the origin is outside the grid and find entry that way
@@ -166,22 +166,22 @@ namespace badCore
 		//5) unlike sweep, query_ray is about where to start traversing the grid thus sweeps hit.pos does not apply. logical traversal must be respected
 		//calculate the starting points of traversal in cell indices format clamping twice. once implicitly from float to int but secondly making sure it stays in the grid
 		//the second clamp forces traversal to begin in the grid, not some value outside. not a crash but fails to query
-		float2 entryPos = ray.rayOrigin + ray.rayDir * currentT;
+		float2 entryPos = ray.origin + ray.dir * currentT;
 		int cellX = static_cast<int>((entryPos.x - mBounds.min.x) * invCellW);
 		int cellY = static_cast<int>((entryPos.y - mBounds.min.y) * invCellH);
 		cellX = core_clamp(cellX, 0, mColumns - 1);
 		cellY = core_clamp(cellY, 0, mRows - 1);
 
 		//6) get the sign of a step, which way to traverse
-		const auto rayDirSign = ray.rayDir.sign();
+		const auto rayDirSign = ray.dir.sign();
 		const int step_x = static_cast<int>(rayDirSign.x);
 		const int step_y = static_cast<int>(rayDirSign.y);
 
 		//7) get the distance difference per step. per 1 x axis step how much y length changes; per 1 y axis step how much x length changes (basic graph stuff)
 		//if step.x or step.y is 0 it means it's axis aligned and should never choose the other step, thus give it infinity value
 		const float2 delta = float2(
-			(step_x == 0) ? INFINITY : std::fabs(mCellWidth / ray.rayDir.x),
-			(step_y == 0) ? INFINITY : std::fabs(mCellHeight / ray.rayDir.y)
+			(step_x == 0) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
+			(step_y == 0) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
 		);
 
 		//8) initalize the time along the ray when each axis crosses its next cell boundary
@@ -192,10 +192,10 @@ namespace badCore
 
 		//9) since the origin can be anywhere in the grid, set up initially as the length that is "already traversed"
 		float traversedX = (step_x == 0.0f) ? INFINITY :
-			(nextBoundaryX - entryPos.x) / ray.rayDir.x + currentT;
+			(nextBoundaryX - entryPos.x) / ray.dir.x + currentT;
 
 		float traversedY = (step_y == 0.0f) ? INFINITY :
-			(nextBoundaryY - entryPos.y) / ray.rayDir.y + currentT;
+			(nextBoundaryY - entryPos.y) / ray.dir.y + currentT;
 
 		//10) Traverse grid as long as cell indecies are within range and currentT is within segment length
 		while (

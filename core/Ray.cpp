@@ -4,20 +4,20 @@
 namespace badCore
 {
 	Ray::Ray(const float2& origin, const float2& vector) noexcept
-		:rayOrigin(origin), rayLen(vector.length()), rayDir(normal_optimized(vector, rayLen))
+		:origin(origin), length(vector.length()), dir(normal_optimized(vector, length))
 	{
 	}
 
 	SweepInfo Ray::sweep_test(const Rect& target)const noexcept
 	{
 		float2 invdir(
-			(rayDir.x == 0.0f) ? INFINITY : 1.0f / rayDir.x,
-			(rayDir.y == 0.0f) ? INFINITY : 1.0f / rayDir.y
+			(dir.x == 0.0f) ? INFINITY : 1.0f / dir.x,
+			(dir.y == 0.0f) ? INFINITY : 1.0f / dir.y
 		);
-		float t_near_x = (target.min.x - rayOrigin.x) * invdir.x;
-		float t_far_x = (target.min.x + target.get_width() - rayOrigin.x) * invdir.x;
-		float t_near_y = (target.min.y - rayOrigin.y) * invdir.y;
-		float t_far_y = (target.min.y + target.get_height() - rayOrigin.y) * invdir.y;
+		float t_near_x = (target.min.x - origin.x) * invdir.x;
+		float t_far_x = (target.min.x + target.get_width() - origin.x) * invdir.x;
+		float t_near_y = (target.min.y - origin.y) * invdir.y;
+		float t_far_y = (target.min.y + target.get_height() - origin.y) * invdir.y;
 
 		float t_entry = core_max(
 			core_min(t_near_x, t_far_x),
@@ -33,7 +33,7 @@ namespace badCore
 		if (t_entry <= t_exit && t_exit >= 0.0f) {
 			info.is_hit = true;
 			info.time = core_max(t_entry, 0.0f);
-			info.contact_point = rayOrigin + rayDir * info.time;
+			info.contact_point = origin + dir * info.time;
 		}
 
 		return info;
@@ -51,7 +51,7 @@ namespace badCore
 		if (distance <= radius) {
 			info.normal = (distance > 0.0f) ?
 				normal_optimized(vec_between_ray_and_point, distance) :
-				perpendicular_ccw(rayDir);
+				perpendicular_ccw(dir);
 
 			info.penetration = radius - distance;
 		}

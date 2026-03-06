@@ -28,24 +28,24 @@ namespace badCore
 		// vector is expected to be unnormalized
 		Ray(const float2& origin, const float2& vector) noexcept;
 		//order matters!
-		const float rayLen;
-		const class float2 rayOrigin;
-		const class float2 rayDir;
+		const float length;
+		const class float2 origin;
+		const class float2 dir;
 
 		SweepInfo sweep_test(const Rect& target)const noexcept;
 
 		constexpr bool is_hit(float time)const noexcept
 		{
-			return time >= 0.0f && time < rayLen;
+			return time >= 0.0f && time < length;
 		}
 
 		constexpr auto closest_point_on_ray(const float2& point)const noexcept
 		{
-			float2 vector_between_objects = point - rayOrigin;
-			float t = dot_product(vector_between_objects, rayDir);
+			float2 vector_between_objects = point - origin;
+			float t = dot_product(vector_between_objects, dir);
 			// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
-			t = core_clamp(t, 0.0f, rayLen);
-			return rayOrigin + rayDir * t;
+			t = core_clamp(t, 0.0f, length);
+			return origin + dir * t;
 		}
 
 		IntersectionInfo intersection_test(const float2& point, float radius)const noexcept;
