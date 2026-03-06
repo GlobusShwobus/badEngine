@@ -83,14 +83,14 @@ namespace badCore {
 			return (a << 24u) | (b << 16u) | (g << 8u) | r;
 		}
 
-		static constexpr Color White = makeRGBA(255u, 255u, 255u, 255u);
-		static constexpr Color Black = makeRGBA(0u, 0u, 0u, 255u);
-		static constexpr Color Gray = makeRGBA(0x80u, 0x80u, 0x80u, 255u);
-		static constexpr Color Red = makeRGBA(255u, 0u, 0u, 255u);
-		static constexpr Color Green = makeRGBA(0u, 255u, 0u, 255u);
-		static constexpr Color Blue = makeRGBA(0u, 0u, 255u, 255u);
-		static constexpr Color Yellow = makeRGBA(255u, 255u, 0u, 255u);
-		static constexpr Color Cyan = makeRGBA(0u, 255u, 255u, 255u);
+		static constexpr Color White   = makeRGBA(255u, 255u, 255u, 255u);
+		static constexpr Color Black   = makeRGBA(0u, 0u, 0u, 255u);
+		static constexpr Color Gray    = makeRGBA(0x80u, 0x80u, 0x80u, 255u);
+		static constexpr Color Red     = makeRGBA(255u, 0u, 0u, 255u);
+		static constexpr Color Green   = makeRGBA(0u, 255u, 0u, 255u);
+		static constexpr Color Blue    = makeRGBA(0u, 0u, 255u, 255u);
+		static constexpr Color Yellow  = makeRGBA(255u, 255u, 0u, 255u);
+		static constexpr Color Cyan    = makeRGBA(0u, 255u, 255u, 255u);
 		static constexpr Color Magenta = makeRGBA(255u, 0u, 255u, 255u);
 	}
 }
