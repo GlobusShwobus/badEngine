@@ -9,8 +9,8 @@ namespace badCore
 	class Rect
 	{
 	public:
-		struct float2 min;
-		struct float2 max;
+		class float2 min;
+		class float2 max;
 
 		constexpr Rect()noexcept
 			:min{}, max{}
@@ -34,6 +34,9 @@ namespace badCore
 		constexpr float2 get_pos()const noexcept { return min; }
 		constexpr float  get_width()const noexcept { return max.x - min.x; }
 		constexpr float  get_height()const noexcept { return max.y - min.y; }
+
+		constexpr float  get_half_width()const noexcept { return (max.x - min.x) * 0.5f; }
+		constexpr float  get_half_height()const noexcept { return (max.y - min.y) * 0.5f; }
 
 		constexpr void set_width(float w)noexcept 
 		{
