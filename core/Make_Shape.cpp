@@ -1,19 +1,10 @@
 #include "pch.h"
 #include "Make_Shape.h"
-#include "bad_utility.h"
+#include "Utility.h"
 #include <assert.h>
+
 namespace badCore
 {
-	AABB make_union(const AABB& a, const AABB& b)noexcept
-	{
-		const float minx = core_min(a.x, b.x);
-		const float miny = core_min(a.y, b.y);
-		const float maxx = core_max(a.x + a.w, b.x + b.w);
-		const float maxy = core_max(a.y + a.h, b.y + b.h);
-
-		return { minx, miny, maxx - minx, maxy - miny };
-	}
-
 	Sequence<float2> make_poly(float outerRadius, float innerRadius, int nFlares)
 	{
 		assert(nFlares >= 1);

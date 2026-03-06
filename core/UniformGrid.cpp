@@ -1,21 +1,26 @@
 #include "pch.h"
 #include "UniformGrid.h"
-#include "bad_utility.h"
-#include "bad_geometry.h"
-#include "Collision.h"
+#include "Utility.h"
+
 
 namespace badCore 
 {
-	UniformGrid::UniformGrid(const AABB& bounds, float cellWidth, float cellHeight)
+	UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHeight)
 		:mBounds(bounds), mCellWidth(cellWidth), mCellHeight(cellHeight)
 	{
+		const auto bWidth = bounds.get_width();
+		const auto bHeight = bounds.get_height();
+
 		//assign column and row counts
-		mColumns = bounds.w / cellWidth;
-		mRows = bounds.h / cellHeight;
+		mColumns = static_cast<int>(bWidth / cellWidth);
+		mRows    = static_cast<int>(bHeight / cellHeight);
 
 		//assert bare minimum valid grid, if mcolumns are 0 or negative it should cover all bad cases
 		assert(mColumns >= 1);
 		assert(mRows >= 1);
+		assert(bWidth * cellWidth == static_cast<float>(mColumns));
+		assert(bHeight * cellHeight == static_cast<float>(mRows));
+
 		//cache division to instead do * operator later
 		invCellW = 1.0f / mCellWidth;
 		invCellH = 1.0f / mCellHeight;
@@ -35,13 +40,13 @@ namespace badCore
 			cell.clear();
 	}
 
-	void UniformGrid::insert(int user_index, const AABB& box)noexcept
+	void UniformGrid::insert(int user_index, const Rect& box)noexcept
 	{
 		//NOTE: the reason for std::ceil is because we must include partially overlapping cells
-		int minx = static_cast<int>((box.x - mBounds.x) * invCellW);					     //left edge (round down)
-		int miny = static_cast<int>((box.y - mBounds.y) * invCellH);					     //top edge (round down)
-		int maxx = static_cast<int>(std::ceil((box.x + box.w - mBounds.x) * invCellW));	     //right edge (round up)
-		int maxy = static_cast<int>(std::ceil((box.y + box.h - mBounds.y) * invCellH));	     //bottom edge (round up)
+		int minx = static_cast<int>((box.min.x - mBounds.min.x) * invCellW);					     //left edge (round down)
+		int miny = static_cast<int>((box.min.y - mBounds.min.y) * invCellH);					     //top edge (round down)
+		int maxx = static_cast<int>(std::ceil((box.max.x - mBounds.min.x) * invCellW));	     //right edge (round up)
+		int maxy = static_cast<int>(std::ceil((box.max.y - mBounds.min.x) * invCellH));	     //bottom edge (round up)
 
 		//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
 		minx = core_clamp(minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
@@ -61,13 +66,13 @@ namespace badCore
 		return mCells;
 	}
 
-	void UniformGrid::query_region(const AABB& region, Sequence<int>& results)const noexcept
+	void UniformGrid::query_region(const Rect& region, Sequence<int>& results)const noexcept
 	{
 		//NOTE: the reason for std::ceil is because we must include partially overlapping cells
-		int minx = static_cast<int>((region.x - mBounds.x) * invCellW);					             //left edge (round down)
-		int miny = static_cast<int>((region.y - mBounds.y) * invCellH);					             //top edge (round down)
-		int maxx = static_cast<int>(std::ceil((region.x + region.w - mBounds.x) * invCellW));	     //right edge (round up)
-		int maxy = static_cast<int>(std::ceil((region.y + region.h - mBounds.y) * invCellH));	     //bottom edge (round up)
+		int minx = static_cast<int>((region.min.x - mBounds.min.x) * invCellW);					             //left edge (round down)
+		int miny = static_cast<int>((region.min.y - mBounds.min.y) * invCellH);					             //top edge (round down)
+		int maxx = static_cast<int>(std::ceil((region.max.x - mBounds.min.x) * invCellW));	     //right edge (round up)
+		int maxy = static_cast<int>(std::ceil((region.max.y - mBounds.min.y) * invCellH));	     //bottom edge (round up)
 
 		//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
 		minx = core_clamp(minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
@@ -85,8 +90,8 @@ namespace badCore
 
 	int UniformGrid::query_point(const float2& point)const noexcept
 	{
-		int x = static_cast<int>((point.x - mBounds.x) * invCellW);
-		int y = static_cast<int>((point.y - mBounds.y) * invCellH);
+		int x = static_cast<int>((point.x - mBounds.min.x) * invCellW);
+		int y = static_cast<int>((point.y - mBounds.min.y) * invCellH);
 
 		if (x < 0 || x >= mColumns || y < 0 || y >= mRows) {
 			return -1;
@@ -131,66 +136,66 @@ namespace badCore
 	void UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
 	{
 		//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
-		const float& segmentLength = ray.magnitude;
+		const float& segmentLength = ray.rayLen;
 		if (segmentLength == 0.0f)
 			return;
 
 		//2) create a ray and check if the origin is inside grid bounds
 		const bool originInside =
-			ray.origin.x >= mBounds.x &&
-			ray.origin.x < mBounds.x + mBounds.w &&
-			ray.origin.y >= mBounds.y &&
-			ray.origin.y < mBounds.y + mBounds.h;
+			ray.rayOrigin.x >= mBounds.min.x &&
+			ray.rayOrigin.x <  mBounds.max.x &&
+			ray.rayOrigin.y >= mBounds.min.y &&
+			ray.rayOrigin.y <  mBounds.max.y;
 
 		//3) the point origin can be in the grid or out. if it is inside, by default entry MUST be 0. Doing a sweep blindly will result in not quering inner cells. 
 		//otherwise do a sweep test if the origin is outside the grid and find entry that way
 		float entryT = 0.0f;
 		if (!originInside) {
 			
-			float near, far;
-			sweep_test(mBounds, ray, near, far);
-			if (is_sweep_hit(near, far)) {
-				entryT = (near < 0.0f) ? far : near;
-			}
+			auto sweep = ray.sweep_test(mBounds);
+			if (sweep.is_hit)
+				entryT = sweep.time;
 		}
 
 		//4) apply a tiny epsilon to entryT to avoid edges cases like traversing EXACTLY on the edges.
 		//also check again if entry is within the maximum segment length
-		float currentT = entryT + CORE_EPSILON;
+		float currentT = entryT + EPSILON_core;
 		if (currentT > segmentLength)
 			return;
 
 		//5) unlike sweep, query_ray is about where to start traversing the grid thus sweeps hit.pos does not apply. logical traversal must be respected
 		//calculate the starting points of traversal in cell indices format clamping twice. once implicitly from float to int but secondly making sure it stays in the grid
 		//the second clamp forces traversal to begin in the grid, not some value outside. not a crash but fails to query
-		float2 entryPos = ray.origin + ray.dir * currentT;
-		int cellX = static_cast<int>((entryPos.x - mBounds.x) * invCellW);
-		int cellY = static_cast<int>((entryPos.y - mBounds.y) * invCellH);
+		float2 entryPos = ray.rayOrigin + ray.rayDir * currentT;
+		int cellX = static_cast<int>((entryPos.x - mBounds.min.x) * invCellW);
+		int cellY = static_cast<int>((entryPos.y - mBounds.min.y) * invCellH);
 		cellX = core_clamp(cellX, 0, mColumns - 1);
 		cellY = core_clamp(cellY, 0, mRows - 1);
 
 		//6) get the sign of a step, which way to traverse
-		const int2 step = sign(ray.dir);
+		const auto rayDirSign = ray.rayDir.sign();
+		const int step_x = static_cast<int>(rayDirSign.x);
+		const int step_y = static_cast<int>(rayDirSign.y);
 
 		//7) get the distance difference per step. per 1 x axis step how much y length changes; per 1 y axis step how much x length changes (basic graph stuff)
 		//if step.x or step.y is 0 it means it's axis aligned and should never choose the other step, thus give it infinity value
 		const float2 delta = float2(
-			(step.x == 0.0f) ? INFINITY : std::fabs(mCellWidth / ray.dir.x),
-			(step.y == 0.0f) ? INFINITY : std::fabs(mCellHeight / ray.dir.y)
+			(step_x == 0) ? INFINITY : std::fabs(mCellWidth / ray.rayDir.x),
+			(step_y == 0) ? INFINITY : std::fabs(mCellHeight / ray.rayDir.y)
 		);
 
 		//8) initalize the time along the ray when each axis crosses its next cell boundary
-		const float nextBoundaryX = mBounds.x + (step.x > 0 ?
+		const float nextBoundaryX = mBounds.min.x + (step_x > 0 ?
 			(cellX + 1) * mCellWidth : cellX * mCellWidth);
-		const float nextBoundaryY = mBounds.y + (step.y > 0 ?
+		const float nextBoundaryY = mBounds.min.y + (step_y > 0 ?
 			(cellY + 1) * mCellHeight : cellY * mCellHeight);
 
 		//9) since the origin can be anywhere in the grid, set up initially as the length that is "already traversed"
-		float traversedX = (step.x == 0.0f) ? INFINITY :
-			(nextBoundaryX - entryPos.x) / ray.dir.x + currentT;
+		float traversedX = (step_x == 0.0f) ? INFINITY :
+			(nextBoundaryX - entryPos.x) / ray.rayDir.x + currentT;
 
-		float traversedY = (step.y == 0.0f) ? INFINITY :
-			(nextBoundaryY - entryPos.y) / ray.dir.y + currentT;
+		float traversedY = (step_y == 0.0f) ? INFINITY :
+			(nextBoundaryY - entryPos.y) / ray.rayDir.y + currentT;
 
 		//10) Traverse grid as long as cell indecies are within range and currentT is within segment length
 		while (
@@ -206,21 +211,21 @@ namespace badCore
 			{
 				currentT = traversedX;
 				traversedX += delta.x;
-				cellX += step.x;
+				cellX += step_x;
 			}
 			else if (traversedY < traversedX)
 			{
 				currentT = traversedY;
 				traversedY += delta.y;
-				cellY += step.y;
+				cellY += step_y;
 			}
 			else //45 degree angles
 			{
 				currentT = traversedX;
 				traversedX += delta.x;
 				traversedY += delta.y;
-				cellX += step.x;
-				cellY += step.y;
+				cellX += step_x;
+				cellY += step_y;
 			}
 		}
 	}
@@ -238,7 +243,7 @@ namespace badCore
 		return mCells[index];
 	}		
 
-	const AABB& UniformGrid::get_grid_bounds()const noexcept
+	const Rect& UniformGrid::get_grid_bounds()const noexcept
 	{
 		return mBounds;
 	}

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Sequence.h"
-#include "AABB.h"
-#include "vector.h"
+#include "Float2.h"
+#include "Rect.h"
 #include "Ray.h"
 
 namespace badCore 
@@ -14,7 +14,7 @@ namespace badCore
 
 	public:
 
-		UniformGrid(const AABB& bounds, float cellWidth, float cellHeight);
+		UniformGrid(const Rect& bounds, float cellWidth, float cellHeight);
 
 		//empties out all cells, leaves capacity intact
 		void clear()noexcept;
@@ -23,12 +23,12 @@ namespace badCore
 		// Each cell that the box overlaps will contain the `user_index`.
 		// If the box is partially outside the grid, only the overlapping cells are filled.
 		// If the box is fully outside the grid, no insertion occurs.
-		void insert(int user_index, const AABB& box)noexcept;
+		void insert(int user_index, const Rect& box)noexcept;
 
 		// convenience with iterators but does not protect against begin_index_naming being negative or something
 		// user should know what index their begin really is. otherwise works with any input iterator, list, vec, custom... as long as dereferenced it is an AABB
 		template<std::input_iterator InputIt>
-			requires std::same_as<std::remove_cvref_t<std::iter_reference_t<InputIt>>, AABB>
+			requires std::same_as<std::remove_cvref_t<std::iter_reference_t<InputIt>>, Rect>
 		void insert(InputIt first, InputIt last, int begin_index_naming)noexcept
 		{
 			for (; first != last; ++first) {
@@ -41,7 +41,7 @@ namespace badCore
 
 		// queries a region against the grid
 		// returns indices to the cells the region intersects with
-		void query_region(const AABB& region, Sequence<int>& results)const noexcept;
+		void query_region(const Rect& region, Sequence<int>& results)const noexcept;
 
 		// queries a point against the grid
 		// returns cell index or -1 if the point is not in bounds of the grid
@@ -64,7 +64,7 @@ namespace badCore
 		const Cell& get_cell(std::size_t index)const noexcept;
 
 		// returns the bounds of the grid
-		const AABB& get_grid_bounds()const noexcept;
+		const Rect& get_grid_bounds()const noexcept;
 
 		// returns the width of a cell
 		float get_cell_width()const noexcept;
@@ -73,8 +73,8 @@ namespace badCore
 		float get_cell_height()const noexcept;
 
 	private:
-		Sequence<Cell> mCells;
-		AABB mBounds;
+		class Sequence<Cell> mCells;
+		class Rect mBounds;
 
 		int mColumns;
 		int mRows;

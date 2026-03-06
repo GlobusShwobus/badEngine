@@ -1,27 +1,26 @@
 #pragma once
 
-#include "vector.h"
-#include "AABB.h"
+#include "Float2.h"
+#include "Rect.h"
 #include "Sequence.h"
 
 namespace badCore
 {
-	constexpr AABB make_aabb(const float2& center, float radius_x, float radius_y)noexcept
+	constexpr Rect make_rect_from_point(const float2& center, float radius_x, float radius_y)noexcept
 	{
 		return{ center.x - radius_x, center.y - radius_y, radius_x + radius_x, radius_y + radius_y };
 	}
 
-	constexpr AABB expand_aabb(const AABB& expandable, const AABB& other) noexcept  
-	{
-		return AABB(
-			expandable.x - (other.w / 2),
-			expandable.y - (other.h / 2),
-			expandable.w + other.w,
-			expandable.h + other.h
-		);
-	}
 
-	AABB make_union(const AABB& a, const AABB& b)noexcept;
+	constexpr Rect make_union_rect(const Rect& a, const Rect& b)noexcept
+	{
+		const float minx = core_min(a.min.x, b.min.x);
+		const float miny = core_min(a.min.y, b.min.y);
+		const float maxx = core_max(a.max.x, b.max.x);
+		const float maxy = core_max(a.max.y, b.max.y);
+
+		return { minx, miny, maxx - minx, maxy - miny };
+	}
 
 	Sequence<float2> make_poly(float outerRadius, float innerRadius, int nFlares);
 

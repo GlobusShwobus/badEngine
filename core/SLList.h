@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>//might not need it, it's here since unique_ptr version
-#include "bad_concepts.h"
+#include <concepts>
 
 namespace badCore
 {
@@ -23,7 +23,7 @@ namespace badCore
 		{
 			template<typename... Args>
 			Node(NodeBase* next, Args&&... args) 
-				requires std::constructible_from<T, Args&&...>
+				requires std::constructible_from<T, Args...>
 				: NodeBase{ next }, value(std::forward<Args>(args)...)
 			{
 			}

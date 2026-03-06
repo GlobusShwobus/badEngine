@@ -34,6 +34,12 @@
     <ClCompile Include="Ray.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="AsyncLogger.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
