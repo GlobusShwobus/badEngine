@@ -46,7 +46,7 @@ namespace badCore
 		int minx = static_cast<int>((box.min.x - mBounds.min.x) * invCellW);					     //left edge (round down)
 		int miny = static_cast<int>((box.min.y - mBounds.min.y) * invCellH);					     //top edge (round down)
 		int maxx = static_cast<int>(std::ceil((box.max.x - mBounds.min.x) * invCellW));	     //right edge (round up)
-		int maxy = static_cast<int>(std::ceil((box.max.y - mBounds.min.x) * invCellH));	     //bottom edge (round up)
+		int maxy = static_cast<int>(std::ceil((box.max.y - mBounds.min.y) * invCellH));	     //bottom edge (round up)
 
 		//NOTE: the reason for clamp high difference is because we do 0 based indexing AND the loop is exclusionary (using < instead of <=)
 		minx = core_clamp(minx, 0, mColumns - 1);	    //clamp x to left edge if negative, to right if wider than width, or keep
