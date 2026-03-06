@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdexcept>
 #include <concepts>
-#include "bad_utility.h"
+#include "Utility.h"
 
 //TODO: proper insert and all pushes/emplaces hierarchy
 //TODO: range constructors
@@ -102,7 +102,7 @@ namespace badCore
 		explicit Sequence(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
-			if (count > CORE_ZERO) {
+			if (count > 0) {
 				reConstructAllocate(count, [&value](pointer dest, size_type n) {
 					return std::uninitialized_fill_n(dest, n, value);
 					});
@@ -114,7 +114,7 @@ namespace badCore
 			requires std::constructible_from<value_type, const_reference>
 		{
 			const size_type size = init.size();
-			if (size > CORE_ZERO) {
+			if (size > 0) {
 				reConstructAllocate(size, [init](pointer dest, size_type n) {
 					return std::uninitialized_copy(init.begin(), init.end(), dest);
 					});
@@ -126,7 +126,7 @@ namespace badCore
 			requires std::constructible_from<value_type, const_reference>
 		{
 			size_type size = rhs.size();
-			if (size > CORE_ZERO) {
+			if (size > 0) {
 				reConstructAllocate(size, [&rhs](pointer dest, size_type n) {
 					return std::uninitialized_copy(rhs.begin(), rhs.end(), dest);
 					});
@@ -303,7 +303,7 @@ namespace badCore
 		//if any constructed elements
 		constexpr bool isEmpty()const noexcept
 		{
-			return mSize == CORE_ZERO;
+			return mSize == 0;
 		}
 
 		//set addative for growth calculation, can't go lower than 1 in debug, otherwise all types of memes will happen
