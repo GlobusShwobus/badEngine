@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "UniformGrid.h"
-#include "Utility.h"
-
+#include "CoreUtils.h"
 
 namespace badCore 
 {

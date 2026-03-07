@@ -141,7 +141,7 @@
   <ItemGroup>
     <ClInclude Include="AsyncLogger.h" />
     <ClInclude Include="bString.h" />
-    <ClInclude Include="Utility.h" />
+    <ClInclude Include="CoreUtils.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Make_Shape.h" />

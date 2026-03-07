@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Float2.h"
-#include "Utility.h"
+#include "CoreUtils.h"
 #include <assert.h>
 
 namespace badCore

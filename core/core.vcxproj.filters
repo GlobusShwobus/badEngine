@@ -69,7 +69,7 @@
     <ClInclude Include="Float2.h">
       <Filter>geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.h">
+    <ClInclude Include="CoreUtils.h">
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="Make_Shape.h">
