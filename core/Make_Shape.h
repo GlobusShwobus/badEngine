@@ -13,7 +13,7 @@ namespace badCore
 		const float maxx = core_max(a.max.x, b.max.x);
 		const float maxy = core_max(a.max.y, b.max.y);
 
-		return { minx, miny, maxx - minx, maxy - miny };
+		return { {minx, miny},{maxx, maxy} };
 	}
 
 	Sequence<float2> make_poly(float outerRadius, float innerRadius, int nFlares);
