@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Transform.h"
 #include <SDL3/SDL_events.h>
-#include "AABB.h"
+#include <SDL3/SDL_video.h>
+#include "Transform.h"
+#include "Rect.h"
 
 namespace badWindow
 {
@@ -16,14 +17,11 @@ namespace badWindow
 
 		void update(float dt, const SDL_Event& events)noexcept;
 
-		badCore::AABB get_viewport(const badCore::int2& window_size)const noexcept;
+		badCore::Rect get_viewport(SDL_Window* const window)const;
 
 		void rotate_by(float dt) noexcept;
 
-		const badCore::Transform get_camera()const noexcept
-		{
-			return mCamera;
-		}
+		const badCore::Transform get_camera()const noexcept;
 
 	private:
 

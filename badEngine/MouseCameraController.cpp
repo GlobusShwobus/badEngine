@@ -60,10 +60,24 @@ namespace badWindow
 			break;
 		}
 	}
-	badCore::AABB MouseCameraController::get_viewport(const badCore::int2& window_size)const noexcept
+	badCore::Rect MouseCameraController::get_viewport(SDL_Window* const window)const
 	{
+		assert(window != nullptr);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
 		const float zoom = 1.0f / mCamera.get_scale();
-		return badCore::make_aabb(mCamera.get_pos(), (window_size.x * 0.5f) * zoom, (window_size.y * 0.5f) * zoom);
+
+		const float radius_x = (w * 0.5f) * zoom;
+		const float radius_y = (h * 0.5f) * zoom;
+		const auto& cam_pos = mCamera.get_pos();
+
+		return {
+			cam_pos.x - radius_x,
+			cam_pos.y - radius_y,
+			radius_x * 2,
+			radius_y * 2
+		};
 	}
 
 	void MouseCameraController::rotate_by(float dt) noexcept {
@@ -74,5 +88,10 @@ namespace badWindow
 		if (new_angle < 0.0f)   new_angle += 360.0f;
 
 		mCamera.set_angle(new_angle);
+	}
+
+	const badCore::Transform MouseCameraController::get_camera()const noexcept
+	{
+		return mCamera;
 	}
 }
