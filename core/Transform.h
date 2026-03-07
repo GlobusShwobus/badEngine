@@ -12,7 +12,7 @@ namespace badCore
 		
 		Transform() = default;
 
-		constexpr float2 get_pos()const noexcept
+		constexpr const float2& get_pos()const noexcept
 		{
 			return mPos;
 		}
