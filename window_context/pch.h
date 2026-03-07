@@ -18,5 +18,6 @@
 #include <assert.h>
 #include <bit>
 #include <vector>
+#include <stdexcept>
 
 #endif //PCH_H
