@@ -6,12 +6,6 @@
 
 namespace badCore
 {
-	constexpr Rect make_rect_from_point(const float2& center, float radius_x, float radius_y)noexcept
-	{
-		return{ center.x - radius_x, center.y - radius_y, radius_x + radius_x, radius_y + radius_y };
-	}
-
-
 	constexpr Rect make_union_rect(const Rect& a, const Rect& b)noexcept
 	{
 		const float minx = core_min(a.min.x, b.min.x);
