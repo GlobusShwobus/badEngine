@@ -49,6 +49,14 @@ namespace badCore
 		}
 
 		IntersectionInfo intersection_test(const float2& point, float radius)const noexcept;
+
+		constexpr float2 get_vectorized()const noexcept
+		{
+			return {
+				origin.x + dir.x * length,
+				origin.y + dir.y * length 
+			};
+		}
 	};
 
 	//NOTE: maybe there will be a gooder place for it, but since it's related to ray currently this is as good as it gets
