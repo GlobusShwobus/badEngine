@@ -69,5 +69,8 @@
     <ClCompile Include="SDL_SYSTEM_RAII.cpp">
       <Filter>window_context</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>textures_types</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
