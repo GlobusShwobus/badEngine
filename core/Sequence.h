@@ -52,34 +52,36 @@ namespace badCore
 				begin++->~T();
 		}
 
-		//NOTE:: does not take size
-		//NOTE2:: forever trust me bro function
-		template<typename LambdaFunc>
-		void reConstructAllocate(size_type newSize, LambdaFunc constructor)
+		void realloc(size_type new_capacity, size_type new_size)
 		{
-			//allocate new chunck of memory of size newSize and move [from -> to] data into it (always move) 
-			iterator thisBegin = begin();
-			iterator thisEnd = end();
-
-			iterator destination = nullptr;
-			iterator initialized = nullptr;
+			iterator newArray = nullptr;//create a temporary to store data into
 
 			try {
-				destination = alloc_memory(newSize);
-				initialized = constructor(destination, newSize);
+				if constexpr (std::is_trivially_copyable_v<value_type>) {//if same to memcpy
+					if (mArray && mSize > 0) {
+						std::memcpy(newArray, mArray, mSize * sizeof(value_type));
+					}
+				}
+				else {
+					iterator newEnd = destination;
+					if (mArray) {
+						newEnd = std::uninitialized_move(mArray, mArray + new_size, newArray);
+					}
+				}
 			}
 			catch (...) {
-				destroy_objects(destination, initialized);
-				free_memory(destination);
+				destroy_objects(destination, initialized); //clean up temporary if throws
+				free_memory(destination);				   //clean up temporary if throws
 				throw;
 			}
 
 			if (mArray) {
-				destroy_objects(thisBegin, thisEnd);
-				free_memory(mArray);
+				destroy_objects(begin(), end());//clean up current
+				free_memory(mArray);            //free current
 			}
-			mArray = destination;
-			mCapacity = newSize;
+			mArray = destination;     //swap ownership
+			mCapacity = new_capacity;
+			mSize = new_size;		
 		}
 
 		//growth math
@@ -357,7 +359,7 @@ namespace badCore
 		{
 			//if at capacity, reallocate with extra memory
 			if (mSize == mCapacity) {
-				set_capacity(growthFactor(mCapacity));
+				realloc(growthFactor(mCapacity), mSize);
 			}
 			new(mArray + mSize)value_type(std::forward<Args>(args)...);
 			++mSize;
@@ -443,42 +445,50 @@ namespace badCore
 			destroy_objects(end(), thisEnd);
 		}
 
-		//acts as both a reserver or trimmer. if n is more than current cappacity, sets new capacity to given, if less then destroys the difference amount
-		void set_capacity(size_type n)
+		// if new_capacity is greater than the current capacity the array will grow in capacity
+		// if new_capacity is less than the current size, then the array will also destroy any object passed given new_capacity
+		void set_capacity(size_type new_capacity)
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
-			pointer oldBegin = begin();
-			size_type moveCount = core_min(mSize, n);
-			reConstructAllocate(n, [oldBegin, moveCount](pointer dest, size_type size) {
-				return std::uninitialized_move(oldBegin, oldBegin + moveCount, dest);
-				}
-			);
-			mSize = moveCount;
+			const size_type new_size = core_min(mSize, new_capacity);
+
+			realloc(new_capacity, new_size);
 		}
-		//default constructs or erases elements by the difference amount of current size and given count
+		// default constructs or erases elements by the difference amount of current size and given count
 		void resize(size_type count)
 			requires std::default_initializable<value_type>
 		{
-			value_type def = value_type{};
-			resize(count, def);
+			//check if need growing
+			if (count > mCapacity)
+				realloc(count, mSize);
+			//check if count is less than current size, then just cut the end but don't reallocate
+			if (count < mSize) {
+				erase(begin() + count, end());
+			}//otherwise use std:: to bulk init instead of a manual loop
+			else if (count > mSize) {
+				size_type amount = count - mSize;
+
+				std::uninitialized_value_construct(mArray + mSize, mArray + count);
+				mSize = count;
+			}
 		}
 
-		//default constructs or erases elements by the difference amount of current size and given count
+		// default constructs or erases elements by the difference amount of current size and given count
 		void resize(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
+			//check if need growing
+			if (count > mCapacity)
+				realloc(count, mSize);
+			//check if count is less than current size, then just cut the end but don't reallocate
 			if (count < mSize) {
 				erase(begin() + count, end());
-			}
-			else {
-
-				if (count > mCapacity)
-					set_capacity(count);
-
+			}//otherwise use std:: to bulk init instead of a manual loop
+			else if (count > mSize) {
 				size_type amount = count - mSize;
-				while (amount--) {
-					emplace_back(value);
-				}
+
+				std::uninitialized_fill_n(mArray + mSize, amount, value);
+				mSize = count;
 			}
 		}
 
