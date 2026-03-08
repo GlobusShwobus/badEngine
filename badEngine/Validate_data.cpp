@@ -1,12 +1,19 @@
 #include "Validate_data.h"
 #include <filesystem>
+#include <fstream>
+#include <algorithm>
+#include <execution>
+
 #include <SDL3/SDL.h>
+#include "EngineUtils.h"
+
 namespace badEngine 
 {
-	badCore::bString validate_json_file(const char* path) noexcept
+	badCore::bString validate_json_file(const char* path, expected_file_type type) noexcept
 	{
+		// phase 1: test basic file info
 		if (!path)
-			return badCore::bString::failure("Null path");
+			return badCore::bString::failure("Null path provided");
 
 		std::filesystem::path p(path);
 
@@ -16,126 +23,93 @@ namespace badEngine
 		if (!std::filesystem::is_regular_file(p))
 			return badCore::bString::failure("Path is not a regular file: " + std::string(path));
 
-		if (!p.has_extension())
-			return badCore::bString::failure("File has no extension: " + std::string(path));
-		std::string ext = p.extension().string();
-		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-		if (ext != ".json")
-			return badCore::bString::failure("File is not a .json: " +std::string(path));
-
 		if (std::filesystem::file_size(p) == 0)
 			return badCore::bString::failure("File is empty: " + std::string(path));
 
+		// phase 2: test json fr
+		try {
+			std::ifstream in(path);
+			if (!in.is_open())
+				return badCore::bString::failure("Cannot open file: " + std::string(path));
+
+			nlohmann::json test = nlohmann::json::parse(in);
+			// phase 3: try to read specific json bodies expected by the system
+			switch (type) {
+			case expected_file_type::DEFAULT_JSON:
+				break;
+			case expected_file_type::TEXTURE_JSON:
+				validate_details::validate_texture_manifest(test, "textures");
+				break;
+			case expected_file_type::WINDOW_JSON:
+				validate_details::validate_window_manifest(test, "window");
+				break;
+			default:
+				return badCore::bString::failure("Unknown file type specified");
+			}
+
+		}
+		catch (const nlohmann::json::parse_error& e) {
+			return badCore::bString::failure(
+				"Invalid JSON format at byte " + std::to_string(e.byte) +
+				": " + e.what());
+		}
+		catch (const std::exception& e) {
+			return badCore::bString::failure(
+				"JSON parsing error: " + std::string(e.what()));
+		}
+		catch (...) {
+			return badCore::bString::failure("Unknown error while parsing JSON");
+		}
+
 		return badCore::bString::success();
 	}
 
-	badCore::bString validate_texture_manifest(const nlohmann::json& manifest, const char* key) noexcept
-	{
-		if (!manifest.is_object())
-			return badCore::bString::failure("Malformed json");
+	namespace validate_details {
+		void validate_texture_manifest(const nlohmann::json& manifest, const char* key) {
+			const auto& textures = manifest.at(key);
+			//testing out for each
+			std::for_each(std::execution::seq, textures.begin(), textures.end(), [](const auto& item) {
+				const std::string& tag = item.key();
+				const auto& info = item.value();
 
-		if (!manifest.contains(key))
-			return badCore::bString::failure("Key not found: " + std::string(key));
+				//try to grab the texture path
+				std::string filepath = info.at("file");
 
-		const auto& config = manifest.at(key);
+				//check if path exists
+				std::filesystem::path path(filepath);
+				if (!std::filesystem::exists(path))
+					throw std::runtime_error("Texture file does not exist: " + filepath + " for tag: " + tag);
 
-		if (!config.is_object())
-			return badCore::bString::failure("Malformed json at key: " + std::string(key));
+				//check extension
+				std::string ext = path.extension().string();
+				std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-		for (auto it = config.begin(); it != config.end(); ++it)
+				if (ext != ".png")
+					throw std::runtime_error("Texture must be PNG: " + filepath + " for tag: " + tag);
+				}//lambda delimiter not if
+			);
+		}
+		void validate_window_manifest(const nlohmann::json& manifest, const char* key)
 		{
-			const std::string& tag = it.key();
-			const auto& info = it.value();
+			const auto& window = manifest.at(key);
 
-			if (!info.is_object())
-				return badCore::bString::failure("Type not an object : " + tag);
+			//try to grab the values required
+			std::string heading = window.at("heading");
+			uint32_t width = window.at("window_width");
+			uint32_t height = window.at("window_height");
 
-			if (!info.contains("file") || !info["file"].is_string())
-				return badCore::bString::failure("Malformed 'file' field: " + tag);
+			//check the value is not too dumb (maybe make some minimum resolution in the future)
+			if (width == 0 || height == 0)
+				throw std::runtime_error("Window dimensions must be positive");
 
-			const std::string filepath = info.at("file");
-
-			if (filepath.empty())
-				return badCore::bString::failure("Empty 'file' field: " + tag);
-
-			const std::filesystem::path path(filepath);
-
-			std::string extension = path.extension().string();
-
-			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-
-			// check for specific type. can extend it in the future
-			if (extension != ".png")
-				return badCore::bString::failure("Type extension not a .png: " + tag);
-
-			// other fields here...
-
-			// check if file actually exists
-			if (!std::filesystem::exists(path))
-				return badCore::bString::failure("File does not exist: " + path.string());
-		}
-
-		return badCore::bString::success();
-	}
-	badCore::bString validate_WindowContext_manifest(const nlohmann::json& manifest, const char* key) noexcept
-	{
-		if (!manifest.is_object())
-			return badCore::bString::failure("Malformed json");
-
-		if (!manifest.contains(key))
-			return badCore::bString::failure("Key not found: " + std::string(key));
-
-		const auto& config = manifest.at(key);
-
-		if (!config.is_object()) {
-			return badCore::bString::failure("Malformed json at key: " + std::string(key));
-		}
-		// heading
-		if (!config.contains("heading") || !config["heading"].is_string()) {
-			return badCore::bString::failure("Malformed 'heading' field: " + std::string(key));
-		}
-		// width and heigth
-		if (!config.contains("window_width") || !config["window_width"].is_number_unsigned())
-			return badCore::bString::failure("Malformed 'window_width' field: " + std::string(key));
-
-		if (!config.contains("window_height") || !config["window_height"].is_number_unsigned())
-			return badCore::bString::failure("Malformed 'window_height' field: " + std::string(key));
-
-		if (config["window_width"].get<uint32_t>() == 0 || config["window_height"].get<uint32_t>() == 0)
-			return badCore::bString::failure("Window width and height minimum requirement fail: " + std::string(key));
-		// flags
-		if (!config.contains("flags") || !config["flags"].is_array())
-			return badCore::bString::failure("Malformed 'flags' field: " + std::string(key));
-
-		for (const auto& flag : config["flags"]) {
-			std::size_t dummy = 0;
-			if (!flag.is_string()) {
-				return badCore::bString::failure("All elements in 'flags' must be strings for key: " + std::string(key));
-			}
-			if (!MapSDL_Flags_to_size_t_bitwise(flag.get<std::string>(), dummy)) {
-				std::string flag_err = std::string("Unknown flag found: ") + flag.get<std::string>()+" at key: ";
-				return badCore::bString::failure(flag_err + std::string(key));
+			//validate falgs
+			for (const auto& flag : window.at("flags")) {
+				std::string flag_str = flag;
+				std::size_t dummy = 0;
+				if (!json_key_to_sdl_flags(flag_str, dummy))
+					throw std::runtime_error("Unknown window flag: " + flag_str);
 			}
 		}
-
-		return badCore::bString::success();
 	}
-
-	bool MapSDL_Flags_to_size_t_bitwise(const std::string& key, std::size_t& flags)noexcept
-	{
-		bool good_flag = false;
-
-		if (key == "SDL_WINDOW_OPENGL") {
-			flags |= SDL_WINDOW_OPENGL;
-			good_flag = true;
-		}
-		if (key == "SDL_WINDOW_RESIZABLE") {
-			flags |= SDL_WINDOW_RESIZABLE;
-			good_flag = true;
-		}
-		//other flags here
-
-		return good_flag;
-	}
+	
 }
