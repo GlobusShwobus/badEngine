@@ -2,7 +2,7 @@
 #include "MouseCameraController.h"
 #include "Make_Shape.h"
 
-namespace badWindow
+namespace badEngine
 {
 	void MouseCameraController::update(float dt, const SDL_Event& events)noexcept
 	{

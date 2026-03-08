@@ -17,9 +17,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "core\core.vcxproj", "{1154F4BC-4170-442C-89D2-B6B834717C8E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "window_context", "window_context\window_context.vcxproj", "{8DFF30D6-E1B0-443C-9032-4F27F6F8B580}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1154F4BC-4170-442C-89D2-B6B834717C8E} = {1154F4BC-4170-442C-89D2-B6B834717C8E}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -71,7 +71,7 @@ namespace badEngine
 		{
 			const auto& textures = manifest.at(key);
 			//testing out for each
-			std::for_each(std::execution::seq, textures.begin(), textures.end(), [](const auto& item) {
+			std::for_each(std::execution::seq, textures.items().begin(), textures.items().end(), [](const auto& item) {
 				const std::string& tag = item.key();
 				const auto& info = item.value();
 

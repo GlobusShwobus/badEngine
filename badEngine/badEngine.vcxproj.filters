@@ -1,17 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Main">
-      <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Validate and load">
       <UniqueIdentifier>{6b1de90d-4a47-4937-859c-99a944899185}</UniqueIdentifier>
     </Filter>
     <Filter Include="temp">
       <UniqueIdentifier>{ae14c5c4-7d4c-42a9-885b-592fff270f61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ideas">
-      <UniqueIdentifier>{62c8ec14-40fa-48bc-a630-d17736ac2b57}</UniqueIdentifier>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,7 +16,7 @@
       <Filter>Validate and load</Filter>
     </ClInclude>
     <ClInclude Include="badEngine.h">
-      <Filter>Main</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="load_data.h">
       <Filter>Validate and load</Filter>
@@ -27,14 +24,20 @@
     <ClInclude Include="Entity.h">
       <Filter>temp</Filter>
     </ClInclude>
+    <ClInclude Include="MouseCameraController.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
     <ClInclude Include="CircleCanvas.h">
-      <Filter>ideas</Filter>
+      <Filter>temp</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineUtils.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="validate_data.cpp">
       <Filter>Validate and load</Filter>
     </ClCompile>
@@ -42,7 +45,19 @@
       <Filter>Validate and load</Filter>
     </ClCompile>
     <ClCompile Include="badEngine.cpp">
-      <Filter>Main</Filter>
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseCameraController.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>temp</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineUtils.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

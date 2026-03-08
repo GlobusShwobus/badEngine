@@ -135,15 +135,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CircleCanvas.h" />
+    <ClInclude Include="Draw.h" />
+    <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
+    <ClInclude Include="MouseCameraController.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="badEngine.cpp" />
+    <ClCompile Include="Draw.cpp" />
+    <ClCompile Include="EngineUtils.cpp" />
     <ClCompile Include="load_data.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MouseCameraController.cpp" />
     <ClCompile Include="validate_data.cpp" />
   </ItemGroup>
   <ItemGroup>

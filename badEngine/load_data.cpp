@@ -42,7 +42,7 @@ namespace badEngine {
 			}
 		);
 
-		return badCore::Sequence<TextureDescription>(std::move(view));
+		return badCore::Sequence<TextureDescription>(view.begin(), view.end());
 	}
 
 	badCore::Sequence<std::pair<std::string, badWindow::Texture>> load_textures(const badCore::Sequence<TextureDescription>& descs, SDL_Renderer* const renderer)
@@ -50,15 +50,16 @@ namespace badEngine {
 		if (!renderer)
 			return {};
 
-		//make a view that tries to call a texture constructor and makes a pair out of a tag and texture. secondly it filters out nullptr
-		auto view = descs | std::views::transform([renderer](const TextureDescription& desc) {
-			badWindow::Texture tex = badWindow::make_texture(renderer, desc.file.string().c_str());
-			//log maybe?
-			return std::make_pair(desc.tag, std::move(tex));
+		badCore::Sequence<std::pair<std::string, badWindow::Texture>> cont;
+		cont.reserve(descs.size());
+		
+		for (const auto& desc : descs) {
+			auto tex = badWindow::make_texture(renderer, desc.file.string().c_str());
+			if (tex.get()) {
+				cont.emplace_back(desc.tag, std::move(tex));
 			}
-		) | std::views::filter([](const auto& pair) {return pair.second.get(); });
+		}
 		
-		
-		return badCore::Sequence<std::pair<std::string, badWindow::Texture>>(std::move(view));
+		return cont;
 	}
 }

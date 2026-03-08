@@ -147,42 +147,14 @@ namespace badCore
 
 		Sequence(std::initializer_list<value_type> init)
 			requires std::constructible_from<value_type, const_reference>
+		:Sequence(init.begin(), init.end())
 		{
-			if (init.size() == 0) return;
-
-			pointer mem = seq_allocate(init.size());
-
-			try {
-				std::uninitialized_copy(init.begin(), init.end(), mem);
-			}
-			catch (...) {
-				seq_deallocate(mem);
-				throw;
-			}
-
-			mArray = mem;
-			mCapacity = rhs.size();
-			mSize = rhs.size();
 		}
 
 		Sequence(const Sequence& rhs)
 			requires std::constructible_from<value_type, const_reference>
+		:Sequence(rhs.begin(), rhs.end())
 		{
-			if (rhs.empty()) return;
-
-			pointer mem = seq_allocate(rhs.size());
-
-			try {
-				std::uninitialized_copy(rhs.begin(), rhs.end(), mem);
-			}
-			catch (...) {
-				seq_deallocate(mem);
-				throw;
-			}
-
-			mArray = mem;
-			mCapacity = rhs.size();
-			mSize = rhs.size();
 		}
 
 		Sequence(Sequence&& rhs)noexcept

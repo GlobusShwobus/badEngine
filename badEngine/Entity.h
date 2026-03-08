@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Sequence.h"
-#include "vector.h"
+#include "Float2.h"
 #include "Matrix3.h"
 #include "Color.h"
-#include "AABB.h"
+#include "Rect.h"
 #include "Ray.h"
-#include "bad_geometry.h"
 
 namespace badEngine
 {

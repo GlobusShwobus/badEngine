@@ -41,13 +41,13 @@ namespace badEngine
 	}
 
 	// does not restore original color
-	void draw_closed_model(SDL_Renderer* const renderer, badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept
+	void draw_closed_model(SDL_Renderer* const renderer, const badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept
 	{
 		static constexpr std::size_t MAX_MODEL_SIZE = 64;
 
 		struct DRAW_IMPL
 		{
-			void operator()(SDL_Renderer* renderer, SDL_FPoint* dest, badCore::float2* const src, std::size_t size, const badCore::Mat3& transformation) {
+			void operator()(SDL_Renderer* renderer, SDL_FPoint* dest, const badCore::float2* const src, std::size_t size, const badCore::Mat3& transformation) {
 				for (std::size_t i = 0; i < size; ++i)
 					dest[i] = logical_to_visual_point(src[i], transformation);
 

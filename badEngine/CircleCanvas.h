@@ -1,5 +1,5 @@
 #pragma once
-#include "vector.h"
+#include "Float2.h"
 #include "Canvas.h"
 #include "Color.h"
 #include "SDL3/SDL_render.h"
@@ -18,13 +18,14 @@ namespace badEngine
 	public:
 
 		CircleCanvas(badCore::float2 pos, float radius, SDL_Renderer* const renderer)
-			:pos(pos), radius(radius), mCirlce(radius * 2, radius * 2, renderer)
+			:pos(pos), radius(radius)
 		{
+			mCirlce = badWindow::make_canvas(radius * 2, radius * 2, renderer);
 			int size = radius * 8 * 35 / 49;
 			int arrsize = (size + (8 - 1)) & -8;
 
 			badCore::Sequence<SDL_FPoint> points;
-			points.set_capacity(arrsize);
+			points.reserve(arrsize);
 
 			const int32_t diameter = (radius * 2);
 
@@ -61,7 +62,8 @@ namespace badEngine
 				}
 			}
 
-			mCirlce.start_drawing(renderer);
+			SDL_SetRenderTarget(renderer, mCirlce.get());
+
 			Uint8 r, g, b, a;
 			SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -69,7 +71,8 @@ namespace badEngine
 			SDL_SetRenderDrawColor(renderer, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 			SDL_RenderPoints(renderer, points.data(), points.size());
 			SDL_SetRenderDrawColor(renderer, r, g, b, a);//kind of dumb... for now
-			mCirlce.end_drawing(renderer);
+
+			SDL_SetRenderTarget(renderer, nullptr);
 		}
 
 		SDL_Texture* const get()const noexcept {

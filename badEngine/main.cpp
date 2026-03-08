@@ -1,56 +1,30 @@
-#include "SLList.h"
-#include "Stopwatch.h"
-#include "WindowContext.h"
-#include "Validate_data.h"
-#include <thread>
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
 #include <crtdbg.h>  
 #include <conio.h>
+#include <iostream>
 
+
+#include "Stopwatch.h"
+#include "RandomNum.h"
+#include "Validate_data.h"
+#include "load_data.h"
 #include "Sprite.h"
-
 #include "UniformGrid.h"
 #include "Canvas.h"
 #include "Sequence.h"
-#include "load_data.h"
-
-#include "RandomNum.h"
-
 #include "Color.h"
 #include "TextureMap.h"
-
-#include <iostream>
 #include "Make_Shape.h"
 #include "Entity.h"
-#include "Collision.h"
 #include "MouseCameraController.h"
+#include "SDL_SYSTEM_RAII.h"
+#include "Window.h"
+#include "Renderer.h"
+#include "EngineUtils.h"
+#include "Draw.h"
 
-
-/*
-NEW HEADERS translate.h entity.h
-
-//TODO::camera then
-//TODO::texture map finish then
-//TODO::translation/entity stuff
-
-
-
-TRANSLATION PIPELINE:
-    entity has a static model
-    entity poops out a model, applying its scale and offset (pos)
-
-    the model gets translated related to the camera
-    first subtracting offset (pos) (because top left corner)
-    then scaling the model
-
-    thirdly everything gets translated retated to the center of screen
-    first flipping y axis then applying offset
-*/
 int main() {
-
-    using namespace badCore;
-    using namespace badWindow;
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
@@ -60,12 +34,19 @@ int main() {
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
     {
         using namespace badEngine;
+        using namespace badCore;
+        using namespace badWindow;
+
+        SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
+
+
         //using namespace badEngine;
-        validate_json_file("../Configs/system_config.json");
-        nlohmann::json window_conf = load_json("../Configs/system_config.json");
-        validate_WindowContext_manifest(window_conf, "sys_config");
-        auto windowContextData = extract_WindowContext_desc(window_conf, "sys_config");
-        WindowContext window(windowContextData.heading.c_str(), windowContextData.width, windowContextData.height, windowContextData.flags);
+        validate_json_file("../Configs/system_config.json", expected_file_type::WINDOW_JSON);
+        nlohmann::json window_conf = badEngine::load_json("../Configs/system_config.json");
+        auto windowContextData = badEngine::create_window_description(window_conf, "sys_config");
+
+        Window window = make_window(windowContextData.heading.c_str(), windowContextData.width, windowContextData.height, windowContextData.flags);
+        Renderer renderer = make_renderer(window.get(), nullptr);
 
 
         //#####################################################################################################################################################################
@@ -99,17 +80,17 @@ int main() {
 
 
         Sequence<Entity> entities;
-        entities.set_capacity(ent_count);
+        entities.reserve(ent_count);
         for (int i = 0; i < ent_count; i++) {
             Sequence<float2> model = make_poly(
-                rng.rFloat(mino, maxo),
-                rng.rFloat(mini, maxi),
-                rng.rFloat(minf, maxf)
+                rng.get(mino, maxo),
+                rng.get(mini, maxi),
+                rng.get(minf, maxf)
             );
-            float2 pos = { rng.rFloat(wminx,wmaxx), rng.rFloat(wminy,wmaxy) };
-            float angular_vel = rng.rFloat(minrv, maxrv);
-            Color col(rng.rFloat(1, 255), rng.rFloat(1, 255), rng.rFloat(1, 255), 255);
-            float scalr_differential = rng.rFloat(0.005f, 0.01f);
+            float2 pos = { rng.get(wminx,wmaxx), rng.get(wminy,wmaxy) };
+            float angular_vel = rng.get(minrv, maxrv);
+            Color col(rng.get(1, 255), rng.get(1, 255), rng.get(1, 255), 255);
+            float scalr_differential = rng.get(0.005f, 0.01f);
 
             entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
         }
@@ -122,13 +103,14 @@ int main() {
 
         //main loop
         bool GAME_RUNNING = true;
-        SDL_Event EVENT;
+
         //this whole main loop is badly bad but engine class in the future so fuck it for now
         Stopwatch steper;
         while (GAME_RUNNING) {
+            SDL_Event EVENT;
             float dt = steper.dt_float();
             //CLEAR RENDERING
-            window.system_refresh();
+            SDL_RenderClear(renderer.get());
 
             //LISTEN TO EVENTS
             while (SDL_PollEvent(&EVENT)) {
@@ -152,18 +134,18 @@ int main() {
                 e.pulse_scale();
             }
 
-            Mat3 window_mat = window.get_transform();
+            Mat3 window_mat = sdl_window_matrix(window.get());
             Mat3 camera_mat = cam.get_camera().transform_inverse();
 
 
             for (auto& e : entities) {
                 Mat3 world = window_mat * camera_mat * e.get_transform();
-
-                window.draw_closed_model(e.get_model(), world, e.get_color());
+                const auto& model = e.get_model();
+                draw_closed_model(renderer.get(), model.data(), model.size(), world, e.get_color());
             }
 
-
-            window.system_present();
+            SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
+            SDL_RenderPresent(renderer.get());
 
             std::cout << "FPS: " << 1 / dt<<'\n';
         }

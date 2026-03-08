@@ -5,7 +5,7 @@
 #include "Transform.h"
 #include "Rect.h"
 
-namespace badWindow
+namespace badEngine
 {
 	class MouseCameraController
 	{

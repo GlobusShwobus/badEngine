@@ -20,7 +20,7 @@ namespace badEngine
 	void draw_line(SDL_Renderer* const renderer, const badCore::Ray& ray, badCore::Color color) noexcept;
 
 	// does not restore original color
-	void draw_closed_model(SDL_Renderer* const renderer, badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept;
+	void draw_closed_model(SDL_Renderer* const renderer, const badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept;
 
 	void draw_texture(SDL_Renderer* const renderer, SDL_Texture* const texture, const badCore::Rect& src, const badCore::Rect& dest) noexcept;
 

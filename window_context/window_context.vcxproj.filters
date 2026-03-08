@@ -37,7 +37,7 @@
     <ClInclude Include="Font.h">
       <Filter>textures_types</Filter>
     </ClInclude>
-    <ClInclude Include="window.h">
+    <ClInclude Include="Window.h">
       <Filter>window_context</Filter>
     </ClInclude>
     <ClInclude Include="SDL_SYSTEM_RAII.h">
