@@ -2,7 +2,6 @@
 
 #include "Float2.h"
 #include "Matrix3.h"
-//TODO::add .cpp
 
 namespace badCore
 {

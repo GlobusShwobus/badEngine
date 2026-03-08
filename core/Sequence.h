@@ -29,20 +29,20 @@ namespace badCore
 		using difference_type = std::ptrdiff_t;
 
 		//allocator/deallocator functions
-		pointer allocate(size_type count)const
+		pointer seq_allocate(size_type count)const
 		{
 			assert(count < max_size());
 			return static_cast<pointer>(::operator new(count * sizeof(value_type)));
 		}
 
-		void deallocate(pointer mem)noexcept
+		void seq_deallocate(pointer mem)noexcept
 		{
 			::operator delete(mem);
 		}
 
-		void realloc(size_type new_capacity)
+		void seq_realloc(size_type new_capacity)
 		{
-			pointer newArray = allocate(new_capacity);   //temp buffer
+			pointer newArray = seq_allocate(new_capacity);   //temp buffer
 			pointer newEnd = newArray;				     //temp buffer
 
 			try {
@@ -60,13 +60,13 @@ namespace badCore
 			}
 			catch (...) {
 				std::destroy(newArray, newEnd);	  //cleanup temp
-				deallocate(newArray);			  //cleanup temp
+				seq_deallocate(newArray);			  //cleanup temp
 				throw;
 			}
 
 			if (mArray){							   //cleanup curr
 				std::destroy(mArray, mArray + mSize);  //cleanup curr
-				deallocate(mArray);					   //cleanup curr
+				seq_deallocate(mArray);					   //cleanup curr
 			}
 
 			mArray = newArray;					//assign new
@@ -89,12 +89,12 @@ namespace badCore
 		{
 			if (count == 0)return;
 
-			pointer mem = allocate(count);
+			pointer mem = seq_allocate(count);
 			try {
 				std::uninitialized_value_construct(mem, mem + count);
 			}
 			catch (...) {
-				deallocate(mem);
+				seq_deallocate(mem);
 				throw;
 			}
 			mArray = mem;
@@ -107,12 +107,12 @@ namespace badCore
 		{
 			if (count == 0)return;
 
-			pointer mem = allocate(count);
+			pointer mem = seq_allocate(count);
 			try {
 				std::uninitialized_fill(mem, mem + count, value);
 			}
 			catch (...) {
-				deallocate(mem);
+				seq_deallocate(mem);
 				throw;
 			}
 
@@ -121,51 +121,68 @@ namespace badCore
 			mSize = count;
 		}
 
-		template <std::ranges::input_range R>
-		Sequence(R&& rg)
-			requires std::constructible_from<value_type, std::ranges::range_reference_t<R>>
+		template <std::forward_iterator FwdIt>
+		Sequence(FwdIt first, FwdIt last)
+			requires std::constructible_from<value_type, std::iter_reference_t<FwdIt>>
 		{
-			if constexpr (std::ranges::sized_range<R>) {
-				size_type count = std::ranges::size(rg);
-				if (count == 0)
-					return;
+			size_type count = std::distance(first, last);
 
-				pointer mem = allocate(count);
+			if (count == 0)
+				return;
 
-				try{
-					std::uninitialized_copy(std::ranges::begin(rg), std::ranges::end(rg), mem);
-				}
-				catch (...){
-					deallocate(mem);
-					throw;
-				}
-				mArray = mem;
-				mCapacity = count;
-				mSize = count;
+			pointer mem = seq_allocate(count);
+
+			try {
+				std::uninitialized_copy(first, last, mem);
 			}
-			else {
-				for (auto&& val : rg)
-					push_back(val);
+			catch (...) {
+				seq_deallocate(mem);
+				throw;
 			}
-		}
 
-		template <std::input_iterator It>
-		Sequence(It first, It last)
-			requires std::constructible_from<value_type, std::iter_reference_t<It>>
-		:Sequence(std::ranges::subrange(first, last))
-		{
+			mArray = mem;
+			mCapacity = count;
+			mSize = count;
 		}
 
 		Sequence(std::initializer_list<value_type> init)
 			requires std::constructible_from<value_type, const_reference>
-		:Sequence(std::ranges::subrange(init.begin(), init.end()))
 		{
+			if (init.size() == 0) return;
+
+			pointer mem = seq_allocate(init.size());
+
+			try {
+				std::uninitialized_copy(init.begin(), init.end(), mem);
+			}
+			catch (...) {
+				seq_deallocate(mem);
+				throw;
+			}
+
+			mArray = mem;
+			mCapacity = rhs.size();
+			mSize = rhs.size();
 		}
 
 		Sequence(const Sequence& rhs)
 			requires std::constructible_from<value_type, const_reference>
-		:Sequence(std::ranges::subrange(rhs.begin(), rhs.end()))
 		{
+			if (rhs.empty()) return;
+
+			pointer mem = seq_allocate(rhs.size());
+
+			try {
+				std::uninitialized_copy(rhs.begin(), rhs.end(), mem);
+			}
+			catch (...) {
+				seq_deallocate(mem);
+				throw;
+			}
+
+			mArray = mem;
+			mCapacity = rhs.size();
+			mSize = rhs.size();
 		}
 
 		Sequence(Sequence&& rhs)noexcept
@@ -200,7 +217,7 @@ namespace badCore
 		{
 			if (mArray) {
 				std::destroy(begin(), end());
-				deallocate(mArray);
+				seq_deallocate(mArray);
 				mArray = nullptr;
 				mSize = 0;
 				mCapacity = 0;
@@ -392,7 +409,7 @@ namespace badCore
 		{
 			//if at capacity, reallocate with extra memory
 			if (mSize == mCapacity) {
-				realloc(growthFactor(mCapacity));
+				seq_realloc(growthFactor(mCapacity));
 			}
 			new(mArray + mSize)value_type(std::forward<Args>(args)...);
 			++mSize;
@@ -483,7 +500,7 @@ namespace badCore
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (new_capacity > mCapacity) {
-				realloc(new_capacity);
+				seq_realloc(new_capacity);
 			}
 		}
 		// default constructs or erases elements by the difference amount of current size and given count
@@ -492,7 +509,7 @@ namespace badCore
 		{
 			//check if need growing
 			if (count > mCapacity)
-				realloc(count);
+				seq_realloc(count);
 
 			//check if count is less than current size, then just cut the end but don't reallocate
 			if (count < mSize) {
@@ -512,7 +529,7 @@ namespace badCore
 		{
 			//check if need growing
 			if (count > mCapacity)
-				realloc(count);
+				seq_realloc(count);
 			//check if count is less than current size, then just cut the end but don't reallocate
 			if (count < mSize) {
 				erase(begin() + count, end());
@@ -529,7 +546,7 @@ namespace badCore
 		void shrink_to_fit()
 		{
 			if (mCapacity > mSize) {
-				realloc(mSize);
+				seq_realloc(mSize);
 			}
 		}
 
