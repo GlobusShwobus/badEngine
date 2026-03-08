@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ranges>
 #include <limits>
 #include <assert.h>
 #include <stdexcept>
@@ -8,7 +9,6 @@
 #include "CoreUtils.h"
 
 //TODO: proper insert and all pushes/emplaces hierarchy
-//TODO: range constructors
 
 namespace badCore
 {
@@ -29,59 +29,49 @@ namespace badCore
 		using difference_type = std::ptrdiff_t;
 
 		//allocator/deallocator functions
-		pointer alloc_memory(size_type count)const
+		pointer allocate(size_type count)const
 		{
 			assert(count < max_size());
 			return static_cast<pointer>(::operator new(count * sizeof(value_type)));
 		}
 
-		constexpr void free_memory(pointer& mem)noexcept
+		void deallocate(pointer mem)noexcept
 		{
 			::operator delete(mem);
-			mem = nullptr;
 		}
 
-		constexpr void destroy(pointer obj)noexcept
+		void realloc(size_type new_capacity)
 		{
-			obj->~T();
-		}
-
-		constexpr void destroy_objects(pointer begin, pointer end)noexcept
-		{
-			while (begin != end)
-				begin++->~T();
-		}
-
-		void realloc(size_type new_capacity, size_type new_size)
-		{
-			iterator newArray = nullptr;//create a temporary to store data into
+			pointer newArray = allocate(new_capacity);   //temp buffer
+			pointer newEnd = newArray;				     //temp buffer
 
 			try {
-				if constexpr (std::is_trivially_copyable_v<value_type>) {//if same to memcpy
+				//if trivial then go all in
+				if constexpr (std::is_trivially_move_constructible_v<value_type> && std::is_trivially_destructible_v<value_type>){
 					if (mArray && mSize > 0) {
-						std::memcpy(newArray, mArray, mSize * sizeof(value_type));
+						std::memmove(newArray, mArray, mSize * sizeof(value_type));
+						newEnd = newArray + mSize;//just in case...
 					}
 				}
-				else {
-					iterator newEnd = destination;
-					if (mArray) {
-						newEnd = std::uninitialized_move(mArray, mArray + new_size, newArray);
-					}
+				else{
+					if (mArray)
+						newEnd = std::uninitialized_move(mArray, mArray + mSize, newArray);
 				}
 			}
 			catch (...) {
-				destroy_objects(destination, initialized); //clean up temporary if throws
-				free_memory(destination);				   //clean up temporary if throws
+				std::destroy(newArray, newEnd);	  //cleanup temp
+				deallocate(newArray);			  //cleanup temp
 				throw;
 			}
 
-			if (mArray) {
-				destroy_objects(begin(), end());//clean up current
-				free_memory(mArray);            //free current
+			if (mArray){							   //cleanup curr
+				std::destroy(mArray, mArray + mSize);  //cleanup curr
+				deallocate(mArray);					   //cleanup curr
 			}
-			mArray = destination;     //swap ownership
-			mCapacity = new_capacity;
-			mSize = new_size;		
+
+			mArray = newArray;					//assign new
+			mCapacity = new_capacity;			//assign new
+			//mSize = mSize;					//not changed
 		}
 
 		//growth math
@@ -96,44 +86,86 @@ namespace badCore
 
 		explicit Sequence(size_type count)
 			requires std::default_initializable<value_type>
-		:Sequence(count, value_type())
 		{
+			if (count == 0)return;
 
+			pointer mem = allocate(count);
+			try {
+				std::uninitialized_value_construct(mem, mem + count);
+			}
+			catch (...) {
+				deallocate(mem);
+				throw;
+			}
+			mArray = mem;
+			mCapacity = count;
+			mSize = count;
 		}
 
 		explicit Sequence(size_type count, const_reference value)
 			requires std::constructible_from<value_type, const_reference>
 		{
-			if (count > 0) {
-				reConstructAllocate(count, [&value](pointer dest, size_type n) {
-					return std::uninitialized_fill_n(dest, n, value);
-					});
+			if (count == 0)return;
+
+			pointer mem = allocate(count);
+			try {
+				std::uninitialized_fill(mem, mem + count, value);
+			}
+			catch (...) {
+				deallocate(mem);
+				throw;
+			}
+
+			mArray = mem;
+			mCapacity = count;
+			mSize = count;
+		}
+
+		template <std::ranges::input_range R>
+		Sequence(R&& rg)
+			requires std::constructible_from<value_type, std::ranges::range_reference_t<R>>
+		{
+			if constexpr (std::ranges::sized_range<R>) {
+				size_type count = std::ranges::size(rg);
+				if (count == 0)
+					return;
+
+				pointer mem = allocate(count);
+
+				try{
+					std::uninitialized_copy(std::ranges::begin(rg), std::ranges::end(rg), mem);
+				}
+				catch (...){
+					deallocate(mem);
+					throw;
+				}
+				mArray = mem;
+				mCapacity = count;
 				mSize = count;
 			}
+			else {
+				for (auto&& val : rg)
+					push_back(val);
+			}
+		}
+
+		template <std::input_iterator It>
+		Sequence(It first, It last)
+			requires std::constructible_from<value_type, std::iter_reference_t<It>>
+		:Sequence(std::ranges::subrange(first, last))
+		{
 		}
 
 		Sequence(std::initializer_list<value_type> init)
 			requires std::constructible_from<value_type, const_reference>
+		:Sequence(std::ranges::subrange(init.begin(), init.end()))
 		{
-			const size_type size = init.size();
-			if (size > 0) {
-				reConstructAllocate(size, [init](pointer dest, size_type n) {
-					return std::uninitialized_copy(init.begin(), init.end(), dest);
-					});
-				mSize = size;
-			}
 		}
 
 		Sequence(const Sequence& rhs)
 			requires std::constructible_from<value_type, const_reference>
+		:Sequence(std::ranges::subrange(rhs.begin(), rhs.end()))
 		{
-			size_type size = rhs.size();
-			if (size > 0) {
-				reConstructAllocate(size, [&rhs](pointer dest, size_type n) {
-					return std::uninitialized_copy(rhs.begin(), rhs.end(), dest);
-					});
-				mSize = size;
-			}
 		}
 
 		Sequence(Sequence&& rhs)noexcept
@@ -167,8 +199,9 @@ namespace badCore
 		~Sequence()noexcept
 		{
 			if (mArray) {
-				destroy_objects(begin(), end());
-				free_memory(mArray);
+				std::destroy(begin(), end());
+				deallocate(mArray);
+				mArray = nullptr;
 				mSize = 0;
 				mCapacity = 0;
 			}
@@ -316,9 +349,9 @@ namespace badCore
 		}
 
 		//destroy all constructed elements
-		constexpr void clear()noexcept
+		void clear()noexcept
 		{
-			destroy_objects(begin(), end());
+			std::destroy(begin(), end());
 			mSize = 0;
 		}
 
@@ -328,7 +361,7 @@ namespace badCore
 			if (!mArray || mCapacity == 0)
 				return;
 
-			destroy_objects(begin(), end());
+			std::destroy(begin(), end());
 			secure_zero_bytes(mArray, mCapacity * sizeof(value_type));
 
 			::operator delete(mArray);
@@ -359,7 +392,7 @@ namespace badCore
 		{
 			//if at capacity, reallocate with extra memory
 			if (mSize == mCapacity) {
-				realloc(growthFactor(mCapacity), mSize);
+				realloc(growthFactor(mCapacity));
 			}
 			new(mArray + mSize)value_type(std::forward<Args>(args)...);
 			++mSize;
@@ -375,14 +408,14 @@ namespace badCore
 
 
 		//UB if the container is empty, otherwise erases the last element
-		constexpr void pop_back()noexcept
+		void pop_back()noexcept
 		{
 			assert(!isEmpty());
 			erase(end() - 1, end());
 		}
 
 		//UB if pos is not in the range of [begin -> end) and if container is empty (probably terminate)
-		constexpr iterator erase(const_iterator pos) noexcept
+		iterator erase(const_iterator pos) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			assert(!isEmpty() && pos >= begin() && pos < end());
@@ -390,7 +423,7 @@ namespace badCore
 		}
 
 		//UB if given range is not in the range of [begin -> end) and if container is empty (probably terminate)
-		constexpr iterator erase(const_iterator first, const_iterator last) noexcept
+		iterator erase(const_iterator first, const_iterator last) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)
@@ -411,20 +444,20 @@ namespace badCore
 			}
 
 			mSize -= destroy_size;
-			destroy_objects(end(), thisEnd);
+			std::destroy(end(), thisEnd);
 
 			return const_cast<iterator>(first);
 		}
 
 		//swaps given element with last and pops back. UB if pos is not in the range of [begin -> end)
-		constexpr void swap_with_last_erase(const_iterator pos) noexcept
+		void swap_with_last_erase(const_iterator pos) noexcept
 		{
 			assert(!isEmpty() && pos >= begin() && pos < end());
 			swap_with_last_erase(pos, pos + 1);
 		}
 
 		//swaps given range with last one by one and pops range. UB if given range is not in the range of [begin -> end)
-		constexpr void swap_with_last_erase(const_iterator first, const_iterator last) noexcept
+		void swap_with_last_erase(const_iterator first, const_iterator last) noexcept
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)return;
@@ -442,17 +475,16 @@ namespace badCore
 				*destination++ = std::move(*src--);
 			}
 			mSize -= destroy_size;
-			destroy_objects(end(), thisEnd);
+			std::destroy(end(), thisEnd);
 		}
 
-		// if new_capacity is greater than the current capacity the array will grow in capacity
-		// if new_capacity is less than the current size, then the array will also destroy any object passed given new_capacity
-		void set_capacity(size_type new_capacity)
+		// if new capacity is more than old capacity, reallocates, otherwise does nothing
+		void reserve(size_type new_capacity)
 			requires std::is_nothrow_move_assignable_v<value_type>
 		{
-			const size_type new_size = core_min(mSize, new_capacity);
-
-			realloc(new_capacity, new_size);
+			if (new_capacity > mCapacity) {
+				realloc(new_capacity);
+			}
 		}
 		// default constructs or erases elements by the difference amount of current size and given count
 		void resize(size_type count)
@@ -460,7 +492,8 @@ namespace badCore
 		{
 			//check if need growing
 			if (count > mCapacity)
-				realloc(count, mSize);
+				realloc(count);
+
 			//check if count is less than current size, then just cut the end but don't reallocate
 			if (count < mSize) {
 				erase(begin() + count, end());
@@ -479,7 +512,7 @@ namespace badCore
 		{
 			//check if need growing
 			if (count > mCapacity)
-				realloc(count, mSize);
+				realloc(count);
 			//check if count is less than current size, then just cut the end but don't reallocate
 			if (count < mSize) {
 				erase(begin() + count, end());
@@ -495,7 +528,9 @@ namespace badCore
 		//shrinks to current size
 		void shrink_to_fit()
 		{
-			set_capacity(mSize);
+			if (mCapacity > mSize) {
+				realloc(mSize);
+			}
 		}
 
 	private:

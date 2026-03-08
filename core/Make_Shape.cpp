@@ -9,7 +9,7 @@ namespace badCore
 	{
 		assert(nFlares >= 1);
 		Sequence<float2> polyline;
-		polyline.set_capacity(nFlares * 2);
+		polyline.reserve(static_cast<std::size_t>(nFlares * 2));
 
 		const float dTheta = 2.0f * 3.14159f / float(nFlares * 2);
 		for (int i = 0; i < nFlares * 2; i++) {
@@ -29,7 +29,7 @@ namespace badCore
 		int arrsize = (size + (8 - 1)) & -8;
 
 		Sequence<float2> circle;
-		circle.set_capacity(arrsize);
+		circle.reserve(arrsize);
 
 		const int32_t diameter = (radius * 2);
 

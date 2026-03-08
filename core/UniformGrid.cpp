@@ -232,7 +232,7 @@ namespace badCore
 	void UniformGrid::maintain_uniform_memory(std::size_t cell_capacity_target)
 	{
 		for (auto& cell : mCells) {
-			cell.set_capacity(cell_capacity_target);
+			cell.reserve(cell_capacity_target);
 		}
 	}
 
