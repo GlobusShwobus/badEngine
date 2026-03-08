@@ -29,10 +29,11 @@ namespace badEngine
 		// phase 2: test json fr
 		try {
 			std::ifstream in(path);
+			in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 			if (!in.is_open())
 				return badCore::bString::failure("Cannot open file: " + std::string(path));
 
-			nlohmann::json test = nlohmann::json::parse(in);
+			nlohmann::json test = nlohmann::json::parse(in, nullptr, true, false);
 			// phase 3: try to read specific json bodies expected by the system
 			switch (type) {
 			case expected_file_type::DEFAULT_JSON:
@@ -64,8 +65,10 @@ namespace badEngine
 		return badCore::bString::success();
 	}
 
-	namespace validate_details {
-		void validate_texture_manifest(const nlohmann::json& manifest, const char* key) {
+	namespace validate_details
+	{
+		void validate_texture_manifest(const nlohmann::json& manifest, const char* key)
+		{
 			const auto& textures = manifest.at(key);
 			//testing out for each
 			std::for_each(std::execution::seq, textures.begin(), textures.end(), [](const auto& item) {
@@ -89,6 +92,7 @@ namespace badEngine
 				}//lambda delimiter not if
 			);
 		}
+
 		void validate_window_manifest(const nlohmann::json& manifest, const char* key)
 		{
 			const auto& window = manifest.at(key);
@@ -111,5 +115,4 @@ namespace badEngine
 			}
 		}
 	}
-	
 }

@@ -3,7 +3,6 @@
 #include "bString.h"
 #include "json.hpp"
 
-
 namespace badEngine
 {
 	enum class expected_file_type : uint_fast8_t
