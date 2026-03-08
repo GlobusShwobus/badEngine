@@ -3,6 +3,15 @@
 #include <memory>//might not need it, it's here since unique_ptr version
 #include <concepts>
 
+/*
+* 
+* Kind of depricated...
+* The bones are alright but not everything is super clean.
+* It hasn't experienced a lot of field testing. might just use forward list instead when i need this type of container
+* For instance Sequence got a lot of field testing and it's kind of worth it considering how often a vector type is used.
+* 
+*/
+
 namespace badCore
 {
 	template <typename T> 
