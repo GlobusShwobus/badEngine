@@ -8,7 +8,7 @@ namespace badWindow
 		mColumnsCount(columnsCount)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mSprite.get_texture(), &textureW, &textureH);
+		SDL_GetTextureSize(mSprite.mTexture, &textureW, &textureH);
 
 		int mGlyphWidth = static_cast<unsigned int>(textureW / columnsCount);
 		int mGlyphHeight = static_cast<unsigned int>(textureH / rowsCount);
@@ -26,8 +26,8 @@ namespace badWindow
 		}
 
 		//AABB destinatioon = AABB(mDest.x, mDest.y, mDest.w, mDest.h);   //inital dest
-		const float glyphW = mSprite.get_width();
-		const float glyphH = mSprite.get_height();
+		const float glyphW = mSprite.mTextureW;
+		const float glyphH = mSprite.mTextureH;
 
 		for (char c : string) {
 			//for any printable character
@@ -49,5 +49,10 @@ namespace badWindow
 	void Font::clear()noexcept
 	{
 		mLetters.clear();
+	}
+
+	SDL_Texture* const Font::get_texture()const noexcept
+	{
+		return mSprite.mTexture;
 	}
 }

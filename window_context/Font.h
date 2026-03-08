@@ -20,6 +20,8 @@ namespace badWindow
 		//clears all text
 		void clear()noexcept;
 
+		SDL_Texture* const get_texture()const noexcept;
+
 		constexpr auto begin()const noexcept
 		{
 			return mLetters.begin();
@@ -29,7 +31,7 @@ namespace badWindow
 			return mLetters.end();
 		}
 	private:
-		class Sprite mSprite;
+		Sprite mSprite;
 		std::vector<SDL_FRect> mLetters;
 		uint32_t mColumnsCount = 0;
 

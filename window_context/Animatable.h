@@ -30,7 +30,7 @@ namespace badWindow
 		SDL_Texture* const get_texture()const noexcept;
 
 	private:
-		class Sprite mSprite;
+		Sprite mSprite;
 		std::vector<SDL_FPoint> mFrames;
 
 		float mFrameLength = 0.08f;

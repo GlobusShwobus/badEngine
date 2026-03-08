@@ -3,6 +3,28 @@
 
 namespace badWindow
 {
+	bool TextureMap::insert(SDL_Renderer* const renderer, const std::string& tag, SDL_Surface* const surface)
+	{
+		Texture texture = make_texture(renderer, surface);
+		return insert(std::move(texture), tag);
+	}
+
+	bool TextureMap::insert(SDL_Renderer* const renderer, const std::string& tag, const char* file_path)
+	{
+		Texture texture = make_texture(renderer, file_path);
+		return insert(std::move(texture), tag);
+	}
+
+	bool TextureMap::insert(Texture&& textr, const std::string& tag) {
+		if (textr) {
+			auto find = mTextures.find(tag);
+			if (find == mTextures.end()) {
+				mTextures.emplace(tag, std::move(textr));
+				return true;
+			}
+		}
+		return false;
+	}
 	void TextureMap::clear()
 	{
 		mTextures.clear();

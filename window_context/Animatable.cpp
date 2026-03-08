@@ -7,7 +7,7 @@ namespace badWindow
 		:mSprite(texture)
 	{
 		float textureW, textureH;
-		SDL_GetTextureSize(mSprite.get_texture(), &textureW, &textureH);
+		SDL_GetTextureSize(mSprite.mTexture, &textureW, &textureH);
 		//set values for iteration, internally frames are stored as 2D array
 		uint16_t columnCount = (nColumns != nullptr) ? *nColumns : static_cast<uint16_t>(textureW / frameWidth);
 		uint16_t rowCount = (nRows != nullptr) ? *nRows : static_cast<uint16_t>(textureH / frameHeight);
@@ -69,11 +69,11 @@ namespace badWindow
 
 	const SDL_FRect& Animation::get_source()const noexcept
 	{
-		return mSprite.get_source();
+		return mSprite.mSource;
 	}
 
 	SDL_Texture* const Animation::get_texture()const noexcept
 	{
-		return mSprite.get_texture();
+		return mSprite.mTexture;
 	}
 }

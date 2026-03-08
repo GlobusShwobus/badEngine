@@ -23,21 +23,11 @@ namespace badWindow
 		// removes all elements from the map. all references to textures get invalidated. 
 		void clear();
 
-		// Creates a textures, or takes ownership if passed as rvalue.
-		// if the given texture is not nullptr tries to insert it. 
-		// no insertion done if there is a tag collision.
-		template <typename... Args>
-		bool add(const std::string& tag, Args&&... args)
-			requires std::constructible_from<Texture, Args...>
-		{
-			Texture texture(std::forward<Args>(args)...);
-			auto find = mTextures.find(tag);
-			if (texture.get() != nullptr && find == mTextures.end()) {
-				mTextures.emplace(tag, std::move(texture));
-				return true;
-			}
-			return false;
-		}
+		bool insert(SDL_Renderer* const renderer, const std::string& tag, SDL_Surface* const surface);
+
+		bool insert(SDL_Renderer* const renderer, const std::string& tag, const char* file_path);
+
+		bool insert(Texture&& textr, const std::string& tag);
 
 		// deletes the texture associated with the tag, any references to the texture become invalidated.
 		void remove(const char* tag)noexcept;

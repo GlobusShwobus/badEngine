@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "Sprite.h"
 #include <assert.h>
+#include <stdexcept>
 
-namespace badWindow {
-
-	Sprite::Sprite(SDL_Texture* texture)noexcept
+namespace badWindow 
+{
+	Sprite::Sprite(SDL_Texture* texture)
 		:mTexture(texture)
 	{
-		assert(mTexture != nullptr);
+		if (!mTexture)
+			throw std::runtime_error("Sprite initalized with nullptr");
 
 		SDL_GetTextureSize(mTexture, &mTextureW, &mTextureH);
 		mSource = SDL_FRect(0, 0, mTextureW, mTextureH);
@@ -40,25 +42,5 @@ namespace badWindow {
 		assert(aabb.x + aabb.w <= mTextureW);
 		assert(aabb.y + aabb.h <= mTextureH);
 		mSource = aabb;
-	}
-
-	const SDL_FRect& Sprite::get_source()const noexcept
-	{
-		return mSource;
-	}
-
-	float Sprite::get_width()const noexcept
-	{
-		return mSource.w;
-	}
-
-	float Sprite::get_height()const noexcept
-	{
-		return mSource.h;
-	}
-
-	SDL_Texture* const Sprite::get_texture()const noexcept
-	{
-		return mTexture;
 	}
 }
