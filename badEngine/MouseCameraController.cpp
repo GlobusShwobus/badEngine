@@ -21,10 +21,10 @@ namespace badEngine
 		case SDL_EVENT_KEY_DOWN:
 
 			if (events.key.key == SDLK_Q)
-				rotate_by(dt);//the camera perspective might be messing with me, maybe fliped is correct
+				mCamera.set_rotation(std::fmod(mCamera.get_radians() + mRotationSpeed * dt, badCore::TAU));
 
 			if (events.key.key == SDLK_E)
-				rotate_by(-dt);//the camera perspective might be messing with me, maybe fliped is correct
+				mCamera.set_rotation(std::fmod(mCamera.get_radians() + mRotationSpeed * -dt, badCore::TAU));
 
 			break;
 
@@ -85,11 +85,5 @@ namespace badEngine
 			radius_x * 2,
 			radius_y * 2
 		};
-	}
-
-	void MouseCameraController::rotate_by(float dt) noexcept
-	{
-		float new_radians = std::fmod(mCamera.get_radians() + mRotationSpeed * dt, badCore::TAU);
-		mCamera.set_rotation(new_radians);
 	}
 }

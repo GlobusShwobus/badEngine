@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "Rect.h"
 #include "Ray.h"
+#include "Transform.h"
 
 namespace badEngine
 {
@@ -14,43 +15,44 @@ namespace badEngine
 	public:
 		//by val so we can either copy/move
 		Entity(std::vector<badCore::float2> model, badCore::float2 pos, float av, badCore::Color col, float scalr_differential)
-		:mModel(std::move(model)), mPos(pos), angular_velocity(av), col(col), scalr_differential(scalr_differential)
+		:mModel(std::move(model)), transform(pos, 1,0), rotation_speed(av), col(col), scalr_differential(scalr_differential)
 		{
 			scalar_velocity = 1 + scalr_differential;
 		}
 
 		void pulse_scale() {
-			mScale *= scalar_velocity;
-			if (mScale > 3) {
-				mScale = 3;
+			auto& scale = transform.mScale;
+
+			scale *= scalar_velocity;
+			if (scale > 3) {
+				scale = 3;
 				scalar_velocity = 1 - scalr_differential;;
 			}
-			if (mScale < 1) {
-				mScale = 1;
+			if (scale < 1) {
+				scale = 1;
 				scalar_velocity = 1+ scalr_differential;
 			}
 		}
 
 		badCore::Mat3 get_transform()const noexcept
 		{
-			//ORDER MATTERS
-			return badCore::Mat3::translation(mPos) * badCore::Mat3::rotation(angle) * badCore::Mat3::scale(mScale, mScale);
+			return transform.transform();
 		}
 
 		void rotate(float dt)
 		{
-			angle += angular_velocity * dt;
+			float radians = std::fmod(transform.get_radians() + rotation_speed * dt, badCore::TAU);
+			transform.set_rotation(radians);
 		}
 
 	public:
-		float mScale = 1.0f;
+
+		badCore::Transform transform;
 		float scalar_velocity = 1.0;
 		float scalr_differential = 0;
+		float rotation_speed = 1;
 
 
-		badCore::float2 mPos;
-		float angular_velocity = 1;
-		float angle= 0;
 		std::vector<badCore::float2> mModel;
 		badCore::Color col = badCore::Colors::Magenta;
 	};

@@ -27,10 +27,14 @@ namespace badCore
 			Mat3::translation(-mPos);
 	}
 
-	void Transform::set_rotation(float radians)noexcept {
+	void Transform::set_rotation(float radians)noexcept
+	{
 		mRadians = radians;
+	}
 
-		mSin = std::sin(radians);
-		mCos = std::cos(radians);
+	void Transform::update_sincos()noexcept
+	{
+		mSin = std::sin(mRadians);
+		mCos = std::cos(mRadians);
 	}
 }

@@ -50,6 +50,7 @@ int main() {
         Renderer renderer = make_renderer(window.get(), nullptr);
 
 
+
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -97,7 +98,7 @@ int main() {
 
             entities.emplace_back(std::move(vmodel), pos, angular_vel, col, scalr_differential);
         }
-
+        bool update_camera_sincos = false;
         badCore::AsyncLogger logger;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -123,6 +124,26 @@ int main() {
                     GAME_RUNNING = false;
                     break;
 
+                case SDL_EVENT_KEY_DOWN:
+
+                    if (EVENT.key.key == SDLK_Q)
+                        update_camera_sincos = true;
+
+                    if (EVENT.key.key == SDLK_E)
+                        update_camera_sincos = true;
+
+                    break;
+
+                case SDL_EVENT_KEY_UP:
+
+                    if (EVENT.key.key == SDLK_Q)
+                        update_camera_sincos = false;
+
+                    if (EVENT.key.key == SDLK_E)
+                        update_camera_sincos = false;
+
+                    break;
+
                 default:break;
                 }
 
@@ -133,12 +154,16 @@ int main() {
             //collect models
             for (auto& e : entities) {
                 e.rotate(dt);
-
+                e.transform.update_sincos();
                 e.pulse_scale();
             }
 
             Mat3 window_mat = sdl_window_matrix(window.get());
-            Mat3 camera_mat = cam.get_camera().transform_inverse();
+            if (update_camera_sincos) {
+                cam.mCamera.update_sincos();
+                logger.log(std::string("sincos update"));
+            }
+            Mat3 camera_mat = cam.mCamera.transform_inverse();
 
 
             for (auto& e : entities) {
@@ -148,9 +173,10 @@ int main() {
             }
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
+            SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end
             SDL_RenderPresent(renderer.get());
 
-            logger.log(std::string("FPS ") + std::to_string(1 / dt));
+            //logger.log(std::string("FPS ") + std::to_string(1 / dt));
         }
     }
     _CrtDumpMemoryLeaks();

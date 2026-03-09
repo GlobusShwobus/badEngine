@@ -17,6 +17,8 @@ namespace badCore
 
 		void set_rotation(float radians)noexcept;
 
+		void update_sincos()noexcept;
+
 		constexpr float get_radians()const noexcept
 		{
 			return mRadians;
