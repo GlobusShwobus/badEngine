@@ -13,7 +13,8 @@ namespace badEngine
 		static constexpr float ZOOM_OUT = 0.75f;
 
 	public:
-		MouseCameraController() noexcept;
+		explicit MouseCameraController() noexcept;
+		MouseCameraController(const badCore::float2& pos, float scale, float inital_radian, float rotation_speed) noexcept;
 
 		void update(float dt, const SDL_Event& events)noexcept;
 
@@ -26,7 +27,7 @@ namespace badEngine
 	private:
 
 		badCore::Transform mCamera;
-		bool mDragging = false;
-		float mRotationSpeed = 1;
+		bool mDragging;
+		float mRotationSpeed;
 	};
 }

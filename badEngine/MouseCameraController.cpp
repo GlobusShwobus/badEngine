@@ -5,7 +5,12 @@
 namespace badEngine
 {
 	MouseCameraController::MouseCameraController() noexcept
-		:mCamera({ 0,0 }, 1.0f, 0)
+		:mCamera({ 0,0 }, 1.0f, 0), mDragging(false), mRotationSpeed(1.0f)
+	{
+	}
+
+	MouseCameraController::MouseCameraController(const badCore::float2& pos, float scale, float inital_radian, float rotation_speed) noexcept
+		:mCamera(pos, scale, inital_radian), mDragging(false), mRotationSpeed(rotation_speed)
 	{
 	}
 
@@ -26,10 +31,10 @@ namespace badEngine
 		case SDL_EVENT_MOUSE_WHEEL:
 
 			if (events.wheel.y > 0) {
-				mCamera.scale *= ZOOM_OUT;
+				mCamera.mScale *= ZOOM_OUT;
 			}
 			else if (events.wheel.y < 0) {
-				mCamera.scale *= ZOOM_IN;
+				mCamera.mScale *= ZOOM_IN;
 			}
 			break;
 
@@ -51,10 +56,10 @@ namespace badEngine
 
 			//NOTE: on zoom to keep the dragging relative to the zoom, divide delta by zoom
 			if (mDragging) {
-				float zoom = mCamera.scale;
+				float zoom = mCamera.mScale;
 
-				mCamera.pos.x -= events.motion.xrel / zoom;
-				mCamera.pos.y -= events.motion.yrel / zoom;
+				mCamera.mPos.x -= events.motion.xrel / zoom;
+				mCamera.mPos.y -= events.motion.yrel / zoom;
 			}
 			break;
 
@@ -68,11 +73,11 @@ namespace badEngine
 
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
-		const float zoom = 1.0f / mCamera.scale;
+		const float zoom = 1.0f / mCamera.mScale;
 
 		const float radius_x = (w * 0.5f) * zoom;
 		const float radius_y = (h * 0.5f) * zoom;
-		const auto& cam_pos = mCamera.pos;
+		const auto& cam_pos = mCamera.mPos;
 
 		return {
 			cam_pos.x - radius_x,
@@ -87,7 +92,7 @@ namespace badEngine
 		constexpr double pi = 3.141592653589793f;
 		constexpr double pi2 = 6.28318530718f;
 
-		mCamera.radians = std::fmod(mCamera.radians + mRotationSpeed * dt, pi2);
+		mCamera.mRadians = std::fmod(mCamera.mRadians + mRotationSpeed * dt, pi2);
 	}
 
 	const badCore::Transform MouseCameraController::get_camera()const noexcept
