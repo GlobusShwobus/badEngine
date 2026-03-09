@@ -89,14 +89,7 @@ namespace badEngine
 
 	void MouseCameraController::rotate_by(float dt) noexcept
 	{
-		constexpr double pi = 3.141592653589793f;
-		constexpr double pi2 = 6.28318530718f;
-
-		mCamera.mRadians = std::fmod(mCamera.mRadians + mRotationSpeed * dt, pi2);
-	}
-
-	const badCore::Transform MouseCameraController::get_camera()const noexcept
-	{
-		return mCamera;
+		float new_radians = std::fmod(mCamera.get_radians() + mRotationSpeed * dt, badCore::TAU);
+		mCamera.set_rotation(new_radians);
 	}
 }

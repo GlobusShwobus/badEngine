@@ -158,7 +158,7 @@ namespace badCore
 
 		//4) apply a tiny epsilon to entryT to avoid edges cases like traversing EXACTLY on the edges.
 		//also check again if entry is within the maximum segment length
-		float currentT = entryT + EPSILON_core;
+		float currentT = entryT + badCore::EPSILON;
 		if (currentT > segmentLength)
 			return;
 

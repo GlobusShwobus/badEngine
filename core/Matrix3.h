@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include "Float2.h"
 
 namespace badCore
@@ -48,11 +47,8 @@ namespace badCore
 			return m;
 		}
 
-		static Mat3 rotation(float radians)noexcept
+		constexpr static Mat3 rotation(float s, float c)noexcept
 		{
-			float s = std::sin(radians);
-			float c = std::cos(radians);
-
 			Mat3 m;
 			m.a = c;
 			m.b = -s;

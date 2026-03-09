@@ -22,11 +22,12 @@ namespace badEngine
 
 		void rotate_by(float dt) noexcept;
 
-		const badCore::Transform get_camera()const noexcept;
+
+
+		badCore::Transform mCamera;
 
 	private:
 
-		badCore::Transform mCamera;
 		bool mDragging;
 		float mRotationSpeed;
 	};
