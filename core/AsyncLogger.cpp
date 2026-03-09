@@ -23,20 +23,24 @@ namespace badCore
 	}
 
 	void AsyncLogger::process() {
-		while (mRunning || !mQueue.empty()) {
-			std::unique_lock<std::mutex> lock(mSync);
+		while (true) {
+			std::queue<std::string> localQueue;
+			{
+				std::unique_lock<std::mutex> lock(mSync);
+				mCondition.wait(lock, [this]() {
+					return !mQueue.empty() || !mRunning;
+					});
 
-			mCondition.wait(lock, [this]() {
-				return !mQueue.empty() || !mRunning;
-				});
+				if (!mRunning && mQueue.empty()) break;
 
-			while (!mQueue.empty()) {
-				std::string msg = std::move(mQueue.front());
-				mQueue.pop();
+				//swap to not fiddle around with locks
+				std::swap(mQueue, localQueue);
+			}
 
-				lock.unlock();
-				std::cout << msg << '\n';
-				lock.lock();
+			// Process logs outside the lock!
+			while (!localQueue.empty()) {
+				std::cout << localQueue.front() << std::endl;
+				localQueue.pop();
 			}
 		}
 	}
