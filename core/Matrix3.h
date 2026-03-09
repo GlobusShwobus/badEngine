@@ -48,10 +48,10 @@ namespace badCore
 			return m;
 		}
 
-		static Mat3 rotation(float angle)noexcept
+		static Mat3 rotation(float radians)noexcept
 		{
-			float s = std::sin(angle);
-			float c = std::cos(angle);
+			float s = std::sin(radians);
+			float c = std::cos(radians);
 
 			Mat3 m;
 			m.a = c;
