@@ -21,10 +21,10 @@ namespace badEngine
 		badCore::Rect get_viewport(SDL_Window* const window)const;
 
 		badCore::Transform mCamera;
-		float mRotationSpeed;
+
 
 	private:
-
+		float mRotationSpeed;
 		bool mDragging;
 	};
 }
