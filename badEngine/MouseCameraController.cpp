@@ -4,6 +4,11 @@
 
 namespace badEngine
 {
+	MouseCameraController::MouseCameraController() noexcept
+		:mCamera({ 0,0 }, 1.0f, 0)
+	{
+	}
+
 	void MouseCameraController::update(float dt, const SDL_Event& events)noexcept
 	{
 		switch (events.type)
@@ -11,10 +16,10 @@ namespace badEngine
 		case SDL_EVENT_KEY_DOWN:
 
 			if (events.key.key == SDLK_Q)
-				rotate_by(dt);
+				rotate_by(dt);//the camera perspective might be messing with me, maybe fliped is correct
 
 			if (events.key.key == SDLK_E)
-				rotate_by(-dt);
+				rotate_by(-dt);//the camera perspective might be messing with me, maybe fliped is correct
 
 			break;
 

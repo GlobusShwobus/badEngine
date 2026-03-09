@@ -13,7 +13,7 @@ namespace badEngine
 		static constexpr float ZOOM_OUT = 0.75f;
 
 	public:
-		MouseCameraController() = default;
+		MouseCameraController() noexcept;
 
 		void update(float dt, const SDL_Event& events)noexcept;
 

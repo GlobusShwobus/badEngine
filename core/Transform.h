@@ -8,7 +8,7 @@ namespace badCore
 	struct Transform 
 	{
 		Transform(const float2& pos, float scale, float radians)
-			:pos(pos), scale(scale), radians(radians)
+			:mPos(pos), mScale(scale), mRadians(radians)
 		{
 		}
 
@@ -16,8 +16,8 @@ namespace badCore
 
 		Mat3 transform_inverse()const noexcept;
 
-		class float2 pos;
-		float scale;
-		float radians;;
+		class float2 mPos;
+		float mScale;
+		float mRadians;;
 	};
 }
