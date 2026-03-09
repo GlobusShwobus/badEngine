@@ -21,10 +21,10 @@ namespace badEngine
 		case SDL_EVENT_MOUSE_WHEEL:
 
 			if (events.wheel.y > 0) {
-				mCamera.scale_by(ZOOM_OUT);
+				mCamera.mScale *= ZOOM_OUT;
 			}
 			else if (events.wheel.y < 0) {
-				mCamera.scale_by(ZOOM_IN);
+				mCamera.mScale *= ZOOM_IN;
 			}
 			break;
 
@@ -46,13 +46,10 @@ namespace badEngine
 
 			//NOTE: on zoom to keep the dragging relative to the zoom, divide delta by zoom
 			if (mDragging) {
-				// Convert screen movement to world movement
-				float zoom = mCamera.get_scale();
+				float zoom = mCamera.mScale;
 
-				mCamera.move_by(badCore::float2(
-					-events.motion.xrel / zoom,
-					-events.motion.yrel / zoom
-				));
+				mCamera.mPos.x -= events.motion.xrel / zoom;
+				mCamera.mPos.y -= events.motion.yrel / zoom;
 			}
 			break;
 
@@ -66,11 +63,11 @@ namespace badEngine
 
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
-		const float zoom = 1.0f / mCamera.get_scale();
+		const float zoom = 1.0f / mCamera.mScale;
 
 		const float radius_x = (w * 0.5f) * zoom;
 		const float radius_y = (h * 0.5f) * zoom;
-		const auto& cam_pos = mCamera.get_pos();
+		const auto& cam_pos = mCamera.mPos;
 
 		return {
 			cam_pos.x - radius_x,
@@ -80,14 +77,12 @@ namespace badEngine
 		};
 	}
 
-	void MouseCameraController::rotate_by(float dt) noexcept {
-		const float angle = mCamera.get_angle();
-		float new_angle = angle + mRotationSpeed * dt;
+	void MouseCameraController::rotate_by(float dt) noexcept
+	{
+		constexpr double pi = 3.141592653589793f;
+		constexpr double pi2 = 6.28318530718f;
 
-		if (new_angle > 360.0f) new_angle -= 360.0f;
-		if (new_angle < 0.0f)   new_angle += 360.0f;
-
-		mCamera.set_angle(new_angle);
+		mCamera.mRadians = std::fmod(mCamera.mRadians + mRotationSpeed * dt, pi2);
 	}
 
 	const badCore::Transform MouseCameraController::get_camera()const noexcept

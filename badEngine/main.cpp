@@ -23,6 +23,7 @@
 #include "Renderer.h"
 #include "EngineUtils.h"
 #include "Draw.h"
+#include "AsyncLogger.h"
 
 int main() {
 
@@ -92,10 +93,12 @@ int main() {
             Color col(rng.get(1, 255), rng.get(1, 255), rng.get(1, 255), 255);
             float scalr_differential = rng.get(0.005f, 0.01f);
 
-            entities.emplace_back(std::move(model), pos, angular_vel, col, scalr_differential);
+            std::vector<float2> vmodel(model.begin(), model.end());
+
+            entities.emplace_back(std::move(vmodel), pos, angular_vel, col, scalr_differential);
         }
 
-
+        badCore::AsyncLogger logger;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -140,14 +143,14 @@ int main() {
 
             for (auto& e : entities) {
                 Mat3 world = window_mat * camera_mat * e.get_transform();
-                const auto& model = e.get_model();
-                draw_closed_model(renderer.get(), model.data(), model.size(), world, e.get_color());
+                const auto& model = e.mModel;
+                draw_closed_model(renderer.get(), model.data(), model.size(), world, e.col);
             }
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_RenderPresent(renderer.get());
 
-            std::cout << "FPS: " << 1 / dt<<'\n';
+            logger.log(std::string("FPS ") + std::to_string(1 / dt));
         }
     }
     _CrtDumpMemoryLeaks();
