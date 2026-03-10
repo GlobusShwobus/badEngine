@@ -3,10 +3,9 @@
 
 namespace badWindow
 {
-	Canvas make_canvas(Uint32 width, Uint32 height, SDL_Renderer* const renderer) 
+	Canvas make_canvas(SDL_Renderer* const renderer, Uint32 width, Uint32 height) noexcept
 	{
-		//NOTE: don't check renderer existance. if it fails, let SDL_CreateTexture fail for a bonus SDL_GetError
-		//create texture
+		//NOTE: don't check renderer existance. if it fails, let SDL_CreateTexture fail for a SDL_GetError
 		SDL_Texture* texture = SDL_CreateTexture(
 			renderer,
 			SDL_PIXELFORMAT_RGBA8888,

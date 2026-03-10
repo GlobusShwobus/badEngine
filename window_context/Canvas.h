@@ -6,7 +6,8 @@
 namespace badWindow
 {
 	struct CanvasDeleter {
-		void operator()(SDL_Texture* c) {
+		void operator()(SDL_Texture* c) 
+		{
 			if (c)
 				SDL_DestroyTexture(c);
 		}
@@ -14,5 +15,5 @@ namespace badWindow
 
 	using Canvas = std::unique_ptr<SDL_Texture, CanvasDeleter>;
 	
-	Canvas make_canvas(Uint32 width, Uint32 height, SDL_Renderer* const renderer);
+	Canvas make_canvas(SDL_Renderer* const renderer, Uint32 width, Uint32 height) noexcept ;
 }

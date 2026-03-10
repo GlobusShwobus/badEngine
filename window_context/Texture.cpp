@@ -5,18 +5,16 @@
 
 namespace badWindow
 {
-	Texture make_texture(SDL_Renderer* const renderer, SDL_Surface* const surface)
+	Texture make_texture(SDL_Renderer* const renderer, SDL_Surface* const surface)noexcept
 	{
 		assert(renderer != nullptr);
 		assert(surface != nullptr);
 		return Texture{ SDL_CreateTextureFromSurface(renderer, surface) };
 	}
 
-	Texture make_texture(SDL_Renderer* const renderer, const char* path)
+	Texture make_texture(SDL_Renderer* const renderer, const std::string& path) noexcept
 	{
 		assert(renderer != nullptr);
-		assert(path != nullptr);
-
-		return Texture{ IMG_LoadTexture(renderer, path) };
+		return Texture{ IMG_LoadTexture(renderer, path.c_str()) };
 	}
 }

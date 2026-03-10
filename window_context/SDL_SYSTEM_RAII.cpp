@@ -11,7 +11,8 @@ namespace badWindow
 			throw std::runtime_error(std::string("Failed to init SDL: ") + SDL_GetError());
 	}
 
-	SDL_SYSTEM_RAII::~SDL_SYSTEM_RAII() {
+	SDL_SYSTEM_RAII::~SDL_SYSTEM_RAII()
+	{
 		SDL_Quit();
 	}
 }
