@@ -5,7 +5,7 @@
 
 namespace badWindow 
 {
-	Sprite::Sprite(SDL_Texture* texture)
+	Sprite::Sprite(SDL_Texture* const texture)
 		:mTexture(texture)
 	{
 		if (!mTexture)
