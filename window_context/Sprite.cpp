@@ -15,6 +15,28 @@ namespace badWindow
 		mSource = SDL_FRect(0, 0, mTextureW, mTextureH);
 	}
 
+	Sprite::Sprite(Sprite&& rhs)noexcept
+		:mTexture(rhs.mTexture), mSource(rhs.mSource), mTextureW(rhs.mTextureW), mTextureH(rhs.mTextureH)
+	{
+		rhs.mTexture = nullptr;
+	}
+	Sprite& Sprite::operator=(Sprite&& rhs)noexcept
+	{
+		if (this != &rhs) {
+			mTexture = rhs.mTexture;
+			mSource = rhs.mSource;
+			mTextureW = rhs.mTextureW;
+			mTextureH = rhs.mTextureH;
+		}
+		return *this;
+	}
+
+	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
+	{
+		//NOTE:: if drawing fails, let SDL fail for SDL_GetError
+		return SDL_RenderTexture(renderer, mTexture, &mSource, &dest);
+	}
+
 	void Sprite::set_source_pos(float x, float y)noexcept
 	{
 		assert(x >= 0 && y >= 0);
