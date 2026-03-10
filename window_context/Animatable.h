@@ -3,43 +3,46 @@
 #include "Sprite.h"
 #include <SDL3/SDL_rect.h>
 #include <vector>
+#include <unordered_map>
 
 namespace badWindow
 {
-	// Extension of sprite. Manages the source control by updating the source on a given time interval.
-	// Subdivide the whole image supporting multiple different animations, or only specific region. Does not support different sized frames.
-	class Animation final
+	enum class AnimID
+	{
+		Idle,
+		Left,
+		Right
+	};
+
+	struct Clip {
+		std::vector<SDL_FRect> frames;
+		float frame_duration = 0.08f;
+		bool loop = false;
+	};
+
+	Clip make_clip(float texture_w, float texture_h, const SDL_FRect& first_frame, uint16_t frame_count);
+
+	class AnimationPlayer final
 	{
 	public:
-		Animation(SDL_Texture* texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns = nullptr, uint16_t* nRows = nullptr);
+		explicit AnimationPlayer(SDL_Texture* const texture);
 
-		// update step
-		void update(float step)noexcept;
+		void update(float dt) noexcept;
 
-		// set interval in which a frame should be changed
-		void set_hold_time(float length)noexcept;
+		void add_clip(AnimID id, Clip clip);
 
-		// set the line of animation to run
-		uint16_t get_lines_count()const noexcept;
+		void play(AnimID id) noexcept;
 
-		//get the count for lines total
-		void set_line(uint16_t line)noexcept;
+		bool draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept;
 
-		const SDL_FRect& get_source()const noexcept;
-
-		SDL_Texture* const get_texture()const noexcept;
+		const Sprite& get_sprite()const noexcept;
 
 	private:
+		std::unordered_map<AnimID, Clip> mClips;
+		const Clip* mCurrentClip = nullptr;
 		Sprite mSprite;
-		std::vector<SDL_FPoint> mFrames;
 
-		float mFrameLength = 0.08f;
-		float mCurrFrameDuration = 0.0f;
-
-		uint16_t mColumnsN = 0;
-		uint16_t mCurrentColumn = 0;
-
-		uint16_t mRowsN = 0;
-		uint16_t mCurrentRow = 0;
+		float mTimer;
+		uint32_t mCurrentFrame;
 	};
 }

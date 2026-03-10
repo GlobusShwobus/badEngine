@@ -3,77 +3,99 @@
 
 namespace badWindow
 {
-	Animation::Animation(SDL_Texture* texture, uint16_t frameWidth, uint16_t frameHeight, uint16_t* nColumns, uint16_t* nRows)
-		:mSprite(texture)
+	Clip make_clip(float texture_w, float texture_h, const SDL_FRect& first_frame, uint16_t frame_count)
 	{
-		float textureW, textureH;
-		SDL_GetTextureSize(mSprite.mTexture, &textureW, &textureH);
-		//set values for iteration, internally frames are stored as 2D array
-		uint16_t columnCount = (nColumns != nullptr) ? *nColumns : static_cast<uint16_t>(textureW / frameWidth);
-		uint16_t rowCount = (nRows != nullptr) ? *nRows : static_cast<uint16_t>(textureH / frameHeight);
+		if (frame_count == 0)
+			throw std::runtime_error("make_clip: frame_count cannot be zero");
 
-		//check if the entire demand is within the control block
-		assert(textureW >= (columnCount * frameWidth) && textureH >= (rowCount * frameHeight));
+		const float frame_w = first_frame.w;
+		const float frame_h = first_frame.h;
 
-		//setup a 2D array
-		mFrames.reserve(static_cast<std::size_t>(rowCount * columnCount));
-		for (uint16_t y = 0; y < rowCount; ++y) {
-			for (uint16_t x = 0; x < columnCount; ++x) {
-				mFrames.emplace_back(x * frameWidth, y * frameHeight);
-			}
+		if (frame_w <= 0.f || frame_h <= 0.f)
+			throw std::runtime_error("make_clip: frame size must be positive");
+
+		// check first frame inside texture
+		if (first_frame.x < 0 || first_frame.y < 0 ||
+			first_frame.x + frame_w > texture_w ||
+			first_frame.y + frame_h > texture_h)
+		{
+			throw std::runtime_error("make_clip: first frame outside texture bounds");
 		}
 
-		mColumnsN = columnCount;
-		mRowsN = rowCount;
+		// check entire animation strip fits
+		const float last_frame_right = first_frame.x + frame_w * frame_count;
 
-		mSprite.set_source_size(static_cast<float>(frameWidth), static_cast<float>(frameHeight));
+		if (last_frame_right > texture_w)
+			throw std::runtime_error("make_clip: animation strip exceeds texture width");
+
+
+		Clip clip;
+		clip.frames.reserve(frame_count);
+
+		for (uint16_t i = 0; i < frame_count; ++i)
+		{
+			clip.frames.emplace_back(SDL_FRect{ first_frame.x + frame_w * i, first_frame.y, frame_w, frame_h });
+		}
+
+		return clip;
 	}
 
-	void Animation::update(float step)noexcept {
-		//add to the time counter
-		mCurrFrameDuration += step;
+	explicit AnimationPlayer::AnimationPlayer(SDL_Texture* const texture)
+		:mSprite(texture), mTimer(0), mCurrentFrame(0)
+	{
+	}
 
-		if (mCurrFrameDuration >= mFrameLength) {
+	void AnimationPlayer::update(float dt) noexcept
+	{
+		if (!mCurrentClip)
+			return;
 
-			//while if counter is more than hold time
-			while (mCurrFrameDuration >= mFrameLength) {
-				++mCurrentColumn;					    //next frame
-				if (mCurrentColumn >= mColumnsN)        //if frame reached the end
-					mCurrentColumn = 0;				    //reset
+		mTimer += dt;
 
-				mCurrFrameDuration -= mFrameLength;         //subtract 1 update cycle worth of time
+		if (mTimer >= mCurrentClip->frame_duration)
+		{
+			while (mTimer >= mCurrentClip->frame_duration)
+			{
+				mTimer -= mCurrentClip->frame_duration;
+
+				++mCurrentFrame;
+
+				if (mCurrentFrame >= mCurrentClip->frames.size()) {
+					if (mCurrentClip->loop)
+						mCurrentFrame = 0;
+					else
+						mCurrentFrame = static_cast<uint32_t>(mCurrentClip->frames.size() - 1);
+				}
 			}
-
-			//set source position [y*width+x]
-			const auto& frame = mFrames[static_cast<std::size_t>(mCurrentRow * mColumnsN + mCurrentColumn)];
-			mSprite.set_source_pos(frame.x, frame.y);
+			mSprite.set_source(mCurrentClip->frames[mCurrentFrame]);
 		}
 	}
 
-	void Animation::set_hold_time(float length)noexcept
+	void AnimationPlayer::add_clip(AnimID id, Clip clip)
 	{
-		assert(length > 0.0001f);
-		mFrameLength = length;
+		mClips.emplace(id, std::move(clip));
 	}
 
-	uint16_t Animation::get_lines_count()const noexcept
+	void AnimationPlayer::play(AnimID id) noexcept
 	{
-		return mRowsN;
+		auto it = mClips.find(id);
+		assert(it != mClips.end());
+
+		mCurrentClip = &it->second;
+
+		mCurrentFrame = 0;
+		mTimer = 0.f;
+
+		mSprite.set_source(mCurrentClip->frames[0]);
 	}
 
-	void Animation::set_line(uint16_t line)noexcept 
+	bool AnimationPlayer::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
 	{
-		assert(line < mRowsN);
-		mCurrentRow = line;
+		return mSprite.draw(renderer, dest);
 	}
 
-	const SDL_FRect& Animation::get_source()const noexcept
+	const Sprite& AnimationPlayer::get_sprite()const noexcept
 	{
-		return mSprite.mSource;
-	}
-
-	SDL_Texture* const Animation::get_texture()const noexcept
-	{
-		return mSprite.mTexture;
+		return mSprite;
 	}
 }
