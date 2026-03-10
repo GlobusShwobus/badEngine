@@ -24,6 +24,7 @@ namespace badWindow
 	{
 		if (this != &rhs) {
 			mTexture = rhs.mTexture;
+			rhs.mTexture = nullptr;
 			mSource = rhs.mSource;
 			mTextureW = rhs.mTextureW;
 			mTextureH = rhs.mTextureH;
