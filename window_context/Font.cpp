@@ -4,7 +4,7 @@
 namespace badWindow
 {
 	Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
-		:mSprite(texture), mColumnsCount(columns_count)
+		:mSprite(texture), mColumnsCount(columns_count), mPosX(0), mPosY(0), mScale(1.0f)
 	{
 		//NOTE:: sprite will throw is texture is nullptr
 		const float sprite_w = mSprite.get_width();
@@ -68,5 +68,65 @@ namespace badWindow
 			}
 		}
 		rebuild_layout();
+	}
+
+	void Font::set_position(float x, float y) noexcept
+	{
+		mPosX = x;
+		mPosY = y;
+		rebuild_layout();
+	}
+
+	void Font::set_scale(float scale) noexcept
+	{
+		mScale = scale;
+		rebuild_layout();
+	}
+
+	float Font::get_scale()const noexcept
+	{
+		return mScale;
+	}
+
+	bool Font::draw(SDL_Renderer* const renderer) const noexcept
+	{
+		for (const auto& g : mGlyphs) {
+			if (g.src.w == 0.f)//spacebar
+				continue;
+
+			mSprite.draw(renderer, g.src, g.dst);
+		}
+
+		return true;
+	}
+
+	void Font::rebuild_layout() noexcept
+	{
+		float cursorX = mPosX;
+		float cursorY = mPosY;
+
+		const float w = mGlyphW * mScale;
+		const float h = mGlyphH * mScale;
+
+		for (auto& g : mGlyphs)
+		{
+			// newline marker
+			if (g.src.x == -1.f)
+			{
+				cursorX = mPosX;
+				cursorY += h;
+				continue;
+			}
+
+			g.dst =
+			{
+				cursorX,
+				cursorY,
+				w,
+				h
+			};
+
+			cursorX += w;
+		}
 	}
 }
