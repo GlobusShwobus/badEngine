@@ -32,10 +32,14 @@ namespace badWindow
 		return *this;
 	}
 
-	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
+	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& dst)const noexcept
 	{
-		//NOTE:: if drawing fails, let SDL fail for SDL_GetError
-		return SDL_RenderTexture(renderer, mTexture, &mSource, &dest);
+		return draw(renderer, mSource, dst);
+	}
+
+	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& src, const SDL_FRect& dst)const noexcept
+	{
+		return SDL_RenderTexture(renderer, mTexture, &src, &dst);
 	}
 
 	void Sprite::set_source_pos(float x, float y)noexcept
@@ -65,5 +69,20 @@ namespace badWindow
 		assert(aabb.x + aabb.w <= mTextureW);
 		assert(aabb.y + aabb.h <= mTextureH);
 		mSource = aabb;
+	}
+
+	const SDL_FRect& Sprite::get_source()const noexcept
+	{
+		return mSource;
+	}
+
+	float Sprite::get_width()const noexcept
+	{
+		return mTextureW;
+	}
+
+	float Sprite::get_height()const noexcept
+	{
+		return mTextureH;
 	}
 }

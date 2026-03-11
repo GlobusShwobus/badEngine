@@ -30,7 +30,7 @@
     <ClInclude Include="CircleCanvas.h">
       <Filter>temp</Filter>
     </ClInclude>
-    <ClInclude Include="Draw.h">
+    <ClInclude Include="FreeDraw.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="EngineUtils.h">
@@ -56,7 +56,7 @@
     <ClCompile Include="EngineUtils.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Draw.cpp">
+    <ClCompile Include="FreeDraw.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>

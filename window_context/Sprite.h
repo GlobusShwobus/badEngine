@@ -3,33 +3,126 @@
 
 namespace badWindow
 {
+	/// <summary>
+	/// A class for handling a region of a texture.
+	/// Sprite stores a non owning ptr to a texture. Copy semantics disabled, move custom.
+	/// </summary>
 	class Sprite final
 	{
 	public:
+		/**
+		* Caches texture, texture width and height and initalized the initial source region to size of the texture
+		* \param texture as texture
+		* \throws std::runtime_error if texture is nullptr
+		*/
 		explicit Sprite(SDL_Texture* const texture);
-		Sprite() = delete;
-
-		Sprite(const Sprite&) = delete;
-		Sprite& operator=(const Sprite&) = delete;
+		
+		/**
+		* Move constructs another Sprite class.
+		* 
+		* Swaps rhs.mTexture and *this.mTexture and sets rhs.mTexture as nullptr
+		* 
+		* Swaps other members as well.
+		* 
+		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
+		* 
+		* \param Sprite&&
+		* \throws noexcept
+		*/
 		Sprite(Sprite&& rhs)noexcept;
+
+		/**
+		* Move assigns rhs Sprite to lhs Sprite
+		* 
+		* Swaps rhs.mTexture and lhs.mTexture and sets rhs.mTexture as nullptr
+		* 
+		* Swaps other members as well.
+		* 
+		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
+		* 
+		* \param Sprite&&
+		* \throws noexcept
+		*/
 		Sprite& operator=(Sprite&& rhs)noexcept;
 
+		/// mTexture member is non owning so the destructor does nothing special
 		~Sprite()noexcept = default;
 
+		Sprite() = delete;
+		Sprite(const Sprite&) = delete;
+		Sprite& operator=(const Sprite&) = delete;
+
+		/**
+		* Sets the x and y members of mSource
+		* \param float x for x
+		* \param float y for y
+		* \throws In DEBUG asserts logical validity for x and y
+		* \throws noexcept
+		*/
 		void set_source_pos(float x, float y)noexcept;
 
+		/**
+		* Sets the w and h members of mSource
+		* \param float w for width
+		* \param float h for height
+		* \throws in DEBUG asserts logical validity for w and h
+		* \throws noexcept
+		*/
 		void set_source_size(float w, float h)noexcept;
 
+		/**
+		* Sets the given rect as source rect
+		* \param SDL_FRect for mSource
+		* \throws in DEBUG asserts logical validity given rect
+		* \throws noexcept
+		*/
 		void set_source(const SDL_FRect& aabb)noexcept;
 
-		bool draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept;
+		/**
+		* Draws this sprite on the screen with a given destination; using cached source as source.
+		*
+		* For more details consult SDL_RenderTexture documentation.
+		* \param renderer for rendering context
+		* \param dst that describes where to draw in the window
+		* \returns true of success or false on failure; call SDL_GetError() for more info
+		* \throws noexcept
+		*/
+		bool draw(SDL_Renderer* const renderer, const SDL_FRect& dst)const noexcept;
 
-		SDL_FRect mSource;
-		float mTextureW;
-		float mTextureH;
+		/**
+		* Draws this sprite on the screen with a given source and destination.
+		* 
+		* For more details consult SDL_RenderTexture documentation.
+		* \param renderer for rendering context
+		* \param src that describes the location of the texture
+		* \param dst that describes where to draw in the window
+		* \returns true of success or false on failure; call SDL_GetError() for more info
+		* \throws noexcept
+		*/
+		bool draw(SDL_Renderer* const renderer, const SDL_FRect& src, const SDL_FRect& dst)const noexcept;
+
+
+		/// <returns>mSource rectangle</returns>
+		const SDL_FRect& get_source()const noexcept;
+
+		/// <returns>float width of the texture</returns>
+		float get_width()const noexcept;
+
+		/// <returns>float height of the texture</returns>
+		float get_height()const noexcept;
 
 	private:
 
-		SDL_Texture* mTexture = nullptr;//not an owner so move assignment doesnt require cleanup of this
+		/// <summary> Non owning pointer of a SDL_Texture. It is expected the lifetime of texture is handled externally. </summary>
+		SDL_Texture* mTexture = nullptr;
+
+		/// <summary> A rectangle representing the area of the texture that is used for drawing. </summary>
+		SDL_FRect mSource;
+
+		/// <summary> Width of the texture </summary>
+		float mTextureW;
+
+		/// <summary> Height of the texture. </summary>
+		float mTextureH;
 	};
 }

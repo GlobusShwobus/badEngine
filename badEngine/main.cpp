@@ -22,8 +22,10 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "EngineUtils.h"
-#include "Draw.h"
+#include "FreeDraw.h"
 #include "AsyncLogger.h"
+#include "Animatable.h"
+#include "Font.h"
 
 int main() {
 
@@ -46,8 +48,8 @@ int main() {
         nlohmann::json window_conf = badEngine::load_json("../Configs/system_config.json");
         auto windowContextData = badEngine::create_window_description(window_conf, "sys_config");
 
-        Window window = make_window(windowContextData.heading.c_str(), windowContextData.width, windowContextData.height, windowContextData.flags);
-        Renderer renderer = make_renderer(window.get(), nullptr);
+        Window window = make_window(windowContextData.heading, windowContextData.width, windowContextData.height, windowContextData.flags);
+        Renderer renderer = make_renderer(window.get(), {});
 
 
 
@@ -100,6 +102,24 @@ int main() {
         }
         bool update_camera_sincos = false;
         badCore::AsyncLogger logger;
+
+
+
+        badWindow::Texture player = badWindow::make_texture(renderer.get(), "C:/Users/ADMIN/Desktop/badEngine/Textures/player.png");
+        badWindow::AnimationPlayer animation(player.get());
+        const auto& s = animation.get_sprite();
+
+        badWindow::Clip clip1 = badWindow::make_clip(s.get_width(), s.get_height(), SDL_FRect{0,0,32,32}, 8, 0.08f, true);
+        animation.add_clip(badWindow::AnimID::Left, std::move(clip1));
+        animation.play(badWindow::AnimID::Left);
+
+
+
+        badWindow::Texture fonttexture = badWindow::make_texture(renderer.get(), "C:/Users/ADMIN/Desktop/badEngine/Fonts/font_32x3.png");
+        badWindow::Font font(fonttexture.get(), 32,3);
+
+        font.set_text("i memed trump into office.\nno need to thank me");
+
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -126,11 +146,15 @@ int main() {
 
                 case SDL_EVENT_KEY_DOWN:
 
-                    if (EVENT.key.key == SDLK_Q)
+                    if (EVENT.key.key == SDLK_Q) {
                         update_camera_sincos = true;
+                        font.set_scale(font.get_scale() * 1.1f);
+                    }
 
-                    if (EVENT.key.key == SDLK_E)
+                    if (EVENT.key.key == SDLK_E) {
                         update_camera_sincos = true;
+                        font.set_scale(font.get_scale() * 0.9f);
+                    }
 
                     break;
 
@@ -171,6 +195,16 @@ int main() {
                 const auto& model = e.mModel;
                 draw_closed_model(renderer.get(), model.data(), model.size(), world, e.col);
             }
+
+
+            float mx, my;
+            SDL_GetMouseState(&mx, &my);
+            SDL_FRect dest{ mx,my,96,96 };
+            
+            animation.update(dt);
+            animation.draw(renderer.get(), dest);
+            font.set_position(mx,my);
+            font.draw(renderer.get());
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

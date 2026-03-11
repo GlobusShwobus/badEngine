@@ -22,9 +22,6 @@
     <ClInclude Include="Texture.h">
       <Filter>textures_types</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>textures_types</Filter>
-    </ClInclude>
     <ClInclude Include="Canvas.h">
       <Filter>textures_types</Filter>
     </ClInclude>
@@ -45,6 +42,9 @@
     </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>window_context</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>textures_types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

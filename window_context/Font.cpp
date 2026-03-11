@@ -7,14 +7,16 @@ namespace badWindow
 		:mSprite(texture), mColumnsCount(columns_count)
 	{
 		//NOTE:: sprite will throw is texture is nullptr
-		mGlyphW  = mSprite.mTextureW / columns_count;
-		mGlyphH  = mSprite.mTextureH / rows_count;
+		const float sprite_w = mSprite.get_width();
+		const float sprite_h = mSprite.get_height();
+		mGlyphW  = sprite_w / columns_count;
+		mGlyphH  = sprite_h / rows_count;
 		//assert that data is pixel perfect
 		const uint32_t assert_width = mGlyphW * columns_count;
 		const uint32_t assert_height = mGlyphH * rows_count;
 
-		assert(assert_width == mSprite.mTextureW);
-		assert(assert_height == mSprite.mTextureH);
+		assert(assert_width == sprite_w);
+		assert(assert_height == sprite_h);
 		//set inital value of width and height of the texture to chunck. pos does not matter yet
 		mSprite.set_source_size(mGlyphW, mGlyphH);
 	}
@@ -26,8 +28,8 @@ namespace badWindow
 			return;
 		
 		//AABB destinatioon = AABB(mDest.x, mDest.y, mDest.w, mDest.h);   //inital dest
-		const float glyphW = mSprite.mTextureW;
-		const float glyphH = mSprite.mTextureH;
+		const float glyphW = mSprite.get_width();;
+		const float glyphH = mSprite.get_height();
 		
 		for (char c : text) {
 			//newline

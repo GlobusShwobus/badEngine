@@ -135,7 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CircleCanvas.h" />
-    <ClInclude Include="Draw.h" />
+    <ClInclude Include="FreeDraw.h" />
     <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
@@ -145,7 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="badEngine.cpp" />
-    <ClCompile Include="Draw.cpp" />
+    <ClCompile Include="FreeDraw.cpp" />
     <ClCompile Include="EngineUtils.cpp" />
     <ClCompile Include="load_data.cpp" />
     <ClCompile Include="main.cpp" />
