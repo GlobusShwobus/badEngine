@@ -3,56 +3,68 @@
 
 namespace badWindow
 {
-	Font::Font(SDL_Texture* texture, uint32_t columnsCount, uint32_t rowsCount)
-		:mSprite(texture),
-		mColumnsCount(columnsCount)
+	Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
+		:mSprite(texture), mColumnsCount(columns_count)
 	{
-		float textureW, textureH;
-		SDL_GetTextureSize(mSprite.mTexture, &textureW, &textureH);
-
-		int mGlyphWidth = static_cast<unsigned int>(textureW / columnsCount);
-		int mGlyphHeight = static_cast<unsigned int>(textureH / rowsCount);
+		//NOTE:: sprite will throw is texture is nullptr
+		mGlyphW  = mSprite.mTextureW / columns_count;
+		mGlyphH  = mSprite.mTextureH / rows_count;
 		//assert that data is pixel perfect
-		assert(mGlyphWidth * columnsCount == textureW);
-		assert(mGlyphHeight * rowsCount == textureH);
-		mSprite.set_source_size(static_cast<float>(mGlyphWidth), static_cast<float>(mGlyphHeight));
+		const uint32_t assert_width = mGlyphW * columns_count;
+		const uint32_t assert_height = mGlyphH * rows_count;
+
+		assert(assert_width == mSprite.mTextureW);
+		assert(assert_height == mSprite.mTextureH);
+		//set inital value of width and height of the texture to chunck. pos does not matter yet
+		mSprite.set_source_size(mGlyphW, mGlyphH);
 	}
 
-	void Font::set_text(std::string_view string)noexcept
+	void Font::set_text(const std::string& text)noexcept
 	{
-		clear();         
-		if (string.empty()) {
+		mGlyphs.clear();         
+		if (text.empty())
 			return;
-		}
-
+		
 		//AABB destinatioon = AABB(mDest.x, mDest.y, mDest.w, mDest.h);   //inital dest
 		const float glyphW = mSprite.mTextureW;
 		const float glyphH = mSprite.mTextureH;
-
-		for (char c : string) {
+		
+		for (char c : text) {
+			//newline
+			if (c == '\n'){
+				Glyph g{};
+				g.src = { -1.f,-1.f,0.f,0.f }; // marker
+				mGlyphs.push_back(g);
+				continue;
+			}
+			//spacebar
+			if (c == ' '){
+				Glyph g{};
+				g.src = { 0.f,0.f,0.f,0.f }; // invisible glyph
+				mGlyphs.push_back(g);
+				continue;
+			}
 			//for any printable character
 			if (c >= ASCII_begin + 1 && c <= ASCII_end) {
-				int glyphIndex = c - ASCII_begin;             //convert char to its index in the texture atlas (0 based)
+				int glyphIndex = c - ASCII_begin;
 
-				const uint32_t sourceX = glyphIndex % mColumnsCount; //unflatten 2D to 1D
-				const uint32_t sourceY = glyphIndex / mColumnsCount; //unflatten 2D to 1D
-				mLetters.emplace_back(
-						static_cast<float>(sourceX) * glyphW, //source x
-						static_cast<float>(sourceY) * glyphH, //source y
-						static_cast<float>(glyphW),           //source w
-						static_cast<float>(glyphH)            //source h
-				);
+				const uint32_t sx = glyphIndex % mColumnsCount;	 //unflatten 2D to 1D
+				const uint32_t sy = glyphIndex / mColumnsCount;	 //unflatten 2D to 1D
+
+				//create a glyph and only set its source
+				Glyph g;
+
+				g.src =
+				{
+					sx * mGlyphW,
+					sy * mGlyphH,
+					mGlyphW,
+					mGlyphH
+				};
+
+				mGlyphs.push_back(g);
 			}
 		}
-	}
-
-	void Font::clear()noexcept
-	{
-		mLetters.clear();
-	}
-
-	SDL_Texture* const Font::get_texture()const noexcept
-	{
-		return mSprite.mTexture;
+		rebuild_layout();
 	}
 }

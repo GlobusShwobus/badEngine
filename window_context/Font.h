@@ -1,41 +1,100 @@
 #pragma once
 
-#include <string_view>
+#include <string>
 #include <vector>
 #include "Sprite.h"
 
 namespace badWindow
 {
-	// Font is an extension of Sprite. Instead of having a single source region of a texture, font provides multiple
-	// for text drawing. Expects respect of ASCII character order. Only characters between ' ' and '~' are supported.
+	struct Glyph {
+		SDL_FRect src;
+		SDL_FRect dst;
+	};
+
 	class Font final
 	{
 	public:
 
-		Font(SDL_Texture* texture, uint32_t columnsCount, uint32_t rowsCount);
+		Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count);
 
-		// collects pieces of the texture to draw as a text, if pos or scale is changed after set_text, text is not updated
-		void set_text(std::string_view string)noexcept;
+		void set_text(const std::string& text)noexcept;
 
-		//clears all text
-		void clear()noexcept;
-
-		SDL_Texture* const get_texture()const noexcept;
-
-		constexpr auto begin()const noexcept
+		void set_position(float x, float y) noexcept
 		{
-			return mLetters.begin();
+			mPosX = x;
+			mPosY = y;
+			rebuild_layout();
 		}
-		constexpr auto end()const noexcept
+
+		void set_scale(float scale) noexcept
 		{
-			return mLetters.end();
+			mScale = scale;
+			rebuild_layout();
 		}
+
+		float get_scale()const noexcept
+		{
+			return mScale;
+		}
+
+		bool draw(SDL_Renderer* const renderer) const noexcept
+		{
+			for (const auto& g : mGlyphs){
+				if (g.src.w == 0.f)//spacebar
+					continue;
+
+				mSprite.draw(renderer, g.src, g.dst);
+			}
+
+			return true;
+		}
+
 	private:
+		std::vector<Glyph> mGlyphs;
 		Sprite mSprite;
-		std::vector<SDL_FRect> mLetters;
+
 		uint32_t mColumnsCount = 0;
+
+		float mPosX = 0.f;
+		float mPosY = 0.f;
+
+		float mScale = 1.f;
+
+		float mGlyphW = 0.f;
+		float mGlyphH = 0.f;
 
 		static constexpr char ASCII_begin = ' ';
 		static constexpr char ASCII_end = '~';
+
+
+		void rebuild_layout() noexcept
+		{
+			float cursorX = mPosX;
+			float cursorY = mPosY;
+
+			const float w = mGlyphW * mScale;
+			const float h = mGlyphH * mScale;
+
+			for (auto& g : mGlyphs)
+			{
+				// newline marker
+				if (g.src.x == -1.f)
+				{
+					cursorX = mPosX;
+					cursorY += h;
+					continue;
+				}
+
+				g.dst =
+				{
+					cursorX,
+					cursorY,
+					w,
+					h
+				};
+
+				cursorX += w;
+			}
+		}
 	};
 }
