@@ -3,7 +3,7 @@
 
 namespace badWindow
 {
-	void TextureMap::clear()
+	void TextureMap::clear()noexcept
 	{
 		mTextures.clear();
 	}

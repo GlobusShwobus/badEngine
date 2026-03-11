@@ -102,15 +102,16 @@ namespace badWindow
 
 	void Font::rebuild_layout() noexcept
 	{
+		//trackers for positions of glyphs. initally pos x and y for the first letter
 		float cursorX = mPosX;
 		float cursorY = mPosY;
 
+		//adjusted size of the glyphs based the base width height of a cell
 		const float w = mGlyphW * mScale;
 		const float h = mGlyphH * mScale;
 
-		for (auto& g : mGlyphs)
-		{
-			// newline marker
+		for (auto& g : mGlyphs){
+			//new line glyph 
 			if (g.src.x == -1.f)
 			{
 				cursorX = mPosX;

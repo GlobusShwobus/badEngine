@@ -118,35 +118,6 @@ namespace badWindow
 		* This is required as Font manages both source and dest of the drawn text.
 		* \throws noexcept
 		*/
-		void rebuild_layout() noexcept
-		{
-			//trackers for positions of dest. initally pos x and y
-			float cursorX = mPosX;
-			float cursorY = mPosY;
-			//size adjusted to scale. base being the gylphs width height
-			const float w = mGlyphW * mScale;
-			const float h = mGlyphH * mScale;
-
-			for (auto& g : mGlyphs)
-			{
-				// newline marker
-				if (g.src.x == -1.f)
-				{
-					cursorX = mPosX;
-					cursorY += h;
-					continue;
-				}
-
-				g.dst =
-				{
-					cursorX,
-					cursorY,
-					w,
-					h
-				};
-
-				cursorX += w;
-			}
-		}
+		void rebuild_layout() noexcept;
 	};
 }
