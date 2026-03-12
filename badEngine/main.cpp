@@ -26,6 +26,7 @@
 #include "AsyncLogger.h"
 #include "Animatable.h"
 #include "Font.h"
+#include "badHTTP.h"
 
 int main() {
 
@@ -42,6 +43,7 @@ int main() {
 
         SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
 
+        badHTTP::MultiCurl cum;
 
         //using namespace badEngine;
         validate_json_file("../Configs/system_config.json", expected_file_type::WINDOW_JSON);
