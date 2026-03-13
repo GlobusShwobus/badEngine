@@ -1,9 +1,34 @@
 #pragma once
 
 namespace badCore {
+	/**
+	* \brief Lightweight 32-bit RGBA color container.
+	*
+	* Color stores a single pixel using a packed 32-bit integer. Each color
+	* component occupies one byte of the internal dword in the following layout:
+	*
+	*      31 .............. 24 | 23 .............. 16 | 15 .............. 8 | 7 .............. 0
+	*           Alpha (A)          Blue (B)                Green (G)            Red (R)
+	*
+	* Bit packing format:
+	*
+	*      dword = (A << 24) | (B << 16) | (G << 8) | R
+	*
+	* This layout corresponds to an **RGBA byte ordering in little-endian
+	* memory**, meaning the bytes in memory appear as:
+	*
+	*      [R][G][B][A]
+	*
+	* Each component ranges from 0–255 and can be accessed or modified
+	* individually through the provided getters and setters.
+	*
+	* \note The alpha channel defaults to 255 (fully opaque) when not specified.
+	*/
 	class Color final
 	{
 	public:
+		unsigned int dword;
+
 		constexpr Color()                 noexcept :dword(0) {}
 		constexpr Color(unsigned int dw)  noexcept :dword(dw) {}
 
@@ -72,8 +97,6 @@ namespace badCore {
 		{
 			return dword & 0xFFu;
 		}
-
-		unsigned int dword;
 	};
 
 	namespace Colors 
