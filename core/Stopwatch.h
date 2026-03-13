@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <concepts>
 
 namespace badCore
 {
@@ -21,16 +22,16 @@ namespace badCore
 		/// <summary> Intializes time measurements. Internally calls std::chrono::steady_clock::now() </summary>
 		Stopwatch()noexcept;
 
-		/// <returns> Difference between now and when the last time delta was asked </returns>
+		/// <returns> Difference between now and then in double </returns>
 		double dt_float() noexcept;
 
-		/// <returns> Difference between now and when the last time delta was asked </returns>
+		/// <returns> Difference between now and then in size_t milliseconds </returns>
 		std::size_t dt_millisec() noexcept;
 
-		/// <returns> Difference between now and when the last time delta was asked </returns>
+		/// <returns> Difference between now and then in size_t microseconds </returns>
 		std::size_t dt_microsec() noexcept;
 
-		/// <returns> Difference between now and when the last time delta was asked </returns>
+		/// <returns> Difference between now and then in size_t nanoseconds </returns>
 		std::size_t dt_nanosec() noexcept;
 
 		/// <summary> Sets the stopwatch to std::chrono::steady_clock::now() </summary>
