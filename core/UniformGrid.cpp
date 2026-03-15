@@ -39,7 +39,7 @@ namespace badCore
 			cell.clear();
 	}
 
-	void UniformGrid::insert(int user_index, const Rect& box)noexcept
+	void UniformGrid::insert(int user_index, const Rect& box)
 	{
 		//NOTE: the reason for std::ceil is because we must include partially overlapping cells
 		int minx = static_cast<int>((box.min.x - mBounds.min.x) * invCellW);					     //left edge (round down)
@@ -65,7 +65,7 @@ namespace badCore
 		return mCells;
 	}
 
-	void UniformGrid::query_region(const Rect& region, Sequence<int>& results)const noexcept
+	void UniformGrid::query_region(const Rect& region, Sequence<int>& results)const
 	{
 		//NOTE: the reason for std::ceil is because we must include partially overlapping cells
 		int minx = static_cast<int>((region.min.x - mBounds.min.x) * invCellW);					             //left edge (round down)
@@ -87,21 +87,22 @@ namespace badCore
 		}
 	}
 
-	int UniformGrid::query_point(const float2& point)const noexcept
+	int UniformGrid::query_point(const Point& point)const noexcept
 	{
 		int x = static_cast<int>((point.x - mBounds.min.x) * invCellW);
 		int y = static_cast<int>((point.y - mBounds.min.y) * invCellH);
 
-		if (x < 0 || x >= mColumns || y < 0 || y >= mRows) {
+		if (x < 0 || x >= mColumns || y < 0 || y >= mRows)
 			return -1;
-		}
 
 		return y * mColumns + x;
 	}
 
-	void UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const noexcept
+	void UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const
 	{
-		assert(mCells.size() > cellIndex && cellIndex >= 0);
+		if (cellIndex < 0 || cellIndex >= static_cast<int>(mCells.size()))
+			return;
+
 		//1) work back the formula [ y * mColums + x ] to get x and y origin to do arithmetic from -1 to 1
 		const int x = cellIndex % mColumns;//column index
 		const int y = cellIndex / mColumns;//row index
@@ -132,7 +133,7 @@ namespace badCore
 		}
 	}
 
-	void UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const noexcept
+	void UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const
 	{
 		//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
 		const float& segmentLength = ray.mLength;
@@ -229,10 +230,10 @@ namespace badCore
 		}
 	}
 
-	void UniformGrid::maintain_uniform_memory(std::size_t cell_capacity_target)
+	void UniformGrid::maintain_uniform_memory(std::size_t capacity)
 	{
 		for (auto& cell : mCells) {
-			cell.reserve(cell_capacity_target);
+			cell.reserve(capacity);
 		}
 	}
 
