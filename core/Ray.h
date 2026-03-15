@@ -160,7 +160,21 @@ namespace badCore
 	};
 
 	/**
-	* Runs a collision check and resolves if there is a collision.
-	*/
+	 * Performs a collision test against a surface and resolves the collision
+	 * by correcting the position and reflecting the velocity.
+	 *
+	 * If the object intersects the target surface:
+	 * - The velocity is reflected using the collision normal.
+	 * - The position is moved out of the surface along the normal by the
+	 *   reported penetration depth.
+	 *
+	 * The function also ensures the normal is oriented against the incoming
+	 * velocity before applying the reflection.
+	 *
+	 * \param target_surface Surface (ray/segment) used for the collision test.
+	 * \param point Position of the object. Modified if penetration occurs.
+	 * \param velocity Velocity of the object. Reflected if a collision occurs.
+	 * \param radius Radius of the object used for the intersection test.
+	 */
 	void reflection_routine_resolved(const Ray& target_surface, float2& point, float2& velocity, float radius) noexcept;
 }
