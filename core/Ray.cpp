@@ -3,21 +3,21 @@
 
 namespace badCore
 {
-	Ray::Ray(const float2& origin, const float2& vector) noexcept
-		:origin(origin), length(vector.length()), dir(normal_optimized(vector, length))
+	Ray::Ray(const Point& origin, const Vector& vector) noexcept
+		:mOrigin(origin), mLength(length(vector)), mDir(normal_optimized(vector, mLength))
 	{
 	}
 
 	SweepInfo Ray::sweep_test(const Rect& target)const noexcept
 	{
 		float2 invdir(
-			(dir.x == 0.0f) ? INFINITY : 1.0f / dir.x,
-			(dir.y == 0.0f) ? INFINITY : 1.0f / dir.y
+			(mDir.x == 0.0f) ? INFINITY : 1.0f / mDir.x,
+			(mDir.y == 0.0f) ? INFINITY : 1.0f / mDir.y
 		);
-		float t_near_x = (target.min.x - origin.x) * invdir.x;
-		float t_far_x = (target.min.x + target.get_width() - origin.x) * invdir.x;
-		float t_near_y = (target.min.y - origin.y) * invdir.y;
-		float t_far_y = (target.min.y + target.get_height() - origin.y) * invdir.y;
+		float t_near_x = (target.min.x - mOrigin.x) * invdir.x;
+		float t_far_x = (target.min.x + target.get_width() - mOrigin.x) * invdir.x;
+		float t_near_y = (target.min.y - mOrigin.y) * invdir.y;
+		float t_far_y = (target.min.y + target.get_height() - mOrigin.y) * invdir.y;
 
 		float t_entry = core_max(
 			core_min(t_near_x, t_far_x),
@@ -33,7 +33,7 @@ namespace badCore
 		if (t_entry <= t_exit && t_exit >= 0.0f) {
 			info.is_hit = true;
 			info.time = core_max(t_entry, 0.0f);
-			info.contact_point = origin + dir * info.time;
+			info.contact_point = mOrigin + mDir * info.time;
 		}
 
 		return info;
@@ -44,14 +44,14 @@ namespace badCore
 		float2 closest_point = closest_point_on_ray(point);
 
 		float2 vec_between_ray_and_point = point - closest_point;
-		float distance = vec_between_ray_and_point.length();
+		float distance = length(vec_between_ray_and_point);
 
 		IntersectionInfo info({}, 0, false);
 
 		if (distance <= radius) {
 			info.normal = (distance > 0.0f) ?
 				normal_optimized(vec_between_ray_and_point, distance) :
-				perpendicular_ccw(dir);
+				perpendicular_ccw(mDir);
 
 			info.penetration = radius - distance;
 		}

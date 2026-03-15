@@ -78,7 +78,7 @@ namespace badCore
 		* \note This constructor does NOT compute sine/cosine values.
 		*       update_sincos() must be called before the transform is used.
 		*/
-		Transform(const float2& pos, float scale, float radians);
+		Transform(const Point& pos, float scale, float radians);
 
 		/**
 		* \returns Returns the transformation matrix representing this transform.
@@ -119,7 +119,7 @@ namespace badCore
 		}
 
 		/// <summary> Position (translation) </summary>
-		class float2 mPos;
+		Point mPos;
 
 		/// <summary> Uniform scaling factor </summary>
 		float mScale;

@@ -3,7 +3,7 @@
 #include <cmath>
 namespace badCore
 {
-	Transform::Transform(const float2& pos, float scale, float radians)
+	Transform::Transform(const Point& pos, float scale, float radians)
 		:mPos(pos), mScale(scale), mRadians(radians)
 	{
 	}

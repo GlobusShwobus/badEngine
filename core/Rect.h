@@ -48,10 +48,10 @@ namespace badCore
 	public:
 
 		/// <summary> Lower-left corner of the rectangle. </summary>
-		class float2 min;
+		Point min;
 
 		/// <summary> Upper-right corner of the rectangle. </summary>
-		class float2 max;
+		Point max;
 
 		/// <summary> Default initalizes rect with all 0s. </summary>
 		constexpr Rect()noexcept
@@ -67,7 +67,7 @@ namespace badCore
 		*
 		* \throws In DEBUG builds asserts that max >= min.
 		*/
-		constexpr Rect(float2 min, float2 max) noexcept
+		constexpr Rect(Point min, Point max) noexcept
 			:min(min), max(max)
 		{
 			assert(max.x >= min.x);
@@ -148,7 +148,7 @@ namespace badCore
 		* 
 		* \returns true if contains, false if not
 		*/
-		constexpr bool contains(const float2& point)const noexcept
+		constexpr bool contains(const Point& point)const noexcept
 		{
 			return
 				point.x >= min.x && point.x < max.x &&

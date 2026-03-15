@@ -10,14 +10,14 @@ namespace badCore
 	//##############################################################################################################
 	struct SweepInfo
 	{
-		class float2 contact_point;
+		Point contact_point;
 		float time;
 		bool is_hit;
 	};
 	
 	struct IntersectionInfo
 	{
-		class float2 normal;
+		Vector normal;
 		float penetration;
 		bool is_hit;
 	};
@@ -66,18 +66,18 @@ namespace badCore
 		* \param origin starting point of the ray
 		* \param vector vector defining ray direction and length
 		*/
-		Ray(const float2& origin, const float2& vector) noexcept;
+		Ray(const Point& origin, const Vector& vector) noexcept;
 		
 		//NOTE: ORDER MATTERS FOR CONSTRUCTOR!
 
 		/// <summary> Lenght of the ray. </summary>
-		const float length;
+		const float mLength;
 
 		/// <summary> Origin point of the ray. </summary>
-		const class float2 origin;
+		const Point mOrigin;
 
 		/// <summary> Normalized direction vector of the ray. </summary>
-		const class float2 dir;
+		const Vector mDir;
 
 		/**
 		* Performs a sweep test against an axis-aligned rectangle.
@@ -108,7 +108,7 @@ namespace badCore
 		*/
 		constexpr bool is_hit(float time)const noexcept
 		{
-			return time >= 0.0f && time < length;
+			return time >= 0.0f && time < mLength;
 		}
 
 		/**
@@ -120,13 +120,13 @@ namespace badCore
 		*
 		* \returns closest point on the ray segment
 		*/
-		constexpr auto closest_point_on_ray(const float2& point)const noexcept
+		constexpr auto closest_point_on_ray(const Point& point)const noexcept
 		{
-			float2 vector_between_objects = point - origin;
-			float t = dot_product(vector_between_objects, dir);
+			Vector vector_between_objects = point - mOrigin;
+			float t = dot_product(vector_between_objects, mDir);
 			// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
-			t = core_clamp(t, 0.0f, length);
-			return origin + dir * t;
+			t = core_clamp(t, 0.0f, mLength);
+			return mOrigin + mDir * t;
 		}
 
 		/**
@@ -143,18 +143,18 @@ namespace badCore
 		*     - is_hit       : true if intersection occurred
 		* NOTE: if is_hit is false then normal is default constructed and penetration is 0.
 		*/
-		IntersectionInfo intersection_test(const float2& point, float radius)const noexcept;
+		IntersectionInfo intersection_test(const Point& point, float radius)const noexcept;
 
 		/**
 		* Converts the ray direction and length back into a vector.
 		*
 		* \returns vector representing the ray
 		*/
-		constexpr float2 get_vectorized()const noexcept
+		constexpr Vector get_vectorized()const noexcept
 		{
 			return {
-				dir.x * length,
-				dir.y * length 
+				mDir.x * mLength,
+				mDir.y * mLength
 			};
 		}
 	};
