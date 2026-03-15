@@ -14,6 +14,9 @@
 
 namespace badCore
 {
+	/**
+	* \brief DEPRICATED
+	*/
 	template <typename T> 
 		requires
 			std::destructible<T> && 
