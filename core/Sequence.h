@@ -12,6 +12,20 @@
 
 namespace badCore
 {
+	/**
+	* \brief
+	* An inhouse variant of std::vector with some differences.
+	* 
+	* Mainly the insert is not complete. The cannon insert method is emplace_back. There is no true insert pos.
+	* 
+	* Additionally, using C++ 20 language tools. Some type traits are demanded  up front:
+	* 
+	*		- type must be destructible.
+	* 
+	*		- type must be move constructible
+	* 
+	*		- type must not be const/volatile/reference
+	*/
 	template<typename T> 
 		requires
 			std::destructible<T> &&
@@ -19,6 +33,7 @@ namespace badCore
 			std::same_as<T, std::remove_cvref_t<T>>
 	class Sequence final
 	{
+	public:
 		using type = Sequence<T>;
 		using value_type = T;
 		using pointer = T*;
@@ -28,6 +43,7 @@ namespace badCore
 		using size_type = std::size_t;
 		using difference_type = std::ptrdiff_t;
 
+	private:
 		//allocator/deallocator functions
 		pointer seq_allocate(size_type count)const
 		{

@@ -1,14 +1,14 @@
 #include "pch.h"
-#include "Make_Shape.h"
+#include "MakeShape.h"
 #include "CoreUtils.h"
 #include <assert.h>
 
-namespace badCore
+namespace badEngine
 {
-	Sequence<Point> make_poly(float outerRadius, float innerRadius, int nFlares)
+	badCore::Sequence<badCore::Point> make_poly(float outerRadius, float innerRadius, int nFlares)
 	{
 		assert(nFlares >= 1);
-		Sequence<Point> polyline;
+		badCore::Sequence<badCore::Point> polyline;
 		polyline.reserve(static_cast<std::size_t>(nFlares * 2));
 
 		const float dTheta = 2.0f * 3.14159f / float(nFlares * 2);
@@ -23,7 +23,7 @@ namespace badCore
 		return polyline;
 	}
 
-	Sequence<float2> make_circle(const float2& center, float radius)
+	badCore::Sequence<badCore::Point> make_circle(const badCore::Point& center, float radius)
 	{
 		// an esimation of how many points are required.
 		// radius * 8 over shoots
@@ -32,7 +32,7 @@ namespace badCore
 		int size = radius * 8 * 35 / 49;
 		int arrsize = (size + (8 - 1)) & -8;
 
-		Sequence<float2> circle;
+		badCore::Sequence<badCore::Point> circle;
 		circle.reserve(arrsize);
 
 		const int32_t diameter = (radius * 2);
@@ -48,17 +48,17 @@ namespace badCore
 		{
 			// each point on a circle has a point directly opposite of it. octant/circle symetry.
 			// because of this Point(x , y) only need to be set once, then mirroring them we get 8 points per loop.
-			circle.emplace_back(float2(center.x + x, center.y - y));
-			circle.emplace_back(float2(center.x + x, center.y + y));
+			circle.emplace_back(badCore::Point(center.x + x, center.y - y));
+			circle.emplace_back(badCore::Point(center.x + x, center.y + y));
 
-			circle.emplace_back(float2(center.x - x, center.y - y));
-			circle.emplace_back(float2(center.x - x, center.y + y));
+			circle.emplace_back(badCore::Point(center.x - x, center.y - y));
+			circle.emplace_back(badCore::Point(center.x - x, center.y + y));
 
-			circle.emplace_back(float2(center.x + y, center.y - x));
-			circle.emplace_back(float2(center.x + y, center.y + x));
+			circle.emplace_back(badCore::Point(center.x + y, center.y - x));
+			circle.emplace_back(badCore::Point(center.x + y, center.y + x));
 
-			circle.emplace_back(float2(center.x - y, center.y - x));
-			circle.emplace_back(float2(center.x - y, center.y + x));
+			circle.emplace_back(badCore::Point(center.x - y, center.y - x));
+			circle.emplace_back(badCore::Point(center.x - y, center.y + x));
 
 
 			// ensure the resterized circle stays as close as possible to a true circle

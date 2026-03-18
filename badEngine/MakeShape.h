@@ -4,7 +4,7 @@
 #include "Rect.h"
 #include "Sequence.h"
 
-namespace badCore
+namespace badEngine
 {
 	/**
 	* Computes the bounding rectangle containing both input rectangles.
@@ -16,32 +16,32 @@ namespace badCore
 	* \param a First rectangle.
 	* \param b Second rectangle.
 	* \return Rectangle that encloses both input rectangles.
-	* 
+	*
 	* \note no use case for it anymore atm...
 	*/
-	constexpr Rect make_union_rect(const Rect& a, const Rect& b)noexcept
+	constexpr badCore::Rect make_union_rect(const badCore::Rect& a, const badCore::Rect& b)noexcept
 	{
-		const float minx = core_min(a.min.x, b.min.x);
-		const float miny = core_min(a.min.y, b.min.y);
-		const float maxx = core_max(a.max.x, b.max.x);
-		const float maxy = core_max(a.max.y, b.max.y);
+		const float minx = badCore::core_min(a.min.x, b.min.x);
+		const float miny = badCore::core_min(a.min.y, b.min.y);
+		const float maxx = badCore::core_max(a.max.x, b.max.x);
+		const float maxy = badCore::core_max(a.max.y, b.max.y);
 
 		return { {minx, miny},{maxx, maxy} };
 	}
 
 	/**
 	* Generates a radial polyline with alternating outer and inner vertices.
-	* 
+	*
 	* The function produces a star-like shape by alternating between outer and inner radii
 	* while stepping uniformly around a circle. The result contains 2x flares amount of vertices.
-	* 
+	*
 	* \param outerRadius Radius of the outer vertices.
 	* \param innerRadius Radius of the inner vertices.
 	* \param nFlares Number of flares (spikes) in the resulting shape.
-	* 
+	*
 	* \return Sequence of points resembling a star containing 2x Flares aount of vertices.
 	*/
-	Sequence<Point> make_poly(float outerRadius, float innerRadius, int nFlares);
+	badCore::Sequence<badCore::Point> make_poly(float outerRadius, float innerRadius, int nFlares);
 
 
 	//#############################################################################################
@@ -52,8 +52,8 @@ namespace badCore
 	// The function uses integer based approximates for point count finding and making the circle.
 	//#############################################################################################
 
-	Sequence<float2> make_circle(const float2& center, float radius);
-	
+	badCore::Sequence<badCore::Point> make_circle(const badCore::Point& center, float radius);
+
 	//#############################################################################################
 	//#############################################################################################
 }
