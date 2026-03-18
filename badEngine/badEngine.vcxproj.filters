@@ -36,6 +36,9 @@
     <ClInclude Include="EngineUtils.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="MakeShape.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="validate_data.cpp">
@@ -57,6 +60,9 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="FreeDraw.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="MakeShape.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,7 +6,8 @@ namespace badEngine
 	// does not restore original color
 	void draw_rect(SDL_Renderer* const renderer, const badCore::Rect& aabb, badCore::Color color) noexcept
 	{
-		if (!renderer) {
+		if (!renderer) 
+		{
 			badCore::AsyncLogger::Global().log("Failed to draw_rect with nullptr renderer");
 			return;
 		}
@@ -16,10 +17,12 @@ namespace badEngine
 		const SDL_FRect sdlArea = rect_to_sdl_frect(aabb);
 		SDL_RenderFillRect(renderer, &sdlArea);
 	}
+
 	// does not restore original color
 	void draw_line(SDL_Renderer* const renderer, const badCore::float2& start, const badCore::float2& end, badCore::Color color) noexcept
 	{
-		if (!renderer) {
+		if (!renderer) 
+		{
 			badCore::AsyncLogger::Global().log("Failed to draw_line with nullptr renderer");
 			return;
 		}
@@ -34,29 +37,31 @@ namespace badEngine
 	{
 		draw_line(
 			renderer,
-			{ ray.origin.x, ray.origin.y },
+			{ ray.mOrigin.x, ray.mOrigin.y },
 			ray.get_vectorized(),
 			color
 		);
 	}
 
 	// does not restore original color
-	void draw_closed_model(SDL_Renderer* const renderer, const badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept
+	void draw_model(SDL_Renderer* const renderer, const badCore::Sequence<badCore::Point>& model, const badCore::Mat3& point_transformation, badCore::Color color) noexcept
 	{
 		static constexpr std::size_t MAX_MODEL_SIZE = 64;
 
 		struct DRAW_IMPL
 		{
-			void operator()(SDL_Renderer* renderer, SDL_FPoint* dest, const badCore::float2* const src, std::size_t size, const badCore::Mat3& transformation) {
-				for (std::size_t i = 0; i < size; ++i)
-					dest[i] = logical_to_visual_point(src[i], transformation);
+			void operator()(SDL_Renderer* renderer, SDL_FPoint* dest, const badCore::Sequence<badCore::Point>& model, const badCore::Mat3& point_transformation)
+			{
+				auto src = model.data();
+				for (std::size_t i = 0; i < model.size(); ++i)
+					dest[i] = logical_to_visual_point(src[i], point_transformation);
 
-				dest[size] = dest[0];
-				SDL_RenderLines(renderer, dest, static_cast<int>(size + 1));
+				dest[model.size()] = dest[0];
+				SDL_RenderLines(renderer, dest, static_cast<int>(model.size() + 1));
 			}
 		}draw;
 
-		if (size < 2) {
+		if (model.size() < 2) {
 			badCore::AsyncLogger::Global().log("draw_closed_model early exit due to low size");
 			return;
 		}
@@ -66,22 +71,17 @@ namespace badEngine
 			return;
 		}
 
-		if (!points) {
-			badCore::AsyncLogger::Global().log("Failed to draw_closed_model with nullptr points");
-			return;
-		}
-
 		SDL_SetRenderDrawColor(renderer, color.get_r(), color.get_g(), color.get_b(), color.get_a());
 
-		if (size <= MAX_MODEL_SIZE)
+		if (model.size() <= MAX_MODEL_SIZE)
 		{
 			SDL_FPoint stack_pts[MAX_MODEL_SIZE + 1];
-			draw(renderer, stack_pts, points, size, transformation);
+			draw(renderer, stack_pts, model, point_transformation);
 		}
 		else
 		{
-			badCore::Sequence<SDL_FPoint> heap_pts(size + 1, {});
-			draw(renderer, heap_pts.data(), points, size, transformation);
+			badCore::Sequence<SDL_FPoint> heap_pts(model.size() + 1, {});
+			draw(renderer, heap_pts.data(), model, point_transformation);
 		}
 	}
 

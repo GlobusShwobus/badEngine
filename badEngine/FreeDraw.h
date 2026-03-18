@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "EngineUtils.h"
 #include "AsyncLogger.h"
+#include "Sequence.h"
 
 namespace badEngine
 {
@@ -20,11 +21,11 @@ namespace badEngine
 	void draw_line(SDL_Renderer* const renderer, const badCore::Ray& ray, badCore::Color color) noexcept;
 
 	// does not restore original color
-	void draw_closed_model(SDL_Renderer* const renderer, const badCore::float2* const points, std::size_t size, const badCore::Mat3& transformation, badCore::Color color) noexcept;
+	void draw_model(SDL_Renderer* const renderer, const badCore::Sequence<badCore::Point>& model, const badCore::Mat3& point_transformation, badCore::Color color) noexcept;
 
 	void draw_texture(SDL_Renderer* const renderer, SDL_Texture* const texture, const badCore::Rect& src, const badCore::Rect& dest) noexcept;
 
-	//inb4 using this is ass
+	// DEPRICATED
 	template <std::input_iterator PairIt>
 	void draw_textures(SDL_Renderer* const renderer, SDL_Texture* const texture, PairIt begin, PairIt end)
 		requires std::same_as<std::pair<badCore::Rect, badCore::Rect>, std::iter_value_t<PairIt>>

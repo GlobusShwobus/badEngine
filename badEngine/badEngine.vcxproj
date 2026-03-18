@@ -139,6 +139,7 @@
     <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
+    <ClInclude Include="MakeShape.h" />
     <ClInclude Include="MouseCameraController.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="EngineUtils.cpp" />
     <ClCompile Include="load_data.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MakeShape.cpp" />
     <ClCompile Include="MouseCameraController.cpp" />
     <ClCompile Include="validate_data.cpp" />
   </ItemGroup>

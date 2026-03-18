@@ -15,7 +15,7 @@
 #include "Sequence.h"
 #include "Color.h"
 #include "TextureMap.h"
-#include "Make_Shape.h"
+#include "MakeShape.h"
 #include "Entity.h"
 #include "MouseCameraController.h"
 #include "SDL_SYSTEM_RAII.h"
@@ -98,7 +98,7 @@ int main() {
             Color col(rng.get(1, 255), rng.get(1, 255), rng.get(1, 255), 255);
             float scalr_differential = rng.get(0.005f, 0.01f);
 
-            std::vector<float2> vmodel(model.begin(), model.end());
+            badCore::Sequence<float2> vmodel(model.begin(), model.end());
 
             entities.emplace_back(std::move(vmodel), pos, angular_vel, col, scalr_differential);
         }
@@ -121,7 +121,7 @@ int main() {
         badWindow::Font font(fonttexture.get(), 32,3);
 
         font.set_text("i memed trump into office.\nno need to thank me");
-
+        cam.mCamera.update_sincos();//otherwise UB can kill
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -195,7 +195,7 @@ int main() {
             for (auto& e : entities) {
                 Mat3 world = window_mat * camera_mat * e.get_transform();
                 const auto& model = e.mModel;
-                draw_closed_model(renderer.get(), model.data(), model.size(), world, e.col);
+                draw_model(renderer.get(), model, world, e.col);
             }
 
 
