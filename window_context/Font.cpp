@@ -90,11 +90,12 @@ namespace badWindow
 
 	bool Font::draw(SDL_Renderer* const renderer) const noexcept
 	{
+		auto txtr = mSprite.get_texture();
 		for (const auto& g : mGlyphs) {
 			if (g.src.w == 0.f)//spacebar
 				continue;
 
-			mSprite.draw(renderer, g.src, g.dst);
+			SDL_RenderTexture(renderer, txtr, &g.src, &g.dst);
 		}
 
 		return true;

@@ -79,28 +79,10 @@ namespace badWindow
 		void set_source(const SDL_FRect& aabb)noexcept;
 
 		/**
-		* Draws this sprite on the screen with a given destination; using cached source as source.
-		*
-		* For more details consult SDL_RenderTexture documentation.
-		* \param renderer for rendering context
-		* \param dst that describes where to draw in the window
-		* \returns true of success or false on failure; call SDL_GetError() for more info
-		* \throws noexcept
+		* \brief this method should never be used to modify the texture (delete or otherwise)
+		* \return retruns SDL_Texture pointer
 		*/
-		bool draw(SDL_Renderer* const renderer, const SDL_FRect& dst)const noexcept;
-
-		/**
-		* Draws this sprite on the screen with a given source and destination.
-		* 
-		* For more details consult SDL_RenderTexture documentation.
-		* \param renderer for rendering context
-		* \param src that describes the location of the texture
-		* \param dst that describes where to draw in the window
-		* \returns true of success or false on failure; call SDL_GetError() for more info
-		* \throws noexcept
-		*/
-		bool draw(SDL_Renderer* const renderer, const SDL_FRect& src, const SDL_FRect& dst)const noexcept;
-
+		SDL_Texture* const get_texture()const noexcept;
 
 		/// <returns>mSource rectangle</returns>
 		const SDL_FRect& get_source()const noexcept;

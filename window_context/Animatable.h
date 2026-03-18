@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 //TODO:: pause function
+//TODO:: draw rotated
 
 namespace badWindow
 {

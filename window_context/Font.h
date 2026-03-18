@@ -4,6 +4,8 @@
 #include <vector>
 #include "Sprite.h"
 
+//TODO:: draw rotated?
+
 namespace badWindow
 {
 	/// <summary> A handle for storing both source and destination of a Glyph. </summary>

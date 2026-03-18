@@ -151,7 +151,7 @@ namespace badWindow
 
 	bool AnimationPlayer::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
 	{
-		return mSprite.draw(renderer, dest);
+		return SDL_RenderTexture(renderer, mSprite.get_texture(), &mSprite.get_source(), &dest);
 	}
 
 	const Sprite& AnimationPlayer::get_sprite()const noexcept

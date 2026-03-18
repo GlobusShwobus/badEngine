@@ -32,14 +32,9 @@ namespace badWindow
 		return *this;
 	}
 
-	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& dst)const noexcept
+	SDL_Texture* const Sprite::get_texture()const noexcept
 	{
-		return draw(renderer, mSource, dst);
-	}
-
-	bool Sprite::draw(SDL_Renderer* const renderer, const SDL_FRect& src, const SDL_FRect& dst)const noexcept
-	{
-		return SDL_RenderTexture(renderer, mTexture, &src, &dst);
+		return mTexture;
 	}
 
 	void Sprite::set_source_pos(float x, float y)noexcept
