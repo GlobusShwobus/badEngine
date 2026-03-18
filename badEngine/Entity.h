@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include "Sequence.h"
 #include "Float2.h"
 #include "Matrix3.h"
 #include "Color.h"
@@ -14,7 +14,7 @@ namespace badEngine
 	{
 	public:
 		//by val so we can either copy/move
-		Entity(std::vector<badCore::float2> model, badCore::float2 pos, float av, badCore::Color col, float scalr_differential)
+		Entity(badCore::Sequence<badCore::float2> model, badCore::float2 pos, float av, badCore::Color col, float scalr_differential)
 		:mModel(std::move(model)), transform(pos, 1,0), rotation_speed(av), col(col), scalr_differential(scalr_differential)
 		{
 			scalar_velocity = 1 + scalr_differential;
@@ -53,7 +53,7 @@ namespace badEngine
 		float rotation_speed = 1;
 
 
-		std::vector<badCore::float2> mModel;
+		badCore::Sequence<badCore::float2> mModel;
 		badCore::Color col = badCore::Colors::Magenta;
 	};
 
