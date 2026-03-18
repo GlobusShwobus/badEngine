@@ -134,10 +134,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CircleCanvas.h" />
     <ClInclude Include="FreeDraw.h" />
     <ClInclude Include="EngineUtils.h" />
-    <ClInclude Include="Entity.h" />
     <ClInclude Include="load_data.h" />
     <ClInclude Include="MakeShape.h" />
     <ClInclude Include="MouseCameraController.h" />
