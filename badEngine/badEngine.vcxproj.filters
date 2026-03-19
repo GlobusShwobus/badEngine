@@ -10,6 +10,9 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{e5739527-90dd-4016-bd3c-858b0093d42b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{a05acf76-a1e8-4925-9baa-c5ab9a9b2131}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="validate_data.h">
@@ -36,6 +39,15 @@
     <ClInclude Include="Entity.h">
       <Filter>temp</Filter>
     </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_SYSTEM_RAII.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="validate_data.cpp">
@@ -61,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="MakeShape.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_SYSTEM_RAII.cpp">
+      <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

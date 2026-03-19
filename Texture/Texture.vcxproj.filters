@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="pch">
+      <UniqueIdentifier>{406de4c5-d89e-4739-8880-11a20424e1fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="Canvas.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animatable.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMap.h">
+      <Filter>files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animatable.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMap.cpp">
+      <Filter>files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -4,7 +4,7 @@
 #include <string>
 #include "Float2.h"
 #include "Rect.h"
-#include "Matrix3.h"
+#include "Mat3.h"
 
 namespace bad
 {

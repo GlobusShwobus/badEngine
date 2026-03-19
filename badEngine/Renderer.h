@@ -19,7 +19,7 @@ namespace bad
 
 	/**
 	* Create a 2D rendering context for a window.
-	* 
+	*
 	* For detailed documentation consult SDL_CreateRenderer.
 	* \param the window where rendering is displayed
 	* \param the name of the rendering driver to initialize, or NULL to let SDL choose one
@@ -29,6 +29,6 @@ namespace bad
 	inline Renderer make_renderer(SDL_Window* window, const char* name) noexcept
 	{
 		//if it doesn't inline, whatever. not gonna make a cpp file just for this
-		return Renderer{ SDL_CreateRenderer(window, name)};
+		return Renderer{ SDL_CreateRenderer(window, name) };
 	}
 }

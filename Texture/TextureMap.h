@@ -33,9 +33,9 @@ namespace bad
 
 		/**
 		* Adds a given texture to the internal storage with a given tag.
-		* 
+		*
 		* Denies textures that are nullptr, but does not throw.
-		* 
+		*
 		* Denies textures with a duplicate tag, but does not throw.
 		* \param texture as rvalue
 		* \param tag for association
@@ -46,11 +46,11 @@ namespace bad
 
 		/**
 		* Creates a texture with given parameters.
-		* 
+		*
 		* Internally calls make_texture provided in Texture.h.
-		* 
+		*
 		* Denies textures that are nullptr, but does not throw.
-		* 
+		*
 		* Denies textures with a duplicate tag, but does not throw.
 		* \param renderer for rendering context
 		* \param tag for association
@@ -103,9 +103,9 @@ namespace bad
 
 		/**
 		* Parses the tree looking for the desired texture.
-		* 
+		*
 		* The given texture acts as a reference and should never be deleted manually in any way.
-		* 
+		*
 		* The cleanup is the responsibility of this class.
 		* \param tag for lookup
 		* \returns valid SDL_Texture or nullptr if the texture with given tag was not found.

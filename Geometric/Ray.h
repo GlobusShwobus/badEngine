@@ -14,7 +14,7 @@ namespace bad
 		float time;
 		bool is_hit;
 	};
-	
+
 	struct IntersectionInfo
 	{
 		Vector normal;
@@ -50,7 +50,7 @@ namespace bad
 	class Ray final
 	{
 	public:
-		
+
 		/**
 		* Constructs a ray from an origin and a vector.
 		*
@@ -67,7 +67,7 @@ namespace bad
 		* \param vector vector defining ray direction and length
 		*/
 		Ray(const Point& origin, const Vector& vector) noexcept;
-		
+
 		//NOTE: ORDER MATTERS FOR CONSTRUCTOR!
 
 		/// <summary> Lenght of the ray. </summary>
@@ -91,7 +91,7 @@ namespace bad
 		*     - contact_point : location of the hit
 		*     - time          : distance along the ray
 		*     - is_hit        : true if intersection occurred
-		* 
+		*
 		* NOTE: If is_hit is false then contact_point default constructed and time is INFINITY.
 		*/
 		SweepInfo sweep_test(const Rect& target)const noexcept;

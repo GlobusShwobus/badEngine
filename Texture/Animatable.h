@@ -50,7 +50,7 @@ namespace bad
 	public:
 		/**
 		* Creates AnimationPlayer and internally a Sprite with the given texture.
-		* 
+		*
 		* Neither Sprite nor AnimationPlayer are owners of the texture and do not manage its lifetime beyond disabling local copy semantics.
 		* \param texture pointer.
 		* \throws AnimationPlayer does no checks but Sprite can internally throw std::runtime_error if given texture is nullptr.
@@ -62,13 +62,13 @@ namespace bad
 
 		/**
 		* Move constructs *this from rhs.
-		* 
+		*
 		* Moves over all data except mTimer and mCurrent frame which are initalized to 0.
-		* 
+		*
 		* Sets rhs.mCurrentClip to nullptr.
-		* 
+		*
 		* Leaves rhs in valid but unspecified state. Any use of it is for all intents and purposes UB.
-		* 
+		*
 		* \throws noexcept
 		*/
 		AnimationPlayer(AnimationPlayer&& rhs)noexcept
@@ -79,13 +79,13 @@ namespace bad
 
 		/**
 		* Uses move operator to move values from rhs to *this or does nothing if this = &rhs.
-		* 
+		*
 		* Moves over all data except mTimer and mCurrentFrame which are set to 0.
-		* 
+		*
 		* Sets rhs.mCurrentClip to nullptr.
-		* 
+		*
 		* Leaves rhs in valid but unspecified state. Any use of it is for all intents and purposes UB.
-		* 
+		*
 		* \throws noexcept
 		*/
 		AnimationPlayer& operator=(AnimationPlayer&& rhs)noexcept
@@ -110,11 +110,11 @@ namespace bad
 
 		/**
 		* Updates the current clips frame index to the next frame.
-		* 
+		*
 		* Does nothing if there is no play() was not called or stop() was called.
-		* 
+		*
 		* Does nothing if given delta time is less than frame_duration.
-		* 
+		*
 		* On update calls Sprites set_source() function which in DEBUG may assert if configuration was faulty.
 		* \param dt for delta time
 		* \throws if clip is malformed it will throw out of bounds access errors.
@@ -123,11 +123,11 @@ namespace bad
 
 		/**
 		* Adds a given clip to the list.
-		* 
+		*
 		* Performs a validation check making sure the passed clips dimensions fit the stored mSprite.
-		* 
+		*
 		* \param id the id of the clip
-		* \param clip by rvalue 
+		* \param clip by rvalue
 		* \throws std::logic_error if given clips frame count is 0.
 		* \throws std::logic_error if the total width of of the frames exceeds Sprites width
 		* \throws std::logic_error if the maximum height of a frame is more than the Sprites height
@@ -138,10 +138,10 @@ namespace bad
 
 		/**
 		* Plays the requested clip.
-		* 
+		*
 		* Prevents calling play on the same ID twice.
-		* 
-		* Since clips are exposed for 
+		*
+		* Since clips are exposed for
 		* \param id as animation id
 		* \throws std::invalid_argument if a clip with a given id is not stored intnernally.
 		* \throws if clip is malformed it will throw out of bounds access errors.
@@ -150,9 +150,9 @@ namespace bad
 
 		/**
 		* Sets the current clip to nullptr and sets counters to 0.
-		* 
+		*
 		* When update is called, nothing happens.
-		* 
+		*
 		* However the last drawn state will still be drawn.
 		* \throws noexcept
 		*/
@@ -164,7 +164,7 @@ namespace bad
 		}
 		/**
 		* Sets the counters to 0 but retains the current clip.
-		* 
+		*
 		* When update is called the animation starts from 0.
 		*
 		* \throws noexcept
@@ -177,7 +177,7 @@ namespace bad
 
 		/**
 		* Draws the current frame onto the given rendering context.
-		* 
+		*
 		* \param renderer for rendering context.
 		* \param dest for location where to draw on the window.
 		* \returns bool true on success false on failure; call SDL_GetError() for more info.
@@ -187,7 +187,7 @@ namespace bad
 
 		/**
 		* Exposes the sprite for read only access.
-		* 
+		*
 		* Intended for creating clips.
 		* \returns cached Sprite const reference
 		*/

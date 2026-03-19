@@ -6,12 +6,12 @@ namespace bad
 {
 	/**
 	* \brief float2 is literally just a pair of floats.
-	* 
+	*
 	* In most if not all cases float2 is used as either a vector or a point on the coordinate plane.
-	* 
+	*
 	* Since a 'point' != 'vector' but separating them would produce a lot of headache,
 	* the decision is to only define arithmetic operators in class.
-	* 
+	*
 	* Outside the class additional typedefs for 'Point' and 'Vector' are provided.
 	*
 	* Arithmetic operators perform component-wise operations.
@@ -24,25 +24,25 @@ namespace bad
 		float y;
 
 		/// <summary> Default constructs float2 {0.0f, 0.0f}  </summary>
-		constexpr float2()noexcept 
+		constexpr float2()noexcept
 			:x(0.0f), y(0.0f)
 		{
 		}
 
 		/**
 		* Constructs float2 from given floats.
-		* 
+		*
 		* \param X for x
 		* \param Y for y
 		*/
 		constexpr float2(float X, float Y)noexcept
-			:x(X), y(Y) 
+			:x(X), y(Y)
 		{
 		}
 
 		/**
 		* Constructs float2 from a given float
-		* 
+		*
 		* \param x = v;
 		* \param y = v;
 		*/
@@ -51,19 +51,19 @@ namespace bad
 		{
 		}
 
-		constexpr float2 operator+    (const float2& rhs)const noexcept    { return { x + rhs.x,  y + rhs.y  }; }
-		constexpr float2 operator-    (const float2& rhs)const noexcept    { return { x - rhs.x,  y - rhs.y  }; }
-		constexpr float2 operator*    (float scalar)const noexcept         { return { x * scalar, y * scalar }; }
-		constexpr float2 operator/    (float scalar)const noexcept         { return { x / scalar, y / scalar }; }
-		constexpr float2 operator-    ()const noexcept                     { return { -x, -y };                 }
+		constexpr float2 operator+    (const float2& rhs)const noexcept { return { x + rhs.x,  y + rhs.y }; }
+		constexpr float2 operator-    (const float2& rhs)const noexcept { return { x - rhs.x,  y - rhs.y }; }
+		constexpr float2 operator*    (float scalar)const noexcept { return { x * scalar, y * scalar }; }
+		constexpr float2 operator/    (float scalar)const noexcept { return { x / scalar, y / scalar }; }
+		constexpr float2 operator-    ()const noexcept { return { -x, -y }; }
 
-		constexpr float2& operator+=  (const float2& rhs)noexcept          { x += rhs.x;  y += rhs.y;  return *this; }
-		constexpr float2& operator-=  (const float2& rhs)noexcept          { x -= rhs.x;  y -= rhs.y;  return *this; }
-		constexpr float2& operator*=  (float scalar)noexcept               { x *= scalar; y *= scalar; return *this; }
-		constexpr float2& operator/=  (float scalar)noexcept               { x /= scalar; y /= scalar; return *this; }
+		constexpr float2& operator+=  (const float2& rhs)noexcept { x += rhs.x;  y += rhs.y;  return *this; }
+		constexpr float2& operator-=  (const float2& rhs)noexcept { x -= rhs.x;  y -= rhs.y;  return *this; }
+		constexpr float2& operator*=  (float scalar)noexcept { x *= scalar; y *= scalar; return *this; }
+		constexpr float2& operator/=  (float scalar)noexcept { x /= scalar; y /= scalar; return *this; }
 
-		constexpr bool operator ==    (const float2& rhs)const noexcept    { return x == rhs.x && y == rhs.y; }
-		constexpr bool operator!=     (const float2& rhs)const noexcept    { return !(*this == rhs);          }
+		constexpr bool operator ==    (const float2& rhs)const noexcept { return x == rhs.x && y == rhs.y; }
+		constexpr bool operator!=     (const float2& rhs)const noexcept { return !(*this == rhs); }
 	};
 
 	constexpr float2 operator*(float scalar, const float2& v)noexcept
@@ -169,7 +169,7 @@ namespace bad
 	{
 		return { v.y, -v.x };
 	}
-	
+
 	/**
 	 * Returns a normalized copy of the vector using a precomputed magnitude.
 	 *
@@ -219,7 +219,7 @@ namespace bad
 
 	/**
 	* Computes the reflection vector of v against some normal (surface).
-	* 
+	*
 	* The surface normal is expected to be normalized because by this point the user ought to already have a normal cached anyway.
 	*
 	* \param v vector to be reflected.
@@ -235,7 +235,7 @@ namespace bad
 	//######################################################################################################
 	// under construction
 	//######################################################################################################
-	
+
 	//maybe poopoo caakaa and needs depricating because mat3 does rotation anyway.
 	//even if angle to normal is needed, it has a place elsewhere
 	inline float2 angle_to_normalized(float angle) noexcept

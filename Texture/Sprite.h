@@ -16,16 +16,16 @@ namespace bad
 		* \throws std::runtime_error if texture is nullptr
 		*/
 		explicit Sprite(SDL_Texture* const texture);
-		
+
 		/**
 		* Move constructs another Sprite class.
-		* 
+		*
 		* Swaps rhs.mTexture and *this.mTexture and sets rhs.mTexture as nullptr
-		* 
+		*
 		* Swaps other members as well.
-		* 
+		*
 		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
-		* 
+		*
 		* \param Sprite&&
 		* \throws noexcept
 		*/
@@ -37,13 +37,13 @@ namespace bad
 
 		/**
 		* Move assigns rhs Sprite to lhs Sprite
-		* 
+		*
 		* Swaps rhs.mTexture and lhs.mTexture and sets rhs.mTexture as nullptr
-		* 
+		*
 		* Swaps other members as well.
-		* 
+		*
 		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
-		* 
+		*
 		* \param Sprite&&
 		* \throws noexcept
 		*/

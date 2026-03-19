@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Float2.h"
-#include "Matrix3.h"
+#include "Mat3.h"
 
 namespace bad
 {
@@ -64,7 +64,7 @@ namespace bad
 	*
 	* This ordering matches common object-to-world transformation conventions.
 	*/
-	class Transform 
+	class Transform
 	{
 	public:
 

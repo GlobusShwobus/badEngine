@@ -9,7 +9,7 @@ namespace bad
 	// Functor deleter for SDL_Window.
 	struct WindowDeleter
 	{
-		void operator()(SDL_Window* w) 
+		void operator()(SDL_Window* w)
 		{
 			if (w)
 				SDL_DestroyWindow(w);
@@ -21,7 +21,7 @@ namespace bad
 
 	/**
 	* Create a window with the specified dimensions and flags.
-	* 
+	*
 	* For detailed documentation constult SDL_CreateWindow.
 	* \param title of the window, in UTF-8 encoding.
 	* \param width of the window
@@ -33,6 +33,6 @@ namespace bad
 	inline Window make_window(const std::string& title, uint32_t width, uint32_t height, SDL_WindowFlags flags) noexcept
 	{
 		//if it doesn't inline, whatever. not gonna make a cpp file just for this
-		return Window{ SDL_CreateWindow(title.c_str(), width, height, flags)};
+		return Window{ SDL_CreateWindow(title.c_str(), width, height, flags) };
 	}
 }

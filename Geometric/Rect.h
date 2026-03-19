@@ -120,7 +120,7 @@ namespace bad
 		*
 		* \throws In DEBUG builds asserts width >= 0.
 		*/
-		constexpr void set_width(float w)noexcept 
+		constexpr void set_width(float w)noexcept
 		{
 			assert(w >= 0.0f);
 			max.x = min.x + w;
@@ -135,7 +135,7 @@ namespace bad
 		*
 		* \throws In DEBUG builds asserts height >= 0.
 		*/
-		constexpr void set_height(float h)noexcept 
+		constexpr void set_height(float h)noexcept
 		{
 			assert(h >= 0.0f);
 			max.y = min.y + h;
@@ -145,7 +145,7 @@ namespace bad
 		* \brief Checks whether the rectangle contains a point.
 		*
 		* Uses the half-open interval rule [min, max).
-		* 
+		*
 		* \returns true if contains, false if not
 		*/
 		constexpr bool contains(const Point& point)const noexcept
@@ -159,7 +159,7 @@ namespace bad
 		* \brief Checks whether the rectangle completely contains another rectangle.
 		*
 		* Uses the half-open interval rule [min, max).
-		* 
+		*
 		* \returns true if contains, false if not
 		*/
 		constexpr bool contains(const Rect& other)const noexcept
@@ -170,7 +170,7 @@ namespace bad
 				other.max.x <= max.x &&
 				other.max.y <= max.y;
 		}
-		
+
 		/**
 		* \brief Tests whether two rectangles overlap.
 		*
@@ -180,12 +180,12 @@ namespace bad
 		{
 			return
 				!(other.max.x <= min.x || other.min.x >= max.x ||
-			    other.max.y <= min.y || other.min.y >= max.y);
+					other.max.y <= min.y || other.min.y >= max.y);
 		}
 
 		/**
 		* Computes the area of the rectangle.
-		* 
+		*
 		* \returns area = width * height
 		*/
 		constexpr float get_area() const noexcept
@@ -195,7 +195,7 @@ namespace bad
 
 		/**
 		* Computes the perimiter of the rectangle
-		* 
+		*
 		* \returns perimiter = 2 * (width + height)
 		*/
 		constexpr float get_perimeter()const noexcept
@@ -206,7 +206,7 @@ namespace bad
 		/// <returns> retruns the center point of the rectangle </returns>
 		constexpr float2 get_center() const noexcept
 		{
-			return { 
+			return {
 				min.x + (get_width() * 0.5f),
 				min.y + (get_height() * 0.5f)
 			};
@@ -215,17 +215,17 @@ namespace bad
 
 	/**
 	* Computes the distances between to rectangles and returns bool if they overlap or not.
-	* 
+	*
 	* \param a as rectangle one
 	* \param b as rectangle two
 	* \param overlapWidth reference output for overlap on the x axis
 	* \param overlapHeight reference output for overlap on the y axis
-	* 
+	*
 	* \returns true if overlapWidth and overlapHeight are both more than 0.
 	*/
 	constexpr bool overlap_test(const Rect& a, const Rect& b, float& overlapWidth, float& overlapHeight)noexcept
 	{
-		overlapWidth  = core_min(a.max.x, b.max.x) - core_max(a.min.x, b.min.x);
+		overlapWidth = core_min(a.max.x, b.max.x) - core_max(a.min.x, b.min.x);
 		overlapHeight = core_min(a.max.y, b.max.y) - core_max(a.min.y, b.min.y);
 
 		return overlapWidth > 0.0f && overlapHeight > 0.0f;

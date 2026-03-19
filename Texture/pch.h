@@ -8,20 +8,11 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include <thread>
-#include <mutex>
-#include <queue>
-#include <condition_variable>
+#include <unordered_map>
 #include <string>
-#include <atomic>
-#include <iostream>
-#include <ostream>
-#include <concepts>
-#include <random>
-#include <assert.h>
+#include <vector>
 #include <memory>
-#include <ranges>
-#include <limits>
+#include <assert.h>
 #include <stdexcept>
-#include <chrono>
+#include <algorithm>
 #endif //PCH_H

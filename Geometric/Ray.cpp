@@ -2,9 +2,9 @@
 #include "Ray.h"
 
 bad::Ray::Ray(const Point& origin, const Vector& vector) noexcept
-		:mOrigin(origin), mLength(length(vector)), mDir(normal_optimized(vector, mLength))
-	{
-	}
+	:mOrigin(origin), mLength(length(vector)), mDir(normal_optimized(vector, mLength))
+{
+}
 
 bad::SweepInfo bad::Ray::sweep_test(const Rect& target)const noexcept
 {

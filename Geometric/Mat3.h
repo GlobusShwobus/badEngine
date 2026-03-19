@@ -30,7 +30,7 @@ namespace bad
 				c * v.x + d * v.y + ty
 			};
 		}
-		
+
 		constexpr static Mat3 translation(float2 t) noexcept
 		{
 			Mat3 m;

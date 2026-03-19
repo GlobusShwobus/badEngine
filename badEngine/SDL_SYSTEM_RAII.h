@@ -4,7 +4,7 @@
 
 namespace bad
 {
-	
+
 	/// <summary>
 	/// RAII wrapper that manages SDL system initialization and shutdown.
 	///
@@ -23,15 +23,15 @@ namespace bad
 	{
 	public:
 		/**
-	     * Initializes the SDL system.
-	     *
-	     * Calls SDL_Init() with the provided flags. If initialization fails,
-	     * a std::runtime_error is thrown containing the SDL error message.
-	     *
-	     * \param flags SDL subsystem flags passed to SDL_Init().
-	     *
-	     * \throws std::runtime_error if SDL initialization fails.
-	     */
+		 * Initializes the SDL system.
+		 *
+		 * Calls SDL_Init() with the provided flags. If initialization fails,
+		 * a std::runtime_error is thrown containing the SDL error message.
+		 *
+		 * \param flags SDL subsystem flags passed to SDL_Init().
+		 *
+		 * \throws std::runtime_error if SDL initialization fails.
+		 */
 		SDL_SYSTEM_RAII(SDL_InitFlags flags);
 
 

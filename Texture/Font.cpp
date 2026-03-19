@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Font.h"
+#include <assert.h>
 
 bad::Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
 	:mSprite(texture), mColumnsCount(columns_count), mPosX(0), mPosY(0), mScale(1.0f)

@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TextureMap.h"
 
-
 bool bad::TextureMap::insert(SDL_Renderer* const renderer, const std::string& tag, SDL_Surface* const surface)
 {
 	Texture texture = make_texture(renderer, surface);

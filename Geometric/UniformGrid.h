@@ -10,19 +10,19 @@ namespace bad
 	/**
 	* \brief
 	* Represents a spatial grid with uniform cell sizes.
-	* 
+	*
 	* Architecturally is literally just a array of arrays.
-	* 
+	*
 	* Stores integers for maximum efficienty. The integers represent the indices of actual objects where ever they may be stored.
-	* 
+	*
 	* IMPORTANT:
-	* 
+	*
 	* The grid is intended to be reused. The grid should be filled before any geometric logic is done. The potential colliders should
 	* be collected after which the structure becomes invalid. It may be cleared.
-	* 
+	*
 	* After a 'warmup', once each cell alocates enough memory, the rebuilding of the grid becomes cheap. Cheaper than any readjustment
 	* logic would buy in terms of performance. It is a very cache friendly structure and easy to use supporting just insertion and query methods.
-	* 
+	*
 	* NOTE: Query region gives back the indices of all elements of cells, while other query methods just give back the indices of cells.
 	*/
 	class UniformGrid final
@@ -34,13 +34,13 @@ namespace bad
 
 		/**
 		* Builds the uniform grid with given bounds and sizes for cells
-		* 
+		*
 		* Each cells gets an initial boost to their allocation power but does not reserve memory.
-		* 
+		*
 		* \param bounds the world bounds to be divided with cell dimension
 		* \param cellwidth width of each cell in the grid
 		* \param cellheight height of each cell in the grid
-		* 
+		*
 		* \throw in DEBUG asserts logical values for some fields.
 		*/
 		UniformGrid(const Rect& bounds, float cellWidth, float cellHeight);
@@ -50,19 +50,19 @@ namespace bad
 
 		/**
 		* Inserts an element representation as int into the grid using a rect as a measurement of its size.
-		* 
+		*
 		* Depending on the size of the box, the element may be inserted into multiple cells.
-		* 
+		*
 		* \param user_index representation of the element.
 		* \param box the size of the represntative element.
 		*/
 		void insert(int user_index, const Rect& box);
 
 		/**
-		* Range based insert. Internally just calls insert on each element so it might not be 
+		* Range based insert. Internally just calls insert on each element so it might not be
 		* worth it making pairs of ints and rects and just manually looping your structure instead and calling insert.
-		* 
-		* \param first forward iterator to the first element 
+		*
+		* \param first forward iterator to the first element
 		* \param last forward iterator to the last element (excluded)
 		*/
 		template<std::forward_iterator FwdIt>
@@ -76,7 +76,7 @@ namespace bad
 		}
 
 		/// <returns> Exposes the grid structure itself as const for N^2 iteration or any other read reason... </returns>
-		
+
 		/**
 		* Exposes the grid structure itself as const for N^2 iteration or any other read reason...
 		* \returns an array of cells.
@@ -85,11 +85,11 @@ namespace bad
 
 		/**
 		* Queries a region against the grid.
-		* 
+		*
 		* Fills the given sequence with ALL indices of a cell that intersects with the region. This means even though the cell intersected
 		* the obejct the index represents may not. It also could include duplicates but tests showed duplication is cheaper than a complex grid.
 		* (cache friendliness!)
-		* 
+		*
 		* \param region area to be queries
 		* \param results reference array that is filled with indices of elements per intersected cell
 		*/
@@ -97,7 +97,7 @@ namespace bad
 
 		/**
 		* Queries a point against the grid giving back the index of a cell that contains the point.
-		* 
+		*
 		* \param point the point to look for
 		* \returns index of the cell that contained the point.
 		*/
@@ -105,7 +105,7 @@ namespace bad
 
 		/**
 		* Queries an index of the cell and returns back all of the (valid) neighboring indices of cells.
-		* 
+		*
 		* \param cellIndex the index of the cell to address.
 		* \param neighbors reference array that is filled with cell indices
 		* \throws in DEBUG asserts that the cellIndex is valid otherwise noexcept
@@ -114,7 +114,7 @@ namespace bad
 
 		/**
 		* Queries a ray, or a line segment specifically, against the grid returning all cell indices intersecting with the ray.
-		* 
+		*
 		* \param ray the line segment to query against
 		* \param cell_indices reference array that is filled with indices of cells
 		*/
@@ -125,11 +125,11 @@ namespace bad
 
 		/**
 		* Calls Sequence::reserve on each cell in the grid.
-		* 
+		*
 		* If a cell has more memory than capacity reserve will do nothing.
-		* 
+		*
 		* \param capacity to reserve per cell
-		* 
+		*
 		* \note misleading function name as a relic of older logic
 		*/
 		void maintain_uniform_memory(std::size_t capacity);
@@ -138,12 +138,12 @@ namespace bad
 
 		/**
 		* Exposes a cell for read access.
-		* 
+		*
 		* If the user provides a bad out of range index, it is UB.
-		* 
+		*
 		* \param index the index of the cell
 		* \returns cell
-		* 
+		*
 		* \throw in DEBUG asserts valid size; otherwise noexcept or UB.
 		*/
 		const Cell& get_cell(std::size_t index)const noexcept

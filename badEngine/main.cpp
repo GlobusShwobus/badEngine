@@ -5,7 +5,9 @@
 #include <iostream>
 
 #include "badCore.h"
-#include "badWindow.h"
+#include "SDL_SYSTEM_RAII.h"
+#include "Renderer.h"
+#include "Window.h"
 
 #include "Validate_data.h"
 #include "load_data.h"
@@ -24,8 +26,8 @@ int main() {
 
 
         //using namespace badEngine;
-        bad::validate_json_file("../Configs/system_config.json", bad::expected_file_type::WINDOW_JSON);
-        nlohmann::json window_conf = bad::load_json("../Configs/system_config.json");
+        bad::validate_json_file("../badEngine/Configs/system_config.json", bad::expected_file_type::WINDOW_JSON);
+        nlohmann::json window_conf = bad::load_json("../badEngine/Configs/system_config.json");
         auto windowContextData = bad::create_window_description(window_conf, "sys_config");
 
         bad::Window window = bad::make_window(windowContextData.heading, windowContextData.width, windowContextData.height, windowContextData.flags);

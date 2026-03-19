@@ -30,7 +30,7 @@ bad::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHei
 		cell.set_additive(CELL_ADDATIVE);//actually pretty good in this scenario, massive help for early inserts while not doing potentially wasteful allocations
 	}
 }
-	
+
 void bad::UniformGrid::clear()noexcept
 {
 	for (auto& cell : mCells)

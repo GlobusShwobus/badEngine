@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)window_context;$(SolutionDir)HTTP;$(SolutionDir)core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Texture;$(SolutionDir)Geometric;$(SolutionDir)HTTP;$(SolutionDir)core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)window_context;$(SolutionDir)HTTP;$(SolutionDir)core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Texture;$(SolutionDir)Geometric;$(SolutionDir)HTTP;$(SolutionDir)core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,8 +140,11 @@
     <ClInclude Include="load_data.h" />
     <ClInclude Include="MakeShape.h" />
     <ClInclude Include="MouseCameraController.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SDL_SYSTEM_RAII.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="badEngine.cpp" />
@@ -151,17 +154,21 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MakeShape.cpp" />
     <ClCompile Include="MouseCameraController.cpp" />
+    <ClCompile Include="SDL_SYSTEM_RAII.cpp" />
     <ClCompile Include="validate_data.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{1154f4bc-4170-442c-89d2-b6b834717c8e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Geometric\Geometric.vcxproj">
+      <Project>{002e4f76-817d-4bcc-8f7c-cb1de50d5948}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\HTTP\HTTP.vcxproj">
       <Project>{acea32b5-357b-47a8-9f8b-cdeda823eecc}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\window_context\window_context.vcxproj">
-      <Project>{8dff30d6-e1b0-443c-9032-4f27f6f8b580}</Project>
+    <ProjectReference Include="..\Texture\Texture.vcxproj">
+      <Project>{6e569648-1503-4b57-a6ec-7c7caf12b5b4}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -42,14 +42,14 @@ namespace bad
 
 		/// <summary> Default destructor. </summary>
 		~Font()noexcept = default;
-		
+
 		Font() = delete;
 		Font(const Font&) = delete;
 		Font& operator=(const Font&) = delete;
 
 		/**
 		* Sets the text to be drawn by setting the source glyph and then rebuilding the layout for relative destinations.
-		* 
+		*
 		* \param text to parsed
 		* \throws noexcept
 		*/
@@ -57,7 +57,7 @@ namespace bad
 
 		/**
 		* Sets the position of the text to be drawn and then rebuilding the layout for relative destinations.
-		* 
+		*
 		* Does not do any checks for x or y.
 		* \param x as the x position of the first glyph
 		* \param y as the y position of the first glyph
@@ -67,7 +67,7 @@ namespace bad
 
 		/**
 		* Sets the scale of the text and then rebuilding the layout for relative destinations.
-		* 
+		*
 		* Does not do any checks for scale param.
 		* \param scale for scale per glyph
 		* \throws noexcept
@@ -116,7 +116,7 @@ namespace bad
 
 		/**
 		* Rebuilds or more accurately sets accurate destinations of gylphs using pos x and y and scale.
-		* 
+		*
 		* This is required as Font manages both source and dest of the drawn text.
 		* \throws noexcept
 		*/
