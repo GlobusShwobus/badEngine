@@ -83,19 +83,32 @@ namespace badCore
 		/**
 		* \returns Returns the transformation matrix representing this transform.
 		*/
-		Mat3 transform()const noexcept;
+		inline Mat3 transform()const noexcept
+		{
+			return
+				badCore::Mat3::translation(mPos) *
+				badCore::Mat3::rotation(mSin, mCos) *
+				badCore::Mat3::scale(mScale, mScale);
+		}
 
 		/**
 		* \returns Returns the inverse transformation matrix.
 		*/
-		Mat3 transform_inverse()const noexcept;
+		inline Mat3 transform_inverse()const noexcept
+		{
+			const float invScale = 1.0f / mScale;
+			return
+				Mat3::scale(invScale, invScale) *
+				Mat3::rotation(-mSin, mCos) *
+				Mat3::translation(-mPos);
+		}
 
 		/**
 		* Sets the rotation angle in radians.
 		*
 		* \note update_sincos() must be called after modifying the rotation.
 		*/
-		void set_rotation(float radians)noexcept;
+		constexpr void set_rotation(float radians)noexcept { mRadians = radians; }
 
 		/**
 		* Sets the rotation angle in radians and calls update_sincos()
@@ -113,10 +126,7 @@ namespace badCore
 		/**
 		* Returns the current rotation in radians.
 		*/
-		constexpr float get_radians()const noexcept
-		{
-			return mRadians;
-		}
+		constexpr float get_radians()const noexcept { return mRadians; }
 
 		/// <summary> Position (translation) </summary>
 		Point mPos;

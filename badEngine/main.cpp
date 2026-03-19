@@ -4,28 +4,8 @@
 #include <conio.h>
 #include <iostream>
 
-
-#include "Stopwatch.h"
-#include "RandomNum.h"
-#include "Validate_data.h"
-#include "load_data.h"
-#include "Sprite.h"
-#include "UniformGrid.h"
-#include "Canvas.h"
-#include "Sequence.h"
-#include "Color.h"
-#include "TextureMap.h"
-#include "MakeShape.h"
-#include "MouseCameraController.h"
-#include "SDL_SYSTEM_RAII.h"
-#include "Window.h"
-#include "Renderer.h"
-#include "EngineUtils.h"
-#include "FreeDraw.h"
-#include "AsyncLogger.h"
-#include "Animatable.h"
-#include "Font.h"
-#include "badHTTP.h"
+#include "badCore.h"
+#include "badWindow.h"
 
 int main() {
 
@@ -35,11 +15,8 @@ int main() {
     _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
-    {
-        using namespace badEngine;
-        using namespace badCore;
-        using namespace badWindow;
 
+    {
         SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
 
         badHTTP::MultiCurl cum;

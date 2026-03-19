@@ -173,7 +173,7 @@ namespace badHTTP
 		/// Checks if there are any handles stored.
 		/// </summary>
 		/// <returns>True if empty</returns>
-		bool is_empty()const noexcept;
+		inline bool is_empty()const noexcept { return mHandles.empty(); }
 
 		//attempts to duplicate the provided config. unlike a single curl_perform_get MultiCurl does no option setting except CURLOPT_WRITEDATA
 		//everything else from cert, url and other options are user resp.

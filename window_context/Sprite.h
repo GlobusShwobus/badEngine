@@ -29,7 +29,11 @@ namespace badWindow
 		* \param Sprite&&
 		* \throws noexcept
 		*/
-		Sprite(Sprite&& rhs)noexcept;
+		Sprite(Sprite&& rhs)noexcept
+			:mTexture(rhs.mTexture), mSource(rhs.mSource), mTextureW(rhs.mTextureW), mTextureH(rhs.mTextureH)
+		{
+			rhs.mTexture = nullptr;
+		}
 
 		/**
 		* Move assigns rhs Sprite to lhs Sprite
@@ -43,7 +47,17 @@ namespace badWindow
 		* \param Sprite&&
 		* \throws noexcept
 		*/
-		Sprite& operator=(Sprite&& rhs)noexcept;
+		Sprite& operator=(Sprite&& rhs)noexcept
+		{
+			if (this != &rhs) {
+				mTexture = rhs.mTexture;
+				rhs.mTexture = nullptr;
+				mSource = rhs.mSource;
+				mTextureW = rhs.mTextureW;
+				mTextureH = rhs.mTextureH;
+			}
+			return *this;
+		}
 
 		/// mTexture member is non owning so the destructor does nothing special
 		~Sprite()noexcept = default;
@@ -82,16 +96,16 @@ namespace badWindow
 		* \brief this method should never be used to modify the texture (delete or otherwise)
 		* \return retruns SDL_Texture pointer
 		*/
-		SDL_Texture* const get_texture()const noexcept;
+		SDL_Texture* const get_texture()const noexcept { return mTexture; }
 
 		/// <returns>mSource rectangle</returns>
-		const SDL_FRect& get_source()const noexcept;
+		inline const SDL_FRect& get_source()const noexcept { return mSource; }
 
 		/// <returns>float width of the texture</returns>
-		float get_width()const noexcept;
+		inline float get_width()const noexcept { return mTextureW; }
 
 		/// <returns>float height of the texture</returns>
-		float get_height()const noexcept;
+		inline float get_height()const noexcept { return mTextureH; }
 
 	private:
 

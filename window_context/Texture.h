@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 #include <SDL3/SDL_render.h>
+#include <SDL3_image/SDL_image.h>
+#include <assert.h>
 
 namespace badWindow
 {
@@ -32,7 +34,12 @@ namespace badWindow
 	* \throws in DEBUG asserts renderer and source to not be nullptr 
 	* \throws noexcept
 	*/
-	Texture make_texture(SDL_Renderer* const renderer, SDL_Surface* const surface) noexcept;
+	inline Texture make_texture(SDL_Renderer* const renderer, SDL_Surface* const surface) noexcept
+	{
+		assert(renderer != nullptr);
+		assert(surface != nullptr);
+		return badWindow::Texture{ SDL_CreateTextureFromSurface(renderer, surface) };
+	}
 
 	/**
 	* Create a texture from a filesystem path.
@@ -48,5 +55,9 @@ namespace badWindow
 	* \throws in DEBUG asserts renderer to not be nullptr
 	* \throws noexcept
 	*/
-	Texture make_texture(SDL_Renderer* const renderer, const std::string& path) noexcept;
+	inline Texture make_texture(SDL_Renderer* const renderer, const std::string& path) noexcept
+	{
+		assert(renderer != nullptr);
+		return badWindow::Texture{ IMG_LoadTexture(renderer, path.c_str()) };
+	}
 }

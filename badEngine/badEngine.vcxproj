@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="FreeDraw.h" />
     <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="load_data.h" />

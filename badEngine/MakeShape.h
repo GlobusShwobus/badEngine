@@ -6,7 +6,6 @@
 
 namespace badEngine
 {
-
 	/**
 	* Generates a radial polyline with alternating outer and inner vertices.
 	*

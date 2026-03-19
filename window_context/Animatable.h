@@ -55,7 +55,10 @@ namespace badWindow
 		* \param texture pointer.
 		* \throws AnimationPlayer does no checks but Sprite can internally throw std::runtime_error if given texture is nullptr.
 		*/
-		explicit AnimationPlayer(SDL_Texture* const texture);
+		explicit AnimationPlayer(SDL_Texture* const texture)
+			:mSprite(texture), mTimer(0), mCurrentFrame(0)
+		{
+		}
 
 		/**
 		* Move constructs *this from rhs.
@@ -68,7 +71,11 @@ namespace badWindow
 		* 
 		* \throws noexcept
 		*/
-		AnimationPlayer(AnimationPlayer&& rhs)noexcept;
+		AnimationPlayer(AnimationPlayer&& rhs)noexcept
+			:mClips(std::move(rhs.mClips)), mCurrentClip(rhs.mCurrentClip), mSprite(std::move(rhs.mSprite)), mTimer(0.0f), mCurrentFrame(0)
+		{
+			rhs.mCurrentClip = nullptr;
+		}
 
 		/**
 		* Uses move operator to move values from rhs to *this or does nothing if this = &rhs.
@@ -81,8 +88,18 @@ namespace badWindow
 		* 
 		* \throws noexcept
 		*/
-		AnimationPlayer& operator=(AnimationPlayer&& rhs)noexcept;
-
+		AnimationPlayer& operator=(AnimationPlayer&& rhs)noexcept
+		{
+			if (this != &rhs) {
+				mClips = std::move(rhs.mClips);
+				mCurrentClip = rhs.mCurrentClip;
+				rhs.mCurrentClip = nullptr;
+				mSprite = std::move(rhs.mSprite);
+				mTimer = 0.0f;
+				mCurrentFrame = 0;
+			}
+			return *this;
+		}
 
 		AnimationPlayer() = delete;
 		AnimationPlayer(const AnimationPlayer&) = delete;
@@ -139,8 +156,12 @@ namespace badWindow
 		* However the last drawn state will still be drawn.
 		* \throws noexcept
 		*/
-		void stop()noexcept;
-
+		inline void stop()noexcept
+		{
+			mCurrentClip = nullptr;
+			mTimer = 0.0f;
+			mCurrentFrame = 0;
+		}
 		/**
 		* Sets the counters to 0 but retains the current clip.
 		* 
@@ -148,7 +169,11 @@ namespace badWindow
 		*
 		* \throws noexcept
 		*/
-		void restart()noexcept;
+		inline void restart()noexcept
+		{
+			mTimer = 0.0f;
+			mCurrentFrame = 0;
+		}
 
 		/**
 		* Draws the current frame onto the given rendering context.
@@ -166,7 +191,7 @@ namespace badWindow
 		* Intended for creating clips.
 		* \returns cached Sprite const reference
 		*/
-		const Sprite& get_sprite()const noexcept;
+		inline const Sprite& get_sprite()const noexcept { return mSprite; }
 
 	private:
 

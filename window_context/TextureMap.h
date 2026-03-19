@@ -29,7 +29,7 @@ namespace badWindow
 		~TextureMap()noexcept = default;
 
 		/// <summary> Clears the internal storage of Textures. </summary>
-		void clear()noexcept;
+		inline void clear()noexcept { mTextures.clear(); }
 
 		/**
 		* Adds a given texture to the internal storage with a given tag.

@@ -81,7 +81,7 @@ namespace badCore
 		* Exposes the grid structure itself as const for N^2 iteration or any other read reason...
 		* \returns an array of cells.
 		*/
-		const Sequence<Cell>& query_grid()const noexcept;
+		inline const Sequence<Cell>& query_grid()const noexcept { return mCells; }
 
 		/**
 		* Queries a region against the grid.
@@ -146,22 +146,26 @@ namespace badCore
 		* 
 		* \throw in DEBUG asserts valid size; otherwise noexcept or UB.
 		*/
-		const Cell& get_cell(std::size_t index)const noexcept;
+		const Cell& get_cell(std::size_t index)const noexcept
+		{
+			assert(mCells.size() > index);
+			return mCells[index];
+		}
 
 		/**
 		* \returns returns the bounds of the grid
 		*/
-		const Rect& get_grid_bounds()const noexcept;
+		const Rect& get_grid_bounds()const noexcept { return mBounds; }
 
 		/**
 		* \returns returns the width of each cell
 		*/
-		float get_cell_width()const noexcept;
+		float get_cell_width()const noexcept { return mCellWidth; }
 
 		/**
 		* \returns returns the height of each cell
 		*/
-		float get_cell_height()const noexcept;
+		float get_cell_height()const noexcept { return mCellHeight; }
 
 	private:
 		class Sequence<Cell> mCells;

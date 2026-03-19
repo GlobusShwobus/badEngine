@@ -16,26 +16,49 @@ namespace badCore
 		/// Measures the difference between now and the last time this function was called.
 		/// </summary>
 		/// <returns> std::steady_clock::duration difference between now and then</returns>
-		std::chrono::steady_clock::duration elapsed()noexcept;
+		std::chrono::steady_clock::duration elapsed()noexcept
+		{
+			const auto old = mWatch;
+			mWatch = std::chrono::steady_clock::now();
+			return mWatch - old;
+		}
 
 	public:
 		/// <summary> Intializes time measurements. Internally calls std::chrono::steady_clock::now() </summary>
-		Stopwatch()noexcept;
+		explicit Stopwatch()noexcept
+			:mWatch(std::chrono::steady_clock::now())
+		{
+		}
 
 		/// <returns> Difference between now and then in double </returns>
-		double dt_float() noexcept;
+		inline double dt_float() noexcept
+		{
+			return std::chrono::duration_cast<Valuesec>(elapsed()).count();
+		}
 
 		/// <returns> Difference between now and then in size_t milliseconds </returns>
-		std::size_t dt_millisec() noexcept;
+		inline std::size_t dt_millisec() noexcept
+		{
+			return std::chrono::duration_cast<Millisec>(elapsed()).count();
+		}
 
 		/// <returns> Difference between now and then in size_t microseconds </returns>
-		std::size_t dt_microsec() noexcept;
+		inline std::size_t dt_microsec() noexcept
+		{
+			return std::chrono::duration_cast<Microsec>(elapsed()).count();
+		}
 
 		/// <returns> Difference between now and then in size_t nanoseconds </returns>
-		std::size_t dt_nanosec() noexcept;
+		inline std::size_t dt_nanosec() noexcept
+		{
+			return std::chrono::duration_cast<Nanosec>(elapsed()).count();
+		}
 
 		/// <summary> Sets the stopwatch to std::chrono::steady_clock::now() </summary>
-		void reset()noexcept;
+		inline void reset()noexcept
+		{
+			mWatch = std::chrono::steady_clock::now();
+		}
 
 	private:
 		std::chrono::steady_clock::time_point mWatch;

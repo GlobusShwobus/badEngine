@@ -79,7 +79,7 @@ namespace badWindow
 		* \returns float scale
 		* \throws noexcept
 		*/
-		float get_scale()const noexcept;
+		inline float get_scale()const noexcept { return mScale; }
 
 		/**
 		* Draws the assigned texture on the screen handling all source and dest internally.
