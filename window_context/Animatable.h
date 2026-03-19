@@ -8,7 +8,7 @@
 //TODO:: pause function
 //TODO:: draw rotated
 
-namespace badWindow
+namespace bad
 {
 	/// <summary> An Enumeration type for naming different animations in the AnimationPlayer manager. </summary>
 	enum class AnimID

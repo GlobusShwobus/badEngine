@@ -2,7 +2,7 @@
 #include "Animatable.h"
 #include <algorithm>
 
-badWindow::Clip badWindow::make_clip(float texture_w, float texture_h, const SDL_FRect& first_frame, uint16_t frame_count, float frame_duration, bool loops)
+bad::Clip bad::make_clip(float texture_w, float texture_h, const SDL_FRect& first_frame, uint16_t frame_count, float frame_duration, bool loops)
 {
 	if (frame_count == 0)
 		throw std::runtime_error("make_clip: frame_count cannot be zero");
@@ -28,7 +28,7 @@ badWindow::Clip badWindow::make_clip(float texture_w, float texture_h, const SDL
 		throw std::runtime_error("make_clip: animation strip exceeds texture width");
 
 
-	badWindow::Clip clip;
+	Clip clip;
 	clip.frame_duration = frame_duration;
 	clip.loop = loops;
 	clip.frames.reserve(frame_count);
@@ -39,7 +39,7 @@ badWindow::Clip badWindow::make_clip(float texture_w, float texture_h, const SDL
 	return clip;
 }
 
-void badWindow::AnimationPlayer::update(float dt)
+void bad::AnimationPlayer::update(float dt)
 {
 	if (!mCurrentClip)
 		return;
@@ -68,7 +68,7 @@ void badWindow::AnimationPlayer::update(float dt)
 	}
 }
 
-void badWindow::AnimationPlayer::add_clip(AnimID id, Clip&& clip)
+void bad::AnimationPlayer::add_clip(AnimID id, Clip&& clip)
 {
 	if (clip.frames.empty())
 		throw std::logic_error("Animation clip has no frames");
@@ -91,7 +91,7 @@ void badWindow::AnimationPlayer::add_clip(AnimID id, Clip&& clip)
 		throw std::logic_error("AnimationPlayer::add_clip: duplicate animation id");
 }
 
-void badWindow::AnimationPlayer::play(AnimID id)
+void bad::AnimationPlayer::play(AnimID id)
 {
 	auto it = mClips.find(id);
 
@@ -110,7 +110,7 @@ void badWindow::AnimationPlayer::play(AnimID id)
 	mSprite.set_source(mCurrentClip->frames[0]);
 }
 
-bool badWindow::AnimationPlayer::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
+bool bad::AnimationPlayer::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
 {
 	return SDL_RenderTexture(renderer, mSprite.get_texture(), &mSprite.get_source(), &dest);
 }

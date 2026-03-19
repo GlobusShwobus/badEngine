@@ -1,6 +1,6 @@
 #include "badEngine.h"
 
-namespace badEngine
+namespace bad
 {
    // void badEngine::process_input(float dt)
    // {

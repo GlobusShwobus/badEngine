@@ -2,7 +2,7 @@
 
 #include "Float2.h"
 
-namespace badCore
+namespace bad
 {
 	struct Mat3
 	{

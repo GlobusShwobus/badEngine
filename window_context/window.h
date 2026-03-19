@@ -4,7 +4,7 @@
 #include <memory>
 #include <SDL3/SDL_video.h>
 
-namespace badWindow
+namespace bad
 {
 	// Functor deleter for SDL_Window.
 	struct WindowDeleter

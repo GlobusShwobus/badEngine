@@ -4,7 +4,7 @@
 #include "CoreUtils.h"
 #include <assert.h>
 
-namespace badCore
+namespace bad
 {
 	/**
 	* \brief Rect represents an axis-aligned rectangle using two points:

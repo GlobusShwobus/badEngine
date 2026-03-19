@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Float2.h"
-#include "Rect.h"
 #include "Sequence.h"
 
-namespace badEngine
+namespace bad
 {
 	/**
 	* Generates a radial polyline with alternating outer and inner vertices.
@@ -18,5 +17,5 @@ namespace badEngine
 	*
 	* \return Sequence of points resembling a star containing 2x Flares aount of vertices.
 	*/
-	badCore::Sequence<badCore::Point> make_poly(float outerRadius, float innerRadius, int nFlares);
+	bad::Sequence<bad::Point> make_poly(float outerRadius, float innerRadius, int nFlares);
 }

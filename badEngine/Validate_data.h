@@ -3,7 +3,7 @@
 #include "bString.h"
 #include "json.hpp"
 
-namespace badEngine
+namespace bad
 {
 	enum class expected_file_type : uint_fast8_t
 	{
@@ -20,5 +20,5 @@ namespace badEngine
 	}
 
 	//validate a json
-	badCore::bString validate_json_file(const char* path, expected_file_type type = expected_file_type::DEFAULT_JSON) noexcept;
+	bad::bString validate_json_file(const char* path, expected_file_type type = expected_file_type::DEFAULT_JSON) noexcept;
 }

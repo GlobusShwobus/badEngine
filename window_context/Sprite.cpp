@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdexcept>
 
-badWindow::Sprite::Sprite(SDL_Texture* const texture)
+bad::Sprite::Sprite(SDL_Texture* const texture)
 	:mTexture(texture)
 {
 	if (!mTexture)
@@ -13,7 +13,7 @@ badWindow::Sprite::Sprite(SDL_Texture* const texture)
 	mSource = SDL_FRect(0, 0, mTextureW, mTextureH);
 }
 
-void badWindow::Sprite::set_source_pos(float x, float y)noexcept
+void bad::Sprite::set_source_pos(float x, float y)noexcept
 {
 	assert(x >= 0 && y >= 0);
 	assert(x + mSource.w <= mTextureW);
@@ -23,7 +23,7 @@ void badWindow::Sprite::set_source_pos(float x, float y)noexcept
 	mSource.y = y;
 }
 
-void badWindow::Sprite::set_source_size(float w, float h)noexcept
+void bad::Sprite::set_source_size(float w, float h)noexcept
 {
 	assert(w > 0 && h > 0);
 	assert(mSource.x + w <= mTextureW);
@@ -33,7 +33,7 @@ void badWindow::Sprite::set_source_size(float w, float h)noexcept
 	mSource.h = h;
 }
 
-void badWindow::Sprite::set_source(const SDL_FRect& aabb)noexcept
+void bad::Sprite::set_source(const SDL_FRect& aabb)noexcept
 {
 	assert(aabb.x >= 0 && aabb.y >= 0);
 	assert(aabb.w > 0 && aabb.h > 0);

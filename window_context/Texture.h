@@ -6,7 +6,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <assert.h>
 
-namespace badWindow
+namespace bad
 {
 	/// <summary> Functor deleter for SDL_Texture </summary>
 	struct TextureDeleter {
@@ -38,7 +38,7 @@ namespace badWindow
 	{
 		assert(renderer != nullptr);
 		assert(surface != nullptr);
-		return badWindow::Texture{ SDL_CreateTextureFromSurface(renderer, surface) };
+		return bad::Texture{ SDL_CreateTextureFromSurface(renderer, surface) };
 	}
 
 	/**
@@ -58,6 +58,6 @@ namespace badWindow
 	inline Texture make_texture(SDL_Renderer* const renderer, const std::string& path) noexcept
 	{
 		assert(renderer != nullptr);
-		return badWindow::Texture{ IMG_LoadTexture(renderer, path.c_str()) };
+		return bad::Texture{ IMG_LoadTexture(renderer, path.c_str()) };
 	}
 }

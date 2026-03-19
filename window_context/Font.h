@@ -6,7 +6,7 @@
 
 //TODO:: draw rotated?
 
-namespace badWindow
+namespace bad
 {
 	/// <summary> A handle for storing both source and destination of a Glyph. </summary>
 	struct Glyph {

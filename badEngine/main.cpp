@@ -7,6 +7,9 @@
 #include "badCore.h"
 #include "badWindow.h"
 
+#include "Validate_data.h"
+#include "load_data.h"
+
 int main() {
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -17,17 +20,16 @@ int main() {
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 
     {
-        SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
+        bad::SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
 
-        badHTTP::MultiCurl cum;
 
         //using namespace badEngine;
-        validate_json_file("../Configs/system_config.json", expected_file_type::WINDOW_JSON);
-        nlohmann::json window_conf = badEngine::load_json("../Configs/system_config.json");
-        auto windowContextData = badEngine::create_window_description(window_conf, "sys_config");
+        bad::validate_json_file("../Configs/system_config.json", bad::expected_file_type::WINDOW_JSON);
+        nlohmann::json window_conf = bad::load_json("../Configs/system_config.json");
+        auto windowContextData = bad::create_window_description(window_conf, "sys_config");
 
-        Window window = make_window(windowContextData.heading, windowContextData.width, windowContextData.height, windowContextData.flags);
-        Renderer renderer = make_renderer(window.get(), {});
+        bad::Window window = bad::make_window(windowContextData.heading, windowContextData.width, windowContextData.height, windowContextData.flags);
+        bad::Renderer renderer = bad::make_renderer(window.get(), {});
 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -44,7 +46,7 @@ int main() {
         bool GAME_RUNNING = true;
 
         //this whole main loop is badly bad but engine class in the future so fuck it for now
-        Stopwatch steper;
+        bad::Stopwatch steper;
         while (GAME_RUNNING) {
             SDL_Event EVENT;
             float dt = steper.dt_float();

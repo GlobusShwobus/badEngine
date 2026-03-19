@@ -2,17 +2,17 @@
 #include "AsyncLogger.h"
 #include <iostream>
 
-badCore::AsyncLogger::AsyncLogger() {
+bad::AsyncLogger::AsyncLogger() {
 	mWorker = std::thread([this]() { this->process(); });
 }
 
-badCore::AsyncLogger::~AsyncLogger() {
+bad::AsyncLogger::~AsyncLogger() {
 	mRunning = false;
 	mCondition.notify_all();
 	mWorker.join();
 }
 
-void badCore::AsyncLogger::log(std::string msg) {
+void bad::AsyncLogger::log(std::string msg) {
 	{
 		std::lock_guard<std::mutex> lock(mSync);
 		mQueue.push(std::move(msg));
@@ -20,7 +20,7 @@ void badCore::AsyncLogger::log(std::string msg) {
 	mCondition.notify_one();
 }
 
-void badCore::AsyncLogger::process() {
+void bad::AsyncLogger::process() {
 	while (true) {
 		std::queue<std::string> localQueue;
 		{

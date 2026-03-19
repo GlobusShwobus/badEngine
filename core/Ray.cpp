@@ -1,12 +1,12 @@
 #include "pch.h"
 #include "Ray.h"
 
-badCore::Ray::Ray(const Point& origin, const Vector& vector) noexcept
+bad::Ray::Ray(const Point& origin, const Vector& vector) noexcept
 		:mOrigin(origin), mLength(length(vector)), mDir(normal_optimized(vector, mLength))
 	{
 	}
 
-badCore::SweepInfo badCore::Ray::sweep_test(const Rect& target)const noexcept
+bad::SweepInfo bad::Ray::sweep_test(const Rect& target)const noexcept
 {
 	float2 invdir(
 		(mDir.x == 0.0f) ? INFINITY : 1.0f / mDir.x,
@@ -37,7 +37,7 @@ badCore::SweepInfo badCore::Ray::sweep_test(const Rect& target)const noexcept
 	return info;
 }
 
-badCore::IntersectionInfo badCore::Ray::intersection_test(const Point& point, float radius)const noexcept
+bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radius)const noexcept
 {
 	float2 closest_point = closest_point_on_ray(point);
 
@@ -57,7 +57,7 @@ badCore::IntersectionInfo badCore::Ray::intersection_test(const Point& point, fl
 	return info;
 }
 
-void badCore::reflection_routine_resolved(const Ray& target_surface, float2& point, float2& velocity, float radius) noexcept
+void bad::reflection_routine_resolved(const Ray& target_surface, float2& point, float2& velocity, float radius) noexcept
 {
 	auto result = target_surface.intersection_test(point, radius);
 

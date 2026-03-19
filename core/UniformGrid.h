@@ -5,7 +5,7 @@
 #include "Rect.h"
 #include "Ray.h"
 
-namespace badCore 
+namespace bad
 {
 	/**
 	* \brief

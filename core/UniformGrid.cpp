@@ -2,7 +2,7 @@
 #include "UniformGrid.h"
 #include "CoreUtils.h"
 
-badCore::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHeight)
+bad::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHeight)
 	:mBounds(bounds), mCellWidth(cellWidth), mCellHeight(cellHeight)
 {
 	const auto bWidth = bounds.get_width();
@@ -31,13 +31,13 @@ badCore::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cel
 	}
 }
 	
-void badCore::UniformGrid::clear()noexcept
+void bad::UniformGrid::clear()noexcept
 {
 	for (auto& cell : mCells)
 		cell.clear();
 }
 
-void badCore::UniformGrid::insert(int user_index, const Rect& box)
+void bad::UniformGrid::insert(int user_index, const Rect& box)
 {
 	//NOTE: the reason for std::ceil is because we must include partially overlapping cells
 	int minx = static_cast<int>((box.min.x - mBounds.min.x) * invCellW);					     //left edge (round down)
@@ -59,7 +59,7 @@ void badCore::UniformGrid::insert(int user_index, const Rect& box)
 	}
 }
 
-void badCore::UniformGrid::query_region(const Rect& region, Sequence<int>& results)const
+void bad::UniformGrid::query_region(const Rect& region, Sequence<int>& results)const
 {
 	//NOTE: the reason for std::ceil is because we must include partially overlapping cells
 	int minx = static_cast<int>((region.min.x - mBounds.min.x) * invCellW);					             //left edge (round down)
@@ -81,7 +81,7 @@ void badCore::UniformGrid::query_region(const Rect& region, Sequence<int>& resul
 	}
 }
 
-int badCore::UniformGrid::query_point(const Point& point)const noexcept
+int bad::UniformGrid::query_point(const Point& point)const noexcept
 {
 	int x = static_cast<int>((point.x - mBounds.min.x) * invCellW);
 	int y = static_cast<int>((point.y - mBounds.min.y) * invCellH);
@@ -92,7 +92,7 @@ int badCore::UniformGrid::query_point(const Point& point)const noexcept
 	return y * mColumns + x;
 }
 
-void badCore::UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const
+void bad::UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)const
 {
 	if (cellIndex < 0 || cellIndex >= static_cast<int>(mCells.size()))
 		return;
@@ -127,7 +127,7 @@ void badCore::UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbo
 	}
 }
 
-void badCore::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const
+void bad::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const
 {
 	//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
 	const float& segmentLength = ray.mLength;
@@ -153,7 +153,7 @@ void badCore::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices
 
 	//4) apply a tiny epsilon to entryT to avoid edges cases like traversing EXACTLY on the edges.
 	//also check again if entry is within the maximum segment length
-	float currentT = entryT + badCore::EPSILON;
+	float currentT = entryT + bad::EPSILON;
 	if (currentT > segmentLength)
 		return;
 
@@ -224,7 +224,7 @@ void badCore::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices
 	}
 }
 
-void badCore::UniformGrid::maintain_uniform_memory(std::size_t capacity)
+void bad::UniformGrid::maintain_uniform_memory(std::size_t capacity)
 {
 	for (auto& cell : mCells) {
 		cell.reserve(capacity);

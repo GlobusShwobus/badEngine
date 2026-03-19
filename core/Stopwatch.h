@@ -2,7 +2,7 @@
 #include <chrono>
 #include <concepts>
 
-namespace badCore
+namespace bad
 {
 	/// <summary> Basic wrapper around std::chrono only doing time measurements. </summary>
 	class Stopwatch final

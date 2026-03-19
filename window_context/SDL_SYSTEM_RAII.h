@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL_init.h>
 
-namespace badWindow
+namespace bad
 {
 	
 	/// <summary>

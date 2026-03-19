@@ -5,10 +5,8 @@
 #include "Stopwatch.h"
 #include "MouseCameraController.h"
 
-namespace badEngine {
-
-	using namespace badCore;
-	using namespace badWindow;
+namespace bad
+{
 
 	//class badEngine
 	//{

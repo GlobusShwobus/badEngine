@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace badCore 
+namespace bad
 {
 	/**
 	* \brief float2 is literally just a pair of floats.

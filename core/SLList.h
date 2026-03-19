@@ -12,7 +12,7 @@
 * 
 */
 
-namespace badCore
+namespace DEPRICATED123
 {
 	/**
 	* \brief DEPRICATED

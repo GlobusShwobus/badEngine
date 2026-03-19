@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <vector>
 
-namespace badHTTP
+namespace bad
 {
 	/// <summary> Functor deleter for CURL handle </summary>
 	struct CurlDeleter {

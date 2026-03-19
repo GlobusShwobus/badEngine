@@ -3,7 +3,7 @@
 #include <memory>
 #include <SDL3/SDL_render.h>
 
-namespace badWindow
+namespace bad
 {
 	/// <summary> Functor deleter for SDL_Renderer </summary>
 	struct RendererDeleter {

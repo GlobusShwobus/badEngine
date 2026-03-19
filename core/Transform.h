@@ -3,7 +3,7 @@
 #include "Float2.h"
 #include "Matrix3.h"
 
-namespace badCore
+namespace bad
 {
 	/**
 	* Transform represents a 2D geometric transformation.
@@ -86,9 +86,9 @@ namespace badCore
 		inline Mat3 transform()const noexcept
 		{
 			return
-				badCore::Mat3::translation(mPos) *
-				badCore::Mat3::rotation(mSin, mCos) *
-				badCore::Mat3::scale(mScale, mScale);
+				Mat3::translation(mPos) *
+				Mat3::rotation(mSin, mCos) *
+				Mat3::scale(mScale, mScale);
 		}
 
 		/**

@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace badCore
+namespace bad
 {
 	static constexpr float EPSILON = 0.0001f;
 	constexpr float PI = 3.14159265358979323846f;

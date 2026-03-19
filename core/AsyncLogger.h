@@ -7,7 +7,7 @@
 #include <string>
 #include <atomic>
 
-namespace badCore
+namespace bad
 {
 	class AsyncLogger {
 	private:

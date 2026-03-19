@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace badWindow
+namespace bad
 {
 	/// <summary>
 	/// A Wrapper for what is basically just an unordered_map of Textures with string keys to work well with json parsing.

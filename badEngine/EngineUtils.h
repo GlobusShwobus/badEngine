@@ -6,9 +6,9 @@
 #include "Rect.h"
 #include "Matrix3.h"
 
-namespace badEngine
+namespace bad
 {
-	badCore::Mat3 sdl_window_matrix(SDL_Window* const window) noexcept;
+	bad::Mat3 sdl_window_matrix(SDL_Window* const window) noexcept;
 
 	bool json_key_to_sdl_flags(const std::string& key, std::size_t& flags)noexcept;
 }

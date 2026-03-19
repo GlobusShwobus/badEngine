@@ -1,6 +1,7 @@
 #pragma once
 
-namespace badCore {
+namespace bad
+{
 	/**
 	* \brief Lightweight 32-bit RGBA color container.
 	*

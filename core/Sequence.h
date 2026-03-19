@@ -10,7 +10,7 @@
 
 //TODO: proper insert and all pushes/emplaces hierarchy
 
-namespace badCore
+namespace bad
 {
 	/**
 	* \brief

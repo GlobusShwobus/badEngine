@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL3/SDL_render.h>
 
-namespace badWindow
+namespace bad
 {
 	/// <summary>
 	/// A class for handling a region of a texture.

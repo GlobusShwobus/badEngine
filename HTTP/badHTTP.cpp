@@ -2,24 +2,24 @@
 #include "badHTTP.h"
 #include <stdexcept>
 
-badHTTP::HttpResponse perform_writedata(CURL* template_handle)
+bad::HttpResponse bad::perform_writedata(CURL* template_handle)
 {
 	//user provided config must exist
 	if (!template_handle)
 		throw std::runtime_error("user provided config must exist. can not be nullptr");
 
 	//duplicate it as to not mess with owners handle
-	badHTTP::UCURL dupecurl(curl_easy_duphandle(template_handle));
+	UCURL dupecurl(curl_easy_duphandle(template_handle));
 	if (!dupecurl)
 		throw std::runtime_error("curl_easy_duphandle failed");
 
 	CURL* curl = dupecurl.get();
 
 	//bind data
-	badHTTP::HttpResponse handle;
+	HttpResponse handle;
 	handle.body.reserve(16000);//reserve 16KB
 
-	if (auto bind_function = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, badHTTP::write_callback); bind_function != CURLE_OK)
+	if (auto bind_function = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, bad::write_callback); bind_function != CURLE_OK)
 		throw std::runtime_error(std::string("Failed to set WRITEFUNCTION: ") + curl_easy_strerror(bind_function));
 
 	if (auto bind_handle = curl_easy_setopt(curl, CURLOPT_WRITEDATA, &handle); bind_handle != CURLE_OK)
@@ -42,14 +42,14 @@ badHTTP::HttpResponse perform_writedata(CURL* template_handle)
 	return handle;
 }
 
-badHTTP::Observer::Observer(CURL* config)
+bad::Observer::Observer(CURL* config)
 	:curl(curl_easy_duphandle(config)), state(observed_state::idle), mCurlm(nullptr)
 {
 	if (!curl)
 		throw std::runtime_error("curl_easy_init returned nullptr");
 }
 
-badHTTP::Observer::~Observer()noexcept
+bad::Observer::~Observer()noexcept
 {
 	CURLM* curlmRemove = mCurlm.exchange(nullptr, std::memory_order_acq_rel);
 	if (curlmRemove) {
@@ -57,7 +57,7 @@ badHTTP::Observer::~Observer()noexcept
 	}
 }
 
-const badHTTP::HttpResponse* const badHTTP::Observer::try_get_data()const noexcept
+const bad::HttpResponse* const bad::Observer::try_get_data()const noexcept
 {
 	// NOTE:: return by value is probably the safest but requires copies. so if things giga break
 	// in regards to  this getter, return by val
@@ -66,7 +66,7 @@ const badHTTP::HttpResponse* const badHTTP::Observer::try_get_data()const noexce
 	return &data;
 }
 
-void badHTTP::Observer::abort()
+void bad::Observer::abort()
 {
 	observed_state expected = observed_state::idle;
 	if (state.compare_exchange_strong(expected, observed_state::finalized, std::memory_order_acq_rel, std::memory_order_acquire)) {
@@ -75,7 +75,7 @@ void badHTTP::Observer::abort()
 	}
 }
 
-void badHTTP::Observer::handle_finish_info()
+void bad::Observer::handle_finish_info()
 {
 	//NOTE:: consider removing this all together if libcurl offers more detailed ways of result gathering but that would require exposing inner curl
 	if (!is_finalized())
@@ -104,27 +104,27 @@ void badHTTP::Observer::handle_finish_info()
 	data.http_ok = data.httpcode >= 200 && data.httpcode < 300;
 }
 
-badHTTP::observed_state badHTTP::Observer::get_state() const noexcept
+bad::observed_state bad::Observer::get_state() const noexcept
 {
 	return state.load(std::memory_order_acquire);
 }
 
-bool badHTTP::Observer::is_idle() const noexcept
+bool bad::Observer::is_idle() const noexcept
 {
 	return get_state() == observed_state::idle;
 }
 
-bool badHTTP::Observer::is_bound() const noexcept
+bool bad::Observer::is_bound() const noexcept
 {
 	return get_state() == observed_state::bound;
 }
 
-bool badHTTP::Observer::is_finalized() const noexcept
+bool bad::Observer::is_finalized() const noexcept
 {
 	return get_state() == observed_state::finalized;
 }
 
-badHTTP::MultiCurl::MultiCurl()
+bad::MultiCurl::MultiCurl()
 	:mUcurlm(curl_multi_init())
 {
 	if (!mUcurlm)
@@ -132,12 +132,12 @@ badHTTP::MultiCurl::MultiCurl()
 
 }
 
-badHTTP::MultiCurl::~MultiCurl() noexcept
+bad::MultiCurl::~MultiCurl() noexcept
 {
 	clear_handles();
 }
 
-void badHTTP::MultiCurl::clear_handles()noexcept
+void bad::MultiCurl::clear_handles()noexcept
 {
 	// in case MultiCurl goes out of scope of it's handles, and this is technically even realistic, then it's not enough from Observer destruction
 	// because shared pointers get returned. this method provides guarantees that in any case CURL* gets removed from CURLM* before CURLM* goes out of scope
@@ -159,7 +159,7 @@ void badHTTP::MultiCurl::clear_handles()noexcept
 	//if idle or finalized or nullptr then safe to remove
 	mHandles.clear();
 }
-std::shared_ptr<badHTTP::Observer> badHTTP::MultiCurl::add_handle(CURL* config)
+std::shared_ptr<bad::Observer> bad::MultiCurl::add_handle(CURL* config)
 {
 	if (!config)
 		throw std::runtime_error("Illegal config, config can't be nullptr");
@@ -172,7 +172,7 @@ std::shared_ptr<badHTTP::Observer> badHTTP::MultiCurl::add_handle(CURL* config)
 	return handle;
 }
 
-void badHTTP::MultiCurl::perform(std::size_t count, std::condition_variable* cv)
+void bad::MultiCurl::perform(std::size_t count, std::condition_variable* cv)
 {
 	static constexpr int MAX_CURLM_TIMEOUT = 1000; 			//TODO:: remove this hardcore sometime
 	std::size_t bound = 0;

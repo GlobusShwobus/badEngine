@@ -3,7 +3,7 @@
 #include "Float2.h"
 #include "Rect.h"
 
-namespace badCore
+namespace bad
 {
 	//##############################################################################################################
 	// under construction

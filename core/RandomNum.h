@@ -2,7 +2,7 @@
 
 #include <random>
 
-namespace badCore
+namespace bad
 {
 	/// <summary> Wrapper around std::mt19937 </summary>
 	class RandomNum final

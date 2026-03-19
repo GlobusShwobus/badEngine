@@ -5,7 +5,7 @@
 #include "Transform.h"
 #include "Rect.h"
 
-namespace badEngine
+namespace bad
 {
 	class MouseCameraController
 	{
@@ -14,13 +14,13 @@ namespace badEngine
 
 	public:
 		explicit MouseCameraController() noexcept;
-		MouseCameraController(const badCore::float2& pos, float scale, float inital_radian, float rotation_speed) noexcept;
+		MouseCameraController(const bad::Point& pos, float scale, float inital_radian, float rotation_speed) noexcept;
 
 		void update(float dt, const SDL_Event& events)noexcept;
 
-		badCore::Rect get_viewport(SDL_Window* const window)const;
+		bad::Rect get_viewport(SDL_Window* const window)const;
 
-		badCore::Transform mCamera;
+		bad::Transform mCamera;
 
 
 	private:

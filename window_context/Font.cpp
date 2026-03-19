@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Font.h"
 
-badWindow::Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
+bad::Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
 	:mSprite(texture), mColumnsCount(columns_count), mPosX(0), mPosY(0), mScale(1.0f)
 {
 	//NOTE:: sprite will throw is texture is nullptr
@@ -19,7 +19,7 @@ badWindow::Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32
 	mSprite.set_source_size(mGlyphW, mGlyphH);
 }
 
-void badWindow::Font::set_text(const std::string& text)noexcept
+void bad::Font::set_text(const std::string& text)noexcept
 {
 	mGlyphs.clear();
 	if (text.empty())
@@ -68,20 +68,20 @@ void badWindow::Font::set_text(const std::string& text)noexcept
 	rebuild_layout();
 }
 
-void badWindow::Font::set_position(float x, float y) noexcept
+void bad::Font::set_position(float x, float y) noexcept
 {
 	mPosX = x;
 	mPosY = y;
 	rebuild_layout();
 }
 
-void badWindow::Font::set_scale(float scale) noexcept
+void bad::Font::set_scale(float scale) noexcept
 {
 	mScale = scale;
 	rebuild_layout();
 }
 
-bool badWindow::Font::draw(SDL_Renderer* const renderer) const noexcept
+bool bad::Font::draw(SDL_Renderer* const renderer) const noexcept
 {
 	auto txtr = mSprite.get_texture();
 	for (const auto& g : mGlyphs) {
@@ -94,7 +94,7 @@ bool badWindow::Font::draw(SDL_Renderer* const renderer) const noexcept
 	return true;
 }
 
-void badWindow::Font::rebuild_layout() noexcept
+void bad::Font::rebuild_layout() noexcept
 {
 	//trackers for positions of glyphs. initally pos x and y for the first letter
 	float cursorX = mPosX;

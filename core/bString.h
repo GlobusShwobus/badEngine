@@ -3,7 +3,7 @@
 #include <string>
 #include <ostream>
 
-namespace badCore
+namespace bad
 {
 	/**
 	* bString is a combination of a std::string and a bool.

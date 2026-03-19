@@ -6,7 +6,8 @@
 #include "Texture.h"
 #include "SDL3/SDL_render.h"
 
-namespace badEngine {
+namespace bad
+{
 	// basic load file into a json function. assumes complete validity thus does no checks. will throw on failure
 	nlohmann::json load_json(const char* path);
 
@@ -29,8 +30,8 @@ namespace badEngine {
 	};
 
 	// extracts data from a json and creates descriptions for textures. assumes complete validity thus does no checks. will throw on failure
-	badCore::Sequence<TextureDescription> create_texture_descriptions(const nlohmann::json& texture_manifest, const char* key);
+	bad::Sequence<TextureDescription> create_texture_descriptions(const nlohmann::json& texture_manifest, const char* key);
 
 	// loads up textures, assumes is called with the result of extract_texture_descs
-	badCore::Sequence<std::pair<std::string, badWindow::Texture>> load_textures(const badCore::Sequence<TextureDescription>& descs, SDL_Renderer* const renderer);
+	bad::Sequence<std::pair<std::string, bad::Texture>> load_textures(const bad::Sequence<TextureDescription>& descs, SDL_Renderer* const renderer);
 }
