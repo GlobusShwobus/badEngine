@@ -8,11 +8,15 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include <unordered_map>
+
+#include <cstddef>
 #include <string>
-#include <vector>
-#include <assert.h>
 #include <memory>
+#include <unordered_map>
+#include <span>
+#include <assert.h>
+#include <bit>
+#include <vector>
 #include <stdexcept>
-#include <algorithm>
+
 #endif //PCH_H
