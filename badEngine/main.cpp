@@ -53,9 +53,13 @@ int main() {
             auto radians = rng.get(0, 6);
             auto color = bad::Color(rng.get(0, 255), rng.get(0, 255), rng.get(0, 255),255);
 
-            entities.emplace_back(std::move(model), bigradius, pos, scale, radians, color);
-        }
+            rnd::Entity ent(std::move(model), bigradius, pos, scale, radians, color);
+            ent.pulse_dir = rng.get(-4.2f, 4.2f);
+            ent.rotational_velocity = rng.get(-4.2f, 4.2f);
 
+            entities.push_back(std::move(ent));
+        }
+         
         bad::MouseCameraController camera;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
@@ -96,8 +100,9 @@ int main() {
             const auto camera_viewport = camera.get_viewport(window.get());
 
             int draws = 0;
-            for (const auto& e : entities) {
-
+            for (auto& e : entities) {
+                e.pulse_effect(dt);
+                e.rotate(dt);
                 auto entity_bb = e.get_bb();
 
                 if (camera_viewport.intersects(entity_bb)) {

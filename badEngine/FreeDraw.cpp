@@ -2,6 +2,24 @@
 #include "AsyncLogger.h"
 #include "EngineUtils.h"
 
+void bad::draw_rect_lines(SDL_Renderer* const renderer, const bad::Rect& rect, const bad::Mat3& transformer, bad::Color color)
+{
+	static constexpr int RECT_POINTS_COUNT = 4;
+
+	SDL_FPoint pts[RECT_POINTS_COUNT + 1]
+	{
+		transform_point_to_sdl_fpoint(rect.min, transformer), // top-left
+		transform_point_to_sdl_fpoint({rect.max.x, rect.min.y}, transformer), // top-right
+		transform_point_to_sdl_fpoint(rect.max, transformer), // bottom-right
+		transform_point_to_sdl_fpoint({rect.min.x, rect.max.y}, transformer)  // bottom-left
+	};
+	pts[RECT_POINTS_COUNT] = pts[0];
+
+	SDL_SetRenderDrawColor(renderer, color.get_r(), color.get_g(), color.get_b(), color.get_a());
+
+	SDL_RenderLines(renderer, pts, static_cast<int>(RECT_POINTS_COUNT + 1));
+}
+
 void bad::draw_closed_model_transformed(SDL_Renderer* const renderer, const bad::Sequence<bad::Point>& points, const bad::Mat3& transformer, bad::Color color)
 {
 	static constexpr int MAX_STACK_LIMIT = 64;

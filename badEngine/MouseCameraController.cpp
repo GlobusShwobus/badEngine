@@ -62,13 +62,13 @@ void bad::MouseCameraController::update(float dt, const SDL_Event& events)noexce
 		break;
 	}
 }
+
 bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)const
 {
 	assert(window != nullptr);
 
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
-	//const float zoom = 1.0f / mCamera.mScale;
 
 	const float radius_x = (w * 0.5f) * mCamera.mScale;
 	const float radius_y = (h * 0.5f) * mCamera.mScale;

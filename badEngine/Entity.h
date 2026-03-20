@@ -22,9 +22,37 @@ namespace rnd
 			return bad::Rect{ mTransform.mPos - radius, mTransform.mPos + radius };
 		}
 		
+		void pulse_effect(float dt) noexcept
+		{
+
+			pulse_size += dt * pulse_dir;
+
+			if (pulse_size > 5) {
+				pulse_dir *= -1;
+				pulse_size = 5;
+			}
+			else if (pulse_size < 1) {
+				pulse_dir *= -1;
+				pulse_size = 1;
+			}
+
+			mTransform.mScale = pulse_size;
+		}
+
+		void rotate(float dt)noexcept
+		{
+			auto rads = mTransform.get_radians();
+			mTransform.set_rotation_and_update(rads + (dt * rotational_velocity));
+
+		}
+
 		bad::Transform mTransform;
 		bad::Color mColor = bad::Colors::Magenta;
 		float radius;
+
+		float pulse_size = 1;
+		float pulse_dir = 1;
+		float rotational_velocity = 1;
 
 	private:
 		bad::Sequence<bad::Point> mModel;
