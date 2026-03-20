@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Float2.h" />
+    <ClInclude Include="Geometric.h" />
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Ray.h" />

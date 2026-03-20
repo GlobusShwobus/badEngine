@@ -5,12 +5,15 @@
 #include <iostream>
 
 #include "badCore.h"
-#include "SDL_SYSTEM_RAII.h"
-#include "Renderer.h"
-#include "Window.h"
+#include "GFX_INIT.h"
+#include "Geometric.h"
 
+#include "MakeShape.h"
 #include "Validate_data.h"
 #include "load_data.h"
+#include "Entity.h"
+#include "MouseCameraController.h"
+#include "EngineUtils.h"
 
 int main() {
 
@@ -22,7 +25,7 @@ int main() {
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 
     {
-        bad::SDL_SYSTEM_RAII sdl_sys(SDL_INIT_VIDEO);
+        bad::GFX_INIT sdl_sys(SDL_INIT_VIDEO);
 
 
         //using namespace badEngine;
@@ -38,6 +41,8 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
+        rnd::Entity entity(bad::make_poly(64, 32, 6), { 200,200 }, 1, 0);
+        bad::MouseCameraController camera;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -67,7 +72,18 @@ int main() {
                 default:
                     break;
                 }
+                camera.update(dt, EVENT);
             }
+
+
+            auto window_transform = bad::sdl_window_matrix(window.get());
+            auto camera_transform = camera.mCamera.make_transformed_inverse();
+            auto entity_transform = entity.mTransform.make_transformed();
+
+            auto final_transform = window_transform * camera_transform * entity_transform;
+
+
+
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

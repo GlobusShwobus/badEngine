@@ -32,6 +32,9 @@
     <ClInclude Include="UniformGrid.h">
       <Filter>files</Filter>
     </ClInclude>
+    <ClInclude Include="Geometric.h">
+      <Filter>files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

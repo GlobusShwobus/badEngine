@@ -42,7 +42,7 @@
     <ClInclude Include="Window.h">
       <Filter>Window</Filter>
     </ClInclude>
-    <ClInclude Include="SDL_SYSTEM_RAII.h">
+    <ClInclude Include="GFX_INIT.h">
       <Filter>Window</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
@@ -74,7 +74,7 @@
     <ClCompile Include="MakeShape.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="SDL_SYSTEM_RAII.cpp">
+    <ClCompile Include="GFX_INIT.cpp">
       <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>

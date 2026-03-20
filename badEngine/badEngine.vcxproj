@@ -141,7 +141,7 @@
     <ClInclude Include="MakeShape.h" />
     <ClInclude Include="MouseCameraController.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="SDL_SYSTEM_RAII.h" />
+    <ClInclude Include="GFX_INIT.h" />
     <ClInclude Include="validate_data.h" />
     <ClInclude Include="badEngine.h" />
     <ClInclude Include="Window.h" />
@@ -154,7 +154,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MakeShape.cpp" />
     <ClCompile Include="MouseCameraController.cpp" />
-    <ClCompile Include="SDL_SYSTEM_RAII.cpp" />
+    <ClCompile Include="GFX_INIT.cpp" />
     <ClCompile Include="validate_data.cpp" />
   </ItemGroup>
   <ItemGroup>

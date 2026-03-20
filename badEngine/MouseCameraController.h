@@ -22,7 +22,6 @@ namespace bad
 
 		bad::Transform mCamera;
 
-
 	private:
 		float mRotationSpeed;
 		bool mDragging;

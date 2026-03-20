@@ -83,7 +83,7 @@ namespace bad
 		/**
 		* \returns Returns the transformation matrix representing this transform.
 		*/
-		inline Mat3 transform()const noexcept
+		inline Mat3 make_transformed()const noexcept
 		{
 			return
 				Mat3::translation(mPos) *
@@ -94,7 +94,7 @@ namespace bad
 		/**
 		* \returns Returns the inverse transformation matrix.
 		*/
-		inline Mat3 transform_inverse()const noexcept
+		inline Mat3 make_transformed_inverse()const noexcept
 		{
 			const float invScale = 1.0f / mScale;
 			return

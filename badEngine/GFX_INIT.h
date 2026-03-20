@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SDL3/SDL_init.h>
+#include "Window.h"
+#include "Renderer.h"
 
 namespace bad
 {
@@ -19,7 +21,7 @@ namespace bad
 	/// This type is non-copyable and non-movable to ensure a single controlling
 	/// instance.
 	/// </summary>
-	class SDL_SYSTEM_RAII
+	class GFX_INIT
 	{
 	public:
 		/**
@@ -32,7 +34,7 @@ namespace bad
 		 *
 		 * \throws std::runtime_error if SDL initialization fails.
 		 */
-		SDL_SYSTEM_RAII(SDL_InitFlags flags);
+		GFX_INIT(SDL_InitFlags flags);
 
 
 		/**
@@ -40,11 +42,11 @@ namespace bad
 		 *
 		 * Calls SDL_Quit().
 		 */
-		~SDL_SYSTEM_RAII();
+		~GFX_INIT();
 
-		SDL_SYSTEM_RAII(const SDL_SYSTEM_RAII&) = delete;
-		SDL_SYSTEM_RAII& operator=(const SDL_SYSTEM_RAII&) = delete;
-		SDL_SYSTEM_RAII(SDL_SYSTEM_RAII&&) = delete;
-		SDL_SYSTEM_RAII& operator=(SDL_SYSTEM_RAII&&) = delete;
+		GFX_INIT(const GFX_INIT&) = delete;
+		GFX_INIT& operator=(const GFX_INIT&) = delete;
+		GFX_INIT(GFX_INIT&&) = delete;
+		GFX_INIT& operator=(GFX_INIT&&) = delete;
 	};
 }
