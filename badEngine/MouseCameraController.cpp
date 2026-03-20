@@ -51,12 +51,10 @@ void bad::MouseCameraController::update(float dt, const SDL_Event& events)noexce
 
 	case SDL_EVENT_MOUSE_MOTION:
 
-		//NOTE: on zoom to keep the dragging relative to the zoom, divide delta by zoom
-		if (mDragging) {
-			float zoom = mCamera.mScale;
-
-			mCamera.mPos.x -= events.motion.xrel / zoom;
-			mCamera.mPos.y -= events.motion.yrel / zoom;
+		if (mDragging) 
+		{
+			mCamera.mPos.x -= events.motion.xrel;
+			mCamera.mPos.y += events.motion.yrel;
 		}
 		break;
 
@@ -70,10 +68,10 @@ bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)cons
 
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
-	const float zoom = 1.0f / mCamera.mScale;
+	//const float zoom = 1.0f / mCamera.mScale;
 
-	const float radius_x = (w * 0.5f) * zoom;
-	const float radius_y = (h * 0.5f) * zoom;
+	const float radius_x = (w * 0.5f) * mCamera.mScale;
+	const float radius_y = (h * 0.5f) * mCamera.mScale;
 	const auto& cam_pos = mCamera.mPos;
 
 	return {

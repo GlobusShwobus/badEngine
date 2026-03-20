@@ -41,8 +41,21 @@ int main() {
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
+        bad::RandomNum rng;
+        bad::Sequence<rnd::Entity> entities;
+        entities.reserve(500);
 
-        rnd::Entity entity(bad::make_poly(64, 32, 6), { 200,200 }, 1, 0);
+        for (int i = 0; i < 500; ++i) {
+            float bigradius = rng.get(32, 64);
+            auto model = bad::make_poly(bigradius, rng.get(8, 32), rng.get(4, 16));
+            auto pos = bad::Point{ rng.get(-5000.f,5000.f), rng.get(-5000.f,5000.f) };
+            auto scale = rng.get(1, 5);
+            auto radians = rng.get(0, 6);
+            auto color = bad::Color(rng.get(0, 255), rng.get(0, 255), rng.get(0, 255),255);
+
+            entities.emplace_back(std::move(model), bigradius, pos, scale, radians, color);
+        }
+
         bad::MouseCameraController camera;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
@@ -76,21 +89,31 @@ int main() {
                 camera.update(dt, EVENT);
             }
 
-
+            camera.mCamera.update_sincos();
             auto window_transform = bad::sdl_window_matrix(window.get());
             auto camera_transform = camera.mCamera.make_transformed_inverse();
-            auto entity_transform = entity.mTransform.make_transformed();
 
-            auto final_transform = window_transform * camera_transform * entity_transform;
+            const auto camera_viewport = camera.get_viewport(window.get());
 
-            bad::draw_closed_model_transformed(renderer.get(), entity.get_model(), final_transform, entity.get_color());
+            int draws = 0;
+            for (const auto& e : entities) {
 
+                auto entity_bb = e.get_bb();
+
+                if (camera_viewport.intersects(entity_bb)) {
+                    auto final_transform = window_transform * camera_transform * e.mTransform.make_transformed();
+
+                    bad::draw_closed_model_transformed(renderer.get(), e.get_model(), final_transform, e.mColor);
+                    draws++;
+                }
+
+            }
+
+            bad::AsyncLogger::Global().log("draws: " + std::to_string(draws));
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end
             SDL_RenderPresent(renderer.get());
-
-            //logger.log(std::string("FPS ") + std::to_string(1 / dt));
         }
     }
     _CrtDumpMemoryLeaks();

@@ -51,25 +51,29 @@ namespace bad
 		{
 		}
 
-		constexpr float2 operator+    (const float2& rhs)const noexcept { return { x + rhs.x,  y + rhs.y }; }
-		constexpr float2 operator-    (const float2& rhs)const noexcept { return { x - rhs.x,  y - rhs.y }; }
-		constexpr float2 operator*    (float scalar)const noexcept { return { x * scalar, y * scalar }; }
-		constexpr float2 operator/    (float scalar)const noexcept { return { x / scalar, y / scalar }; }
+		constexpr float2 operator+    (const float2& rhs) const noexcept { return { x + rhs.x,  y + rhs.y }; }
+		constexpr float2 operator-    (const float2& rhs) const noexcept { return { x - rhs.x,  y - rhs.y }; }
+		constexpr float2& operator+=  (const float2& rhs) noexcept       { x += rhs.x;  y += rhs.y;  return *this; }
+		constexpr float2& operator-=  (const float2& rhs) noexcept       { x -= rhs.x;  y -= rhs.y;  return *this; } 
+
+		constexpr float2 operator+    (float scalar) const noexcept      { return { x + scalar, y + scalar }; }
+		constexpr float2 operator-    (float scalar) const noexcept      { return { x - scalar, y - scalar }; }
+		constexpr float2 operator*    (float scalar) const noexcept      { return { x * scalar, y * scalar }; }
+		constexpr float2 operator/    (float scalar) const noexcept      { return { x / scalar, y / scalar }; }
+
+		constexpr float2& operator+=  (float scalar) noexcept            { x += scalar; y += scalar; return *this; }
+		constexpr float2& operator-=  (float scalar) noexcept            { x -= scalar; y -= scalar; return *this; }
+		constexpr float2& operator*=  (float scalar) noexcept            { x *= scalar; y *= scalar; return *this; }
+		constexpr float2& operator/=  (float scalar) noexcept            { x /= scalar; y /= scalar; return *this; }
+
 		constexpr float2 operator-    ()const noexcept { return { -x, -y }; }
-
-		constexpr float2& operator+=  (const float2& rhs)noexcept { x += rhs.x;  y += rhs.y;  return *this; }
-		constexpr float2& operator-=  (const float2& rhs)noexcept { x -= rhs.x;  y -= rhs.y;  return *this; }
-		constexpr float2& operator*=  (float scalar)noexcept { x *= scalar; y *= scalar; return *this; }
-		constexpr float2& operator/=  (float scalar)noexcept { x /= scalar; y /= scalar; return *this; }
-
 		constexpr bool operator ==    (const float2& rhs)const noexcept { return x == rhs.x && y == rhs.y; }
 		constexpr bool operator!=     (const float2& rhs)const noexcept { return !(*this == rhs); }
 	};
 
-	constexpr float2 operator*(float scalar, const float2& v)noexcept
-	{
-		return float2{ v.x * scalar, v.y * scalar };
-	}
+	constexpr float2 operator+(float scalar, const float2& v) noexcept { return { scalar + v.x, scalar + v.y }; }
+	constexpr float2 operator-(float scalar, const float2& v) noexcept { return { scalar - v.x, scalar - v.y }; }
+	constexpr float2 operator*(float scalar, const float2& v) noexcept { return { scalar * v.x, scalar * v.y }; }
 
 	using Point = float2;
 	using Vector = float2;
