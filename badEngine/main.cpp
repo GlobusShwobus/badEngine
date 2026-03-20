@@ -14,6 +14,7 @@
 #include "Entity.h"
 #include "MouseCameraController.h"
 #include "EngineUtils.h"
+#include "FreeDraw.h"
 
 int main() {
 
@@ -82,7 +83,7 @@ int main() {
 
             auto final_transform = window_transform * camera_transform * entity_transform;
 
-
+            bad::draw_closed_model_transformed(renderer.get(), entity.get_model(), final_transform, entity.get_color());
 
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder

@@ -3,7 +3,7 @@
 #include "Sequence.h"
 #include "Float2.h"
 #include "Transform.h"
-
+#include "Color.h"
 namespace rnd
 {
 	class Entity
@@ -15,9 +15,11 @@ namespace rnd
 		}
 
 		const bad::Sequence<bad::Point>& get_model()const noexcept { return mModel; }
+		bad::Color get_color()const noexcept { return mColor; }
 		bad::Transform mTransform;
 
 	private:
 		bad::Sequence<bad::Point> mModel;
+		bad::Color mColor = bad::Colors::Magenta;
 	};
 }
