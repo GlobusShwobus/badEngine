@@ -106,8 +106,11 @@ int main() {
                 auto entity_bb = e.get_bb();
 
                 if (camera_viewport.intersects(entity_bb)) {
+                    //for final draw (local -> world -> camera -> window)
                     auto final_transform = window_transform * camera_transform * e.mTransform.make_transformed();
-
+                    //for bounding boxes: only camera and window (world -> camera -> window)
+                    auto screen_transform = window_transform * camera_transform;;
+                    bad::draw_rect_lines(renderer.get(), entity_bb, screen_transform, e.mColor);
                     bad::draw_closed_model_transformed(renderer.get(), e.get_model(), final_transform, e.mColor);
                     draws++;
                 }
