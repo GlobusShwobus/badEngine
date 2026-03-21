@@ -1,13 +1,8 @@
 #include "pch.h"
 #include "MouseCameraController.h"
 
-bad::MouseCameraController::MouseCameraController() noexcept
-	:mCamera({ 0,0 }, 1.0f, 0), mDragging(false), mRotationSpeed(1.0f)
-{
-}
-
-bad::MouseCameraController::MouseCameraController(const bad::Point& pos, float scale, float inital_radian, float rotation_speed) noexcept
-	:mCamera(pos, scale, inital_radian), mDragging(false), mRotationSpeed(rotation_speed)
+bad::MouseCameraController::MouseCameraController(const bad::Transform& transform) noexcept
+	:mCamera(transform)
 {
 }
 

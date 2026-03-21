@@ -81,8 +81,8 @@ int main() {
 
             entities.push_back(std::move(ent));
         }
-
-        bad::MouseCameraController camera;
+        bad::Transform camt(bad::Point{ 0,0 }, 1, 0);
+        bad::MouseCameraController camera{ camt };
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -117,7 +117,7 @@ int main() {
 
             camera.mCamera.update_sincos();
             auto window_transform = bad::sdl_window_matrix(window.get());
-            auto camera_transform = camera.mCamera.make_transformed_inverse();
+            auto camera_transform = camera.get_view_matrix();
 
             const auto camera_viewport = camera.get_viewport(window.get());
 
@@ -125,14 +125,14 @@ int main() {
             for (auto& e : entities) {
                 e.pulse_effect(dt);
                 e.rotate(dt);
-                auto entity_bb = e.get_bb();
+                auto entity_bb_world = e.get_bb();
 
-                if (camera_viewport.intersects(entity_bb)) {
+                if (camera_viewport.intersects(entity_bb_world)) {
                     //for final draw (local -> world -> camera -> window)
                     auto final_transform = window_transform * camera_transform * e.mTransform.make_transformed();
                     //for bounding boxes: only camera and window (world -> camera -> window)
                     auto screen_transform = window_transform * camera_transform;;
-                    bad::draw_rect_lines(renderer.get(), entity_bb, screen_transform, e.mColor);
+                    bad::draw_rect_lines_transformed(renderer.get(), entity_bb_world, screen_transform, e.mColor);
                     bad::draw_closed_model_transformed(renderer.get(), e.get_model(), final_transform, e.mColor);
                     draws++;
                 }

@@ -2,7 +2,7 @@
 #include "AsyncLogger.h"
 #include "EngineUtils.h"
 
-void bad::draw_rect_lines(SDL_Renderer* const renderer, const bad::Rect& rect, const bad::Mat3& transformer, bad::Color color)
+void bad::draw_rect_lines_transformed(SDL_Renderer* const renderer, const bad::Rect& rect, const bad::Mat3& transformer, bad::Color color)
 {
 	static constexpr int RECT_POINTS_COUNT = 4;
 

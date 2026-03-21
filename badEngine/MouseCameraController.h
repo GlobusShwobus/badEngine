@@ -13,8 +13,8 @@ namespace bad
 		static constexpr float ZOOM_OUT = 0.75f;
 
 	public:
-		explicit MouseCameraController() noexcept;
-		MouseCameraController(const bad::Point& pos, float scale, float inital_radian, float rotation_speed) noexcept;
+
+		MouseCameraController(const Transform& t) noexcept;
 
 		void update(float dt, const SDL_Event& events)noexcept;
 
@@ -22,10 +22,15 @@ namespace bad
 		//			not sure how to fix it atm. either view port must also consider rotation OR the entities must consider rotation OR realistically eveyrhing has to
 		bad::Rect get_viewport(SDL_Window* const window)const;
 
+		Mat3 get_view_matrix()const noexcept
+		{
+			return mCamera.make_transformed_inverse();
+		}
+
 		bad::Transform mCamera;
 
 	private:
-		float mRotationSpeed;
-		bool mDragging;
+		float mRotationSpeed = 1;//TODO
+		bool mDragging = false;//TODO
 	};
 }

@@ -67,7 +67,7 @@ namespace bad
 		*
 		* \throws In DEBUG builds asserts that max >= min.
 		*/
-		constexpr Rect(Point min, Point max) noexcept
+		constexpr Rect(const Point& min, const Point& max) noexcept
 			:min(min), max(max)
 		{
 			assert(max.x >= min.x);
@@ -75,22 +75,33 @@ namespace bad
 		}
 
 		/**
-		   * Constructs a rectangle using position and dimensions.
-		   *
-		   * \param x minimum x coordinate
-		   * \param y minimum y coordinate
-		   * \param w width
-		   * \param h height
-		   *
-		   * max is computed as:
-		   *
-		   *     max.x = x + w
-		   *     max.y = y + h
-		   *
-		   * \throws In DEBUG builds asserts width and height are non-negative.
-		   */
+		* Constructs a rectangle using the position and dimensions.
+		*
+		* \param x minimum x coordinate
+		* \param y minimum y coordinate
+		* \param w width
+		* \param h height
+		*
+		* \throws In DEBUG builds asserts width and height are non-negative.
+		*/
 		constexpr Rect(float x, float y, float w, float h) noexcept
 			:min(x, y), max(x + w, y + h)
+		{
+			assert(max.x >= min.x);
+			assert(max.y >= min.y);
+		}
+
+		/**
+		* Constructs a rectangle using the given position and dimensions.
+		* 
+		* \param pos for min
+		* \param w for width
+		* \param h for height
+		* 
+		* \throws In DEBUG builds asserts width and height are non-negative.
+		*/
+		constexpr Rect(const Point& pos, float w, float h)noexcept
+			:min(pos), max(pos.x + w, pos.y + h)
 		{
 			assert(max.x >= min.x);
 			assert(max.y >= min.y);
