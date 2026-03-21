@@ -42,18 +42,25 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         bad::RandomNum rng;
+        auto rPos = rng.get_real_distribution(-5000.f, 5000.f);
+        auto rOuterRadius = rng.get_real_distribution(32.f,64.f);
+        auto rInnerRadius = rng.get_real_distribution(8.f, 32.f);
+        auto rFlares = rng.get_real_distribution(4.f, 16.f);
+
+        auto rColor = rng.get_int_distribution(0, 255);
+
         bad::Sequence<rnd::Entity> entities;
         entities.reserve(500);
 
         for (int i = 0; i < 500; ++i) {
-            float bigradius = rng.get(32, 64);
-            auto model = bad::make_poly(bigradius, rng.get(8, 32), rng.get(4, 16));
-            auto pos = bad::Point{ rng.get(-5000.f,5000.f), rng.get(-5000.f,5000.f) };
-            auto scale = rng.get(1, 5);
+            float big_radius = rOuterRadius(rng.engine);
+            auto model = bad::make_poly(big_radius, rInnerRadius(rng.engine), rFlares(rng.engine));
+            auto pos = bad::Point{ rPos(rng.engine), rPos(rng.engine)};
+            auto scale   = rng.get(1, 5);
             auto radians = rng.get(0, 6);
-            auto color = bad::Color(rng.get(0, 255), rng.get(0, 255), rng.get(0, 255),255);
+            auto color = bad::Color(rColor(rng.engine), rColor(rng.engine), rColor(rng.engine), 255);
 
-            rnd::Entity ent(std::move(model), bigradius, pos, scale, radians, color);
+            rnd::Entity ent(std::move(model), big_radius, pos, scale, radians, color);
             ent.pulse_dir = rng.get(-4.2f, 4.2f);
             ent.rotational_velocity = rng.get(-4.2f, 4.2f);
 

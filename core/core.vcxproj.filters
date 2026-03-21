@@ -13,9 +13,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>meta</Filter>
     </ClCompile>
-    <ClCompile Include="RandomNum.cpp">
-      <Filter>files</Filter>
-    </ClCompile>
     <ClCompile Include="AsyncLogger.cpp">
       <Filter>files</Filter>
     </ClCompile>

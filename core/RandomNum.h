@@ -1,43 +1,80 @@
 #pragma once
 
 #include <random>
+#include <assert.h>
 
 namespace bad
 {
 	/// <summary> Wrapper around std::mt19937 </summary>
-	class RandomNum final
+	struct RandomNum final
 	{
 	public:
 
-		/**
-		*Initializes std::mt19937 with random device
-		*\throws if std::random_device somehow fails. 
-		*/
-		RandomNum();
+		/// <summary> Initializes std::mt19937 with random device </summary>
+		RandomNum()
+			:engine(std::random_device{}())
+		{
+		}
 
-		/**
-		* Uses std::uniform_int_disribution<int> and generates a random number.
-		* \param min minimum value
-		* \param max maximum value
-		* \returns a random int between min and max
-		* \throws in DEBUG asserts min must be less or equal to max
-		* \throws if for some reason uniform_int_distribution throws
-		*/
-		int get(int min, int max);
+		/// <summary>
+		/// Create a random number using uniform_int_distribution.
+		/// </summary>
+		/// <param name="min"> min minimum output value </param>
+		/// <param name="max"> max maximum output value</param>
+		/// <returns> random int between min and max </returns>
+		int get(int min, int max)
+		{
+			assert(min <= max);
+			return std::uniform_int_distribution<int>(min, max)(engine);
+		}
 
+		/// <summary>
+		/// Create a random number using uniform_real_distribution.
+		/// </summary>
+		/// <param name="min"> min minimum output value </param>
+		/// <param name="max"> max maximum output value</param>
+		/// <returns> random float between min and max </returns>
+		float get(float min, float max)
+		{
+			assert(min <= max);
+			return std::uniform_real_distribution<float>(min, max)(engine);
+		}
 
-		/**
-		* Uses std::uniform_real_distribution<float> and generates a random number.
-		* \param min minimum value
-		* \param max maximum value
-		* \returns a random int between min and max
-		* \throws in DEBUG asserts min must be less or equal to max
-		* \throws if for some reason uniform_real_distribution throws
-		*/
-		float get(float min, float max);
+		/// <summary>
+		/// Creates a uniform_int_distribution.
+		/// </summary>
+		/// <param name="min"> min minimum output value </param>
+		/// <param name="max"> max maximum output value</param>
+		/// <returns> std::uniform_int_distribution </returns>
+		auto get_int_distribution(int min, int max)
+		{
+			assert(min <= max);
+			return std::uniform_int_distribution<int>(min, max);
+		}
 
-	private:
-		/// <summary> Heap allocated std::mt19937 </summary>
-		std::mt19937 mt19937;
+		/// <summary>
+		/// Creates a uniform_real_distribution.
+		/// </summary>
+		/// <param name="min"> min minimum output value </param>
+		/// <param name="max"> max maximum output value</param>
+		/// <returns> std::uniform_real_distribution </returns>
+		auto get_real_distribution(float min, float max)
+		{
+			assert(min <= max);
+			return std::uniform_real_distribution<float>(min, max);
+		}
+
+		/// <summary>
+		/// Creates a normal_distribution.
+		/// </summary>
+		/// <param name="mean"> mean the mean value of output </param>
+		/// <param name="deviation"> standard_deviation as the difference from the mean </param>
+		/// <returns> std::normal_distribution </returns>
+		auto get_normal_distribution(float mean, float standard_deviation)
+		{
+			return std::normal_distribution<float>(mean, standard_deviation);
+		}
+
+		std::mt19937 engine;
 	};
 }
