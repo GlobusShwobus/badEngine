@@ -22,10 +22,7 @@ namespace bad
 		//			not sure how to fix it atm. either view port must also consider rotation OR the entities must consider rotation OR realistically eveyrhing has to
 		bad::Rect get_viewport(SDL_Window* const window)const;
 
-		Mat3 get_view_matrix()const noexcept
-		{
-			return mCamera.make_transformed_inverse();
-		}
+		Mat3 get_view_matrix()const noexcept;
 
 		bad::Transform mCamera;
 

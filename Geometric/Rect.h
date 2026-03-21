@@ -241,4 +241,21 @@ namespace bad
 
 		return overlapWidth > 0.0f && overlapHeight > 0.0f;
 	}
+
+	/**
+	* Makes a rectangle from the given center point and dimensions.
+	* 
+	* NOTE: width and height NOT half width and half height!!!
+	* 
+	* \param center as the center point
+	* \param w as width
+	* \param h as height
+	* 
+	* \returns returns rect
+	*/
+	constexpr Rect make_rect_from_center(const Point& center, float w, float h) noexcept {
+		return Rect{
+			center.x - (w * 0.5f), center.y - (h * 0.5f), w, h
+		};
+	}
 }

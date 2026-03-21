@@ -65,14 +65,13 @@ bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)cons
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 
-	const float radius_x = (w * 0.5f) * mCamera.mScale;
-	const float radius_y = (h * 0.5f) * mCamera.mScale;
-	const auto& cam_pos = mCamera.mPos;
+	const float scaled_w = w * mCamera.mScale;
+	const float scaled_h = h * mCamera.mScale;
 
-	return {
-		cam_pos.x - radius_x,
-		cam_pos.y - radius_y,
-		radius_x * 2,
-		radius_y * 2
-	};
+	return bad::make_rect_from_center(mCamera.mPos, scaled_w, scaled_h);
+}
+
+bad::Mat3 bad::MouseCameraController::get_view_matrix()const noexcept
+{
+	return mCamera.make_transformed_inverse();
 }
