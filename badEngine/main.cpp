@@ -43,30 +43,45 @@ int main() {
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         bad::RandomNum rng;
         auto rPos = rng.get_real_distribution(-5000.f, 5000.f);
-        auto rOuterRadius = rng.get_real_distribution(32.f,64.f);
-        auto rInnerRadius = rng.get_real_distribution(8.f, 32.f);
-        auto rFlares = rng.get_real_distribution(4.f, 16.f);
+        auto rOuterRadius = rng.get_normal_distribution(32.f,16.f);
+        auto rInnerRadius = rng.get_normal_distribution(16.f, 8.f);
+        auto rFlares      = rng.get_normal_distribution(10.f, 6.f);
 
         auto rColor = rng.get_int_distribution(0, 255);
 
         bad::Sequence<rnd::Entity> entities;
         entities.reserve(500);
 
-        for (int i = 0; i < 500; ++i) {
-            float big_radius = rOuterRadius(rng.engine);
-            auto model = bad::make_poly(big_radius, rInnerRadius(rng.engine), rFlares(rng.engine));
-            auto pos = bad::Point{ rPos(rng.engine), rPos(rng.engine)};
-            auto scale   = rng.get(1, 5);
+
+        while (entities.size() < 500)
+        {
+            const auto big_rad = bad::core_clamp(rOuterRadius(rng.engine), 16.f, 32.f);
+            auto pos = bad::Point(rPos(rng.engine), rPos(rng.engine));
+
+            if (std::any_of(entities.begin(), entities.end(), [&](const rnd::Entity& e)
+                {
+                    return bad::length(e.mTransform.mPos-pos) < big_rad + e.radius;
+                }
+            )) {
+                continue;
+            }
+
+            const auto small_rad = bad::core_clamp(rInnerRadius(rng.engine), 8.0f, 16.f);
+            const auto flares = bad::core_clamp(rFlares(rng.engine), 3.f, 12.f);
+
+            auto scale = rng.get(1, 5);
             auto radians = rng.get(0, 6);
             auto color = bad::Color(rColor(rng.engine), rColor(rng.engine), rColor(rng.engine), 255);
 
-            rnd::Entity ent(std::move(model), big_radius, pos, scale, radians, color);
+            auto model = bad::make_poly(big_rad, small_rad, flares);
+            rnd::Entity ent(std::move(model), big_rad, pos, scale, radians, color);
+
             ent.pulse_dir = rng.get(-4.2f, 4.2f);
             ent.rotational_velocity = rng.get(-4.2f, 4.2f);
 
             entities.push_back(std::move(ent));
         }
-         
+
         bad::MouseCameraController camera;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
