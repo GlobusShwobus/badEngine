@@ -19,7 +19,7 @@ namespace rnd
 
 		bad::Rect get_bb()const noexcept
 		{
-			return bad::Rect{ mTransform.mPos - radius, mTransform.mPos + radius };
+			return bad::Rect{ mTransform.mPos - (radius*mTransform.mScale), mTransform.mPos + (radius*mTransform.mScale) };
 		}
 		
 		void pulse_effect(float dt) noexcept
