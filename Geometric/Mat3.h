@@ -48,12 +48,17 @@ namespace bad
 			return Mat3{};
 		}
 
-		constexpr static Mat3 scale(float factor) noexcept
+		constexpr static Mat3 scale(float sx, float sy) noexcept
 		{
 			Mat3 m;
-			m.Ax = factor;
-			m.By = factor;
+			m.Ax = sx;
+			m.By = sy;
 			return m;
+		}
+
+		constexpr static Mat3 scale(float factor) noexcept
+		{
+			return scale(factor, factor);
 		}
 
 		//assumes sin cos are pre calculated
@@ -77,6 +82,24 @@ namespace bad
 		{
 			Mat3 m;
 			m.By = -1;
+			return m;
+		}
+
+		constexpr Mat3 inverse()const noexcept
+		{
+			float det = Ax * By - Ay * Bx;
+
+			Mat3 m;
+
+			m.Ax = By / det;
+			m.Ay = -Ay / det;
+
+			m.Bx = -Bx / det;
+			m.By = Ax / det;
+
+			m.Tx = -(m.Ax * Tx + m.Bx * Ty);
+			m.Ty = -(m.Ay * Tx + m.By * Ty);
+
 			return m;
 		}
 	};
