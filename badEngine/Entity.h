@@ -10,8 +10,8 @@ namespace rnd
 	class Entity
 	{
 	public:
-		Entity(bad::Sequence<bad::Point> model, float radius, const bad::Point& pos, float scale, float radians, bad::Color col)
-			:mModel(std::move(model)), mTransform(pos, scale, radians), mColor(col),radius(radius)
+		Entity(bad::Sequence<bad::Point> model, float radius, bad::Transform&& transform, bad::Color col)
+			:mModel(std::move(model)), mTransform(std::move(transform)), mColor(col), mRadius(radius)
 		{
 		}
 
@@ -19,9 +19,9 @@ namespace rnd
 
 		bad::Rect get_bb()const noexcept
 		{
-			return bad::Rect{ mTransform.mPos - (radius * mTransform.mScale), mTransform.mPos + (radius * mTransform.mScale) };
+			return bad::Rect{ mTransform.mPos - (mRadius * mTransform.mScale), mTransform.mPos + (mRadius * mTransform.mScale) };
 		}
-		
+
 		void pulse_effect(float dt) noexcept
 		{
 
@@ -45,15 +45,60 @@ namespace rnd
 			mTransform.set_rotation_and_update(rads + (dt * rotational_velocity));
 		}
 
+
+		bad::Mat3 get_transform_matrix()const noexcept { return mTransform.make_transformed(); }
+
+		const bad::Transform& get_transform()const noexcept { return mTransform; }
+
+		const bad::Point& get_pos()const noexcept { return mTransform.mPos; }
+
+		bad::Color get_color()const noexcept { return mColor; }
+
+		float get_radius()const noexcept { return mRadius; }
+
+
+
+		void set_pulse_oscillation(float oscillation) { pulse_dir = oscillation; }
+
+		void set_rotational_velocity(float velocity) { rotational_velocity = velocity; }
+
+	protected:
+		bad::Sequence<bad::Point> mModel;
 		bad::Transform mTransform;
 		bad::Color mColor = bad::Colors::Magenta;
-		float radius;
+		float mRadius;
 
 		float pulse_size = 1;
 		float pulse_dir = 1;
 		float rotational_velocity = 1;
+	};
+
+
+	class Plank : public Entity
+	{
+	public:
+		Plank(Entity&& ent)
+			:Entity(std::move(ent))
+		{
+			movable_pnt1 = &mModel[1];
+			movable_pnt2 = &mModel[2];
+		}
+
+		void set_offset_y(float offset_y) noexcept
+		{
+			movable_pnt1->y += offset_y;
+			movable_pnt2->y += offset_y;
+		}
+
+		void set_offset_x(float offset_x) noexcept
+		{
+			movable_pnt1->x += offset_x;
+			movable_pnt2->x += offset_x;
+		}
+
 
 	private:
-		bad::Sequence<bad::Point> mModel;
+		bad::Point* movable_pnt1 = nullptr;
+		bad::Point* movable_pnt2 = nullptr;
 	};
 }
