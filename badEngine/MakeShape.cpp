@@ -20,3 +20,27 @@ bad::Sequence<bad::Point> bad::make_poly(float outerRadius, float innerRadius, i
 	}
 	return polyline;
 }
+
+bad::Sequence<bad::Point> bad::make_4ptsShape_heap(float width, float height)
+{
+	bad::Sequence<bad::Point> box = {
+		bad::Point{0,0},
+		bad::Point{width, 0},
+		bad::Point{width, height},
+		bad::Point{0,height}
+	};
+
+	return box;
+}
+
+std::array<bad::Point, 4> bad::make_4ptsShape_stack(float width, float height)
+{
+	std::array<bad::Point, 4> box = {
+		bad::Point{0,0},
+		bad::Point{width, 0},
+		bad::Point{width, height},
+		bad::Point{0,height}
+	};
+
+	return box;
+}
