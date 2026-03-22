@@ -155,23 +155,9 @@ namespace bad
 	* \param v Input vector.
 	* \return Counter-clockwise perpendicular vector.
 	*/
-	constexpr Vector perpendicular_ccw(const Vector& v) noexcept
+	constexpr Vector perpendicular(const Vector& v) noexcept
 	{
 		return { -v.y, v.x };
-	}
-
-	/**
-	 * Returns a vector perpendicular to the input vector rotated
-	 * 90 degrees clockwise.
-	 *
-	 * If v = (x, y), the result is (y, -x).
-	 *
-	 * \param v Input vector.
-	 * \return Clockwise perpendicular vector.
-	 */
-	constexpr Vector perpendicular_cw(const Vector& v) noexcept
-	{
-		return { v.y, -v.x };
 	}
 
 	/**
@@ -234,26 +220,4 @@ namespace bad
 	{
 		return v - (2.0f * projection(v, normal));
 	}
-
-
-	//######################################################################################################
-	// under construction
-	//######################################################################################################
-
-	//maybe poopoo caakaa and needs depricating because mat3 does rotation anyway.
-	//even if angle to normal is needed, it has a place elsewhere
-	inline float2 angle_to_normalized(float angle) noexcept
-	{
-		return float2(std::cos(angle), std::sin(angle));
-	}
-
-	constexpr float2 rotated(const float2& v, const float2& rot)noexcept
-	{
-		return {
-			v.x * rot.x - v.y * rot.y,
-			v.x * rot.y + v.y * rot.x
-		};
-	}
-	//######################################################################################################
-	//######################################################################################################
 }

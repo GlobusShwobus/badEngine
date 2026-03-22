@@ -49,7 +49,7 @@ bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radi
 	if (distance <= radius) {
 		info.normal = (distance > 0.0f) ?
 			normal_optimized(vec_between_ray_and_point, distance) :
-			perpendicular_ccw(mDir);
+			perpendicular(mDir);
 
 		info.penetration = radius - distance;
 	}
