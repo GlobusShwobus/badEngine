@@ -102,6 +102,10 @@ int main() {
 
         bad::AsyncLogger logger;
 
+
+
+        bad::Sequence<bad::Point> star = bad::make_poly(64, 32, 5);
+
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -126,56 +130,19 @@ int main() {
                     GAME_RUNNING = false;
                     break;
 
-                case SDL_EVENT_KEY_DOWN:
-
-                    if (EVENT.key.key == SDLK_S)
-                        plank.dynamic.y += 3.f;
-
-                    if (EVENT.key.key == SDLK_W)
-                        plank.dynamic.y -= 3.f;
-
-                    if (EVENT.key.key == SDLK_A)
-                        plank.dynamic.x -= 3.f;
-
-                    if (EVENT.key.key == SDLK_D)
-                        plank.dynamic.x += 3.f;
-
-                break;
-
                 default:
                     break;
                 }
-                camera.read_input(dt, EVENT);
             }
 
-            spawner.update(dt);
+            float sin = std::sin(45);
+            float cos = std::cos(45);
+            bad::Mat3 translate = bad::Mat3::translate(480,270);
+            bad::Mat3 scale = bad::Mat3::scale(2);
+            bad::Mat3 rotate = bad::Mat3::rotate(sin, cos);
+           // auto final = translate;
 
-            for (auto& ball : spawner.get_balls()) {
-                ball.transform.mPos += (ball.velocity * dt);
-            }
-            bad::Ray plank_ray(plank.trans.mPos, plank.dynamic - plank.trans.mPos);
-
-            for (auto& ball : spawner.get_balls()) {
-                bad::reflection_routine_resolved(plank_ray, ball.transform.mPos, ball.velocity, ball.radius);
-            }
-
-
-            camera.mCamera.update_sincos();// manual labor but it's fine
-            auto camera_transform = camera.get_view_matrix();
-
-            for (auto& ball : spawner.get_balls())
-            {
-                ball.transform.mPos += (ball.velocity*dt);
-
-                auto ball_transform = camera_transform * ball.transform.TRS_matrix();
-                bad::draw_closed_model_transformed(renderer.get(), ball.ball_model, ball_transform, bad::Colors::Cyan);
-            }
-
-
-            auto plank_transform = camera_transform * plank.trans.TRS_matrix();
-            bad::draw_line_transformed(renderer.get(), plank.trans.mPos, plank.dynamic, plank_transform, bad::Colors::Magenta);
-
-
+            bad::draw_closed_model_transformed(renderer.get(), star, translate * scale * rotate, bad::Colors::Green);
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

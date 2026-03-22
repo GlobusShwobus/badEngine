@@ -87,17 +87,9 @@ namespace bad
 		inline Mat3 TRS_matrix()const noexcept
 		{
 			return
-				Mat3::translation(mPos.x, mPos.y) *
-				Mat3::rotation(mSin, mCos) *
-				Mat3::scale(mScale, mScale);
-		}
-
-		inline Mat3 TRS_inverse_matrix() const noexcept
-		{
-			return 
-				Mat3::scale(1.0f / mScale, 1.0f / mScale) *
-				Mat3::rotation(-mSin, mCos) *
-				Mat3::translation(-mPos.x, -mPos.y);
+				Mat3::translate(mPos.x, mPos.y) *
+				Mat3::rotate(mSin, mCos) *
+				Mat3::scale(mScale);
 		}
 
 		/**
