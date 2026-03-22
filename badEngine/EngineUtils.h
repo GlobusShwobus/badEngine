@@ -8,12 +8,12 @@
 
 namespace bad
 {
-	constexpr SDL_FPoint transform_point_to_sdl_fpoint(const bad::Point& point, const bad::Mat3& transformer) noexcept
+	constexpr SDL_FPoint transform_point_to_sdl_fpoint(const bad::Point& point, const bad::Mat3& t) noexcept
 	{
 		return
 		{
-		transformer.a * point.x + transformer.b * point.y + transformer.tx,
-		transformer.c * point.x + transformer.d * point.y + transformer.ty
+		t.Ax * point.x + t.Bx * point.y + t.Tx,
+		t.Ay * point.x + t.By * point.y + t.Ty
 		};
 	}
 
