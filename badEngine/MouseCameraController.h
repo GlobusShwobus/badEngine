@@ -2,7 +2,6 @@
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
-#include "Transform.h"
 #include "Rect.h"
 
 namespace bad
@@ -14,13 +13,11 @@ namespace bad
 
 	public:
 
-		MouseCameraController(const Transform& t) noexcept;
+		MouseCameraController() noexcept;
 
 		void read_input(float dt, const SDL_Event& events)noexcept;
 
-		Mat3 get_view_matrix()const noexcept;
 
-		bad::Transform mCamera;
 
 	private:
 		bool mDragging = false;
