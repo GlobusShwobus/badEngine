@@ -92,6 +92,14 @@ namespace bad
 				Mat3::scale(mScale, mScale);
 		}
 
+		inline Mat3 TRS_inverse_matrix() const noexcept
+		{
+			return 
+				Mat3::scale(1.0f / mScale, 1.0f / mScale) *
+				Mat3::rotation(-mSin, mCos) *
+				Mat3::translation(-mPos.x, -mPos.y);
+		}
+
 		/**
 		* Sets the rotation angle in radians.
 		*

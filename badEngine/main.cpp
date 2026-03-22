@@ -75,11 +75,10 @@ int main() {
                 {
                     time -= period;
 
-
-                    Ball ent(bad::Transform( bad::Point{100,-200 }, 1, 0));
+                    Ball ent(bad::Transform( bad::Point{ 100, 200 }, 1, 0));
                     ent.ball_model = bad::make_poly(16, 16, 8);
                     ent.radius = 16;
-                    ent.velocity = { rng.get(-50.f,50.f), 100 };
+                    ent.velocity = { rng.get(-50.f,50.f), -100 };
 
                     mBalls.push_back(std::move(ent));
                 }
@@ -171,6 +170,7 @@ int main() {
                 auto ball_transform = camera_transform * ball.transform.TRS_matrix();
                 bad::draw_closed_model_transformed(renderer.get(), ball.ball_model, ball_transform, bad::Colors::Cyan);
             }
+
 
             auto plank_transform = camera_transform * plank.trans.TRS_matrix();
             bad::draw_line_transformed(renderer.get(), plank.trans.mPos, plank.dynamic, plank_transform, bad::Colors::Magenta);

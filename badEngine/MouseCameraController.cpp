@@ -11,12 +11,12 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 	switch (events.type)
 	{
 	case SDL_EVENT_KEY_DOWN:
-		//not sure yet. depends on when i test of with textures, but on mathmatical cartesian plane this is correct
+
 		if (events.key.key == SDLK_Q)
-			mCamera.set_rotation(std::fmod(mCamera.get_radians() + ROTATION_SPEED * dt, bad::TAU));
+			mCamera.set_rotation(std::fmod(mCamera.get_radians() - ROTATION_SPEED * dt, bad::TAU));
 
 		if (events.key.key == SDLK_E)
-			mCamera.set_rotation(std::fmod(mCamera.get_radians() + ROTATION_SPEED * -dt, bad::TAU));
+			mCamera.set_rotation(std::fmod(mCamera.get_radians() + ROTATION_SPEED * dt, bad::TAU));
 
 		break;
 
@@ -46,10 +46,10 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 		break;
 
 	case SDL_EVENT_MOUSE_MOTION:
-
+		//BECAUSE INVERSE TRS VIEW
 		if (mDragging) 
 		{
-			mCamera.mPos.x += events.motion.xrel;
+			mCamera.mPos.x -= events.motion.xrel;
 			mCamera.mPos.y -= events.motion.yrel;
 		}
 		break;
@@ -61,5 +61,6 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 
 bad::Mat3 bad::MouseCameraController::get_view_matrix()const noexcept
 {
-	return mCamera.TRS_matrix();
+	//VERY FUGGIN IMPORTANT. INVERSE. ALL LOGIC IS IN LEGIT MATH. VISUAL TRANSLATION IS IN MEME (WHOEVER THE ASSHOLE WAS WHO FLIPED CARTESIAN Y) FORMAT.
+	return mCamera.TRS_inverse_matrix();
 }
