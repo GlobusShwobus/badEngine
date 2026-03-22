@@ -9,25 +9,37 @@ namespace bad
 {
 	class MouseCameraController
 	{
-		static constexpr float ZOOM_IN = 1.25f;
-		static constexpr float ZOOM_OUT = 0.75f;
+		static constexpr float ZOOM_FACTOR = 1.25f;
+		static constexpr float ROTATION_SPEED = 5.0f;
 
 	public:
 
 		MouseCameraController(const Transform& t) noexcept;
 
-		void update(float dt, const SDL_Event& events)noexcept;
-
-		//NOTE:: if the camera rotates then technically the viewport is busted... rotation is not taken into account
-		//			not sure how to fix it atm. either view port must also consider rotation OR the entities must consider rotation OR realistically eveyrhing has to
-		bad::Rect get_viewport(SDL_Window* const window)const;
+		void read_input(float dt, const SDL_Event& events)noexcept;
 
 		Mat3 get_view_matrix()const noexcept;
 
 		bad::Transform mCamera;
 
 	private:
-		float mRotationSpeed = 1;//TODO
-		bool mDragging = false;//TODO
+		bool mDragging = false;
 	};
 }
+
+/*
+bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)const
+{
+	assert(window != nullptr);
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	const float zoom = 1.0f / mCamera.mScale;
+
+	const float viewport_w = (w * 0.5f) * zoom;
+	const float viewport_h = (h * 0.5f) * zoom;
+
+	return bad::make_rect_from_center(mCamera.mPos, viewport_w, viewport_h);
+}
+*/

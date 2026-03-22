@@ -6,28 +6,29 @@ bad::MouseCameraController::MouseCameraController(const bad::Transform& transfor
 {
 }
 
-void bad::MouseCameraController::update(float dt, const SDL_Event& events)noexcept
+void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)noexcept
 {
 	switch (events.type)
 	{
 	case SDL_EVENT_KEY_DOWN:
-
+		//not sure yet. depends on when i test of with textures, but on mathmatical cartesian plane this is correct
 		if (events.key.key == SDLK_Q)
-			mCamera.set_rotation(std::fmod(mCamera.get_radians() + mRotationSpeed * dt, bad::TAU));
+			mCamera.set_rotation(std::fmod(mCamera.get_radians() + ROTATION_SPEED * dt, bad::TAU));
 
 		if (events.key.key == SDLK_E)
-			mCamera.set_rotation(std::fmod(mCamera.get_radians() + mRotationSpeed * -dt, bad::TAU));
+			mCamera.set_rotation(std::fmod(mCamera.get_radians() + ROTATION_SPEED * -dt, bad::TAU));
 
 		break;
 
 	case SDL_EVENT_MOUSE_WHEEL:
 
 		if (events.wheel.y > 0) {
-			mCamera.mScale *= ZOOM_OUT;
+			mCamera.mScale *= ZOOM_FACTOR;
 		}
 		else if (events.wheel.y < 0) {
-			mCamera.mScale *= ZOOM_IN;
+			mCamera.mScale /= ZOOM_FACTOR;
 		}
+
 		break;
 
 	case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -48,8 +49,8 @@ void bad::MouseCameraController::update(float dt, const SDL_Event& events)noexce
 
 		if (mDragging) 
 		{
-			mCamera.mPos.x -= events.motion.xrel;
-			mCamera.mPos.y += events.motion.yrel;
+			mCamera.mPos.x += events.motion.xrel;
+			mCamera.mPos.y -= events.motion.yrel;
 		}
 		break;
 
@@ -58,20 +59,7 @@ void bad::MouseCameraController::update(float dt, const SDL_Event& events)noexce
 	}
 }
 
-bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)const
-{
-	assert(window != nullptr);
-
-	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
-
-	const float scaled_w = w * mCamera.mScale;
-	const float scaled_h = h * mCamera.mScale;
-
-	return bad::make_rect_from_center(mCamera.mPos, scaled_w, scaled_h);
-}
-
 bad::Mat3 bad::MouseCameraController::get_view_matrix()const noexcept
 {
-	return mCamera.make_transformed_inverse();
+	return mCamera.TRS_matrix();
 }

@@ -36,9 +36,6 @@
     <ClInclude Include="MakeShape.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>temp</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Window</Filter>
     </ClInclude>

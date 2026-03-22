@@ -11,7 +11,6 @@
 #include "MakeShape.h"
 #include "Validate_data.h"
 #include "load_data.h"
-#include "Entity.h"
 #include "MouseCameraController.h"
 #include "EngineUtils.h"
 #include "FreeDraw.h"
@@ -42,47 +41,67 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         bad::RandomNum rng;
-        auto rPos = rng.get_real_distribution(-5000.f, 5000.f);
-        auto rOuterRadius = rng.get_normal_distribution(32.f,16.f);
-        auto rInnerRadius = rng.get_normal_distribution(16.f, 8.f);
-        auto rFlares      = rng.get_normal_distribution(10.f, 6.f);
-
-        auto rColor = rng.get_int_distribution(0, 255);
-
-        bad::Sequence<rnd::Entity> entities;
-        entities.reserve(500);
-
-
-        while (entities.size() < 500)
+        struct Plank
         {
-            const auto big_rad = bad::core_clamp(rOuterRadius(rng.engine), 16.f, 32.f);
-            auto pos = bad::Point(rPos(rng.engine), rPos(rng.engine));
+            bad::Transform trans{ {0,0},1,0 };
+            bad::Point dynamic{ 300,0 };
+        }plank;
 
-            if (std::any_of(entities.begin(), entities.end(), [&](const rnd::Entity& e)
-                {
-                    return bad::length(e.mTransform.mPos-pos) < big_rad + e.radius;
-                }
-            )) {
-                continue;
+        struct Ball
+        {
+            Ball(bad::Transform&& t) :transform(std::move(t)) {}
+            bad::Sequence<bad::Point> ball_model;
+            bad::Transform transform;
+            bad::Point velocity;
+            float radius = 32;
+        };
+
+        class BallSpawner
+        {
+        public:
+
+            BallSpawner()
+            {
             }
 
-            const auto small_rad = bad::core_clamp(rInnerRadius(rng.engine), 8.0f, 16.f);
-            const auto flares = bad::core_clamp(rFlares(rng.engine), 3.f, 12.f);
+            auto& get_balls() {
+                return mBalls;
+            }
 
-            auto scale = rng.get(1, 5);
-            auto radians = rng.get(0, 6);
-            auto color = bad::Color(rColor(rng.engine), rColor(rng.engine), rColor(rng.engine), 255);
+            void update(float dt)
+            {
+                time += dt;
+                if (time >= period)
+                {
+                    time -= period;
 
-            auto model = bad::make_poly(big_rad, small_rad, flares);
-            rnd::Entity ent(std::move(model), big_rad, pos, scale, radians, color);
 
-            ent.pulse_dir = rng.get(-4.2f, 4.2f);
-            ent.rotational_velocity = rng.get(-4.2f, 4.2f);
+                    Ball ent(bad::Transform( bad::Point{100,-200 }, 1, 0));
+                    ent.ball_model = bad::make_poly(16, 16, 8);
+                    ent.radius = 16;
+                    ent.velocity = { rng.get(-50.f,50.f), 100 };
 
-            entities.push_back(std::move(ent));
-        }
+                    mBalls.push_back(std::move(ent));
+                }
+            }
+
+        private:
+            bad::RandomNum rng;
+
+            bad::Sequence<Ball> mBalls;
+
+            bad::Point spawn_source{ 200,400 };
+            float period = 0.5f;
+            float time = 0;
+            float vy = -5;
+        };
+
+        BallSpawner spawner;
+
         bad::Transform camt(bad::Point{ 0,0 }, 1, 0);
         bad::MouseCameraController camera{ camt };
+
+        bad::AsyncLogger logger;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -108,38 +127,55 @@ int main() {
                     GAME_RUNNING = false;
                     break;
 
-            
+                case SDL_EVENT_KEY_DOWN:
+
+                    if (EVENT.key.key == SDLK_S)
+                        plank.dynamic.y += 3.f;
+
+                    if (EVENT.key.key == SDLK_W)
+                        plank.dynamic.y -= 3.f;
+
+                    if (EVENT.key.key == SDLK_A)
+                        plank.dynamic.x -= 3.f;
+
+                    if (EVENT.key.key == SDLK_D)
+                        plank.dynamic.x += 3.f;
+
+                break;
+
                 default:
                     break;
                 }
-                camera.update(dt, EVENT);
+                camera.read_input(dt, EVENT);
             }
 
-            camera.mCamera.update_sincos();
-            auto window_transform = bad::sdl_window_matrix(window.get());
+            spawner.update(dt);
+
+            for (auto& ball : spawner.get_balls()) {
+                ball.transform.mPos += (ball.velocity * dt);
+            }
+            bad::Ray plank_ray(plank.trans.mPos, plank.dynamic - plank.trans.mPos);
+
+            for (auto& ball : spawner.get_balls()) {
+                bad::reflection_routine_resolved(plank_ray, ball.transform.mPos, ball.velocity, ball.radius);
+            }
+
+
+            camera.mCamera.update_sincos();// manual labor but it's fine
             auto camera_transform = camera.get_view_matrix();
 
-            const auto camera_viewport = camera.get_viewport(window.get());
+            for (auto& ball : spawner.get_balls())
+            {
+                ball.transform.mPos += (ball.velocity*dt);
 
-            int draws = 0;
-            for (auto& e : entities) {
-                e.pulse_effect(dt);
-                e.rotate(dt);
-                auto entity_bb_world = e.get_bb();
-
-                if (camera_viewport.intersects(entity_bb_world)) {
-                    //for final draw (local -> world -> camera -> window)
-                    auto final_transform = window_transform * camera_transform * e.mTransform.make_transformed();
-                    //for bounding boxes: only camera and window (world -> camera -> window)
-                    auto screen_transform = window_transform * camera_transform;;
-                    bad::draw_rect_lines_transformed(renderer.get(), entity_bb_world, screen_transform, e.mColor);
-                    bad::draw_closed_model_transformed(renderer.get(), e.get_model(), final_transform, e.mColor);
-                    draws++;
-                }
-
+                auto ball_transform = camera_transform * ball.transform.TRS_matrix();
+                bad::draw_closed_model_transformed(renderer.get(), ball.ball_model, ball_transform, bad::Colors::Cyan);
             }
 
-            bad::AsyncLogger::Global().log("draws: " + std::to_string(draws));
+            auto plank_transform = camera_transform * plank.trans.TRS_matrix();
+            bad::draw_line_transformed(renderer.get(), plank.trans.mPos, plank.dynamic, plank_transform, bad::Colors::Magenta);
+
+
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

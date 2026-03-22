@@ -81,26 +81,15 @@ namespace bad
 		Transform(const Point& pos, float scale, float radians);
 
 		/**
+		* NOTE IMPORTANT: this method flips the pos.y. This is because all math should be done in logical math, but translating to screen should flip y.
 		* \returns Returns the transformation matrix representing this transform.
 		*/
-		inline Mat3 make_transformed()const noexcept
+		inline Mat3 TRS_matrix()const noexcept
 		{
 			return
-				Mat3::translation(mPos) *
+				Mat3::translation(mPos.x, mPos.y) *
 				Mat3::rotation(mSin, mCos) *
 				Mat3::scale(mScale, mScale);
-		}
-
-		/**
-		* \returns Returns the inverse transformation matrix.
-		*/
-		inline Mat3 make_transformed_inverse()const noexcept
-		{
-			const float invScale = 1.0f / mScale;
-			return
-				Mat3::scale(invScale, invScale) *
-				Mat3::rotation(-mSin, mCos) *
-				Mat3::translation(-mPos);
 		}
 
 		/**

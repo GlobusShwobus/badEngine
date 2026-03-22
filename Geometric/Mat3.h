@@ -31,11 +31,11 @@ namespace bad
 			};
 		}
 
-		constexpr static Mat3 translation(float2 t) noexcept
+		constexpr static Mat3 translation(float x, float y) noexcept
 		{
 			Mat3 m;
-			m.tx = t.x;
-			m.ty = t.y;
+			m.tx = x;
+			m.ty = y;
 			return m;
 		}
 

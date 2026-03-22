@@ -2,6 +2,16 @@
 #include "AsyncLogger.h"
 #include "EngineUtils.h"
 
+void bad::draw_line_transformed(SDL_Renderer* const renderer, const bad::Point& p0, const bad::Point& p1, const bad::Mat3& transformer, bad::Color color)
+{
+	SDL_SetRenderDrawColor(renderer, color.get_r(), color.get_g(), color.get_b(), color.get_a());
+
+	SDL_FPoint sdlp0 = transform_point_to_sdl_fpoint(p0, transformer);
+	SDL_FPoint sdlp1 = transform_point_to_sdl_fpoint(p1, transformer);
+
+	SDL_RenderLine(renderer, sdlp0.x, sdlp0.y, sdlp1.x, sdlp1.y);
+}
+
 void bad::draw_rect_lines_transformed(SDL_Renderer* const renderer, const bad::Rect& rect, const bad::Mat3& transformer, bad::Color color)
 {
 	static constexpr int RECT_POINTS_COUNT = 4;

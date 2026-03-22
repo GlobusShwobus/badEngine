@@ -46,7 +46,9 @@ bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radi
 
 	IntersectionInfo info({}, 0, false);
 
-	if (distance <= radius) {
+	if (distance <= radius)
+	{
+		info.is_hit = true;
 		info.normal = (distance > 0.0f) ?
 			normal_optimized(vec_between_ray_and_point, distance) :
 			perpendicular(mDir);
@@ -62,11 +64,12 @@ void bad::reflection_routine_resolved(const Ray& target_surface, float2& point, 
 	auto result = target_surface.intersection_test(point, radius);
 
 	if (result.is_hit) {
-		if (dot_product(velocity, result.normal) > 0.0f)
+		float dot = dot_product(velocity, result.normal);
+
+		if (dot > 0.0f) 
 			result.normal = -result.normal;
-		if (dot_product(velocity, result.normal) < 0.0f) {
-			velocity = reflection(velocity, result.normal);
-			point = result.normal * result.penetration;
-		}
+
+		velocity = reflection(velocity, result.normal);
+		point += result.normal * result.penetration;
 	}
 }
