@@ -160,6 +160,11 @@ namespace bad
 			return m;
 		}
 
+		constexpr static Mat3 translate(const bad::Point& p) noexcept
+		{
+			return Mat3::translate(p.x, p.y);
+		}
+
 		/**
 		* \brief
 		* Flips the Y-axis basis y resulting in literally fliping something upside down.

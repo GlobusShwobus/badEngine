@@ -133,4 +133,43 @@ namespace bad
 		/// <summary> Cached cosine value of rotation </summary>
 		float mCos;
 	};
+
+	class Translation
+	{
+	public:
+		Translation() :t(0, 0) {}
+		Translation(float x, float y) :t(x, y) {}
+		Translation(const bad::Point& p) :t(p) {}
+
+		constexpr const bad::Point& get_pos()const noexcept { return t; }
+
+		constexpr void set_pos(float x, float y)noexcept { t = { x,y }; }
+
+		constexpr void set_pos(const bad::Point& p)noexcept { t = p; }
+
+		constexpr void offset_pos(float x, float y)noexcept { t.x += x; t.y += y; }
+
+		constexpr void offset_pos(const bad::Point& p)noexcept { t += p; }
+
+		constexpr Mat3 transformed()const noexcept
+		{
+			return Mat3::translate(t);
+		}
+
+	private:
+		bad::Point t;
+	};
+
+	class Rotation
+	{
+	public:
+		Rotation() :radians(0), sin(0), cos(1) {}
+		Rotation(float radians) :radians(radians), sin(std::sin(radians)), cos(std::cos(radians)) {}
+
+	private:
+		float radians;
+		float sin;
+		float cos;
+	};
+
 }
