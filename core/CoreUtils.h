@@ -4,11 +4,6 @@
 
 namespace bad
 {
-	static constexpr float EPSILON = 0.0001f;
-	constexpr float PI = 3.14159265358979323846f;
-	constexpr float TAU = 6.28318530717958647692f;
-
-
 	/**
 	* \brief Returns the absolute value.
 	* 
