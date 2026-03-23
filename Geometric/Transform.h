@@ -2,174 +2,98 @@
 
 #include "Float2.h"
 #include "Mat3.h"
+#include "MathConstants.h"
 
 namespace bad
 {
-	/**
-	* Transform represents a 2D geometric transformation.
-	*
-	* A Transform combines the three basic operations used to position objects
-	* in the world:
-	*
-	*  - Translation (position)
-	*  - Rotation (in radians)
-	*  - Uniform scaling
-	*
-	* Translation is represented by a float2 coordinate.
-	* Scaling is represented by a single float and is applied uniformly on both axes.
-	*
-	* All rotations in the engine are measured in radians.
-	*
-	*
-	* --- IMPORTANT PERFORMANCE NOTE ---
-	*
-	* This class intentionally does NOT compute sin() and cos() automatically.
-	*
-	* Trigonometric functions are relatively expensive, and automatically
-	* recalculating them every time the transform is used would introduce
-	* unnecessary overhead in many cases.
-	*
-	* Instead, the engine requires the user to explicitly call:
-	*
-	*     Transform::update_sincos()
-	*
-	* whenever the rotation changes.
-	*
-	* This design provides two performance advantages:
-	*
-	* 1. Objects that never rotate will never recompute sin/cos (but do require at least one call to update).
-	* 2. Objects that rotate multiple times per frame only need to compute
-	*    sin/cos once before the transform matrix is used.
-	*
-	*
-	* --- WARNING ---
-	*
-	* The constructor does NOT initialize the sine and cosine values.
-	*
-	* Using transform() or transform_inverse() before calling update_sincos()
-	* after construction or rotation change results in undefined behavior.
-	*
-	*
-	* --- Transformation Order ---
-	*
-	* The transform matrix is constructed in the following order:
-	*
-	*     Translation * Rotation * Scale
-	*
-	* meaning objects are:
-	*
-	*     1. Scaled
-	*     2. Rotated
-	*     3. Translated
-	*
-	* This ordering matches common object-to-world transformation conventions.
-	*/
-	class Transform
+	class Translation final
 	{
 	public:
+		explicit Translation(float x, float y) :mPos(x, y) {}
+		Translation() :Translation(0.f,0.f) {}
+		explicit Translation(const bad::Point& p) :Translation(p.x,p.y) {}
 
-		/**
-		* Creates a Transform with the specified position, scale and rotation.
-		*
-		* \param pos world position
-		* \param scale uniform scaling factor
-		* \param radians rotation angle in radians
-		*
-		* \note This constructor does NOT compute sine/cosine values.
-		*       update_sincos() must be called before the transform is used.
-		*/
-		Transform(const Point& pos, float scale, float radians);
+		constexpr const bad::Point& get_pos()const noexcept { return mPos; }
 
-		/**
-		* NOTE IMPORTANT: this method flips the pos.y. This is because all math should be done in logical math, but translating to screen should flip y.
-		* \returns Returns the transformation matrix representing this transform.
-		*/
-		inline Mat3 TRS_matrix()const noexcept
+		constexpr void set_pos(float x, float y)noexcept { mPos.x = x; mPos.y = y; }
+
+		constexpr void set_pos(const bad::Point& p)noexcept { set_pos(p.x, p.y); }
+
+		constexpr void translate_by(float x, float y)noexcept { mPos.x += x; mPos.y += y; }
+
+		constexpr void translate_by(const bad::Point& p)noexcept { translate_by(p.x, p.y); }
+
+		constexpr Mat3 to_matrix()const noexcept
 		{
-			return
-				Mat3::translate(mPos.x, mPos.y) *
-				Mat3::rotate(mSin, mCos) *
-				Mat3::scale(mScale);
+			return Mat3::translate(mPos);
 		}
 
-		/**
-		* Sets the rotation angle in radians.
-		*
-		* \note update_sincos() must be called after modifying the rotation.
-		*/
-		constexpr void set_rotation(float radians)noexcept { mRadians = radians; }
+	private:
+		bad::Point mPos;
+	};
 
-		/**
-		* Sets the rotation angle in radians and calls update_sincos()
-		*/
-		void set_rotation_and_update(float radians) noexcept;
+	class Rotation final
+	{
+	public:
+		Rotation() :mRad(0), mSin(0), mCos(1) {}
+		explicit Rotation(float radians) { set_radian(radians); }
 
-		/**
-		* Updates cached sine and cosine values from the current rotation.
-		*
-		* This function must be called whenever the rotation changes before
-		* the transform matrix is used.
-		*/
-		void update_sincos()noexcept;
+		inline void set_radian(float r)noexcept
+		{
+			mRad = std::fmod(r, bad::TAU);
 
-		/**
-		* Returns the current rotation in radians.
-		*/
-		constexpr float get_radians()const noexcept { return mRadians; }
+			if (mRad < 0)
+				mRad += bad::TAU;
 
-		/// <summary> Position (translation) </summary>
-		Point mPos;
+			mSin = std::sin(mRad);
+			mCos = std::cos(mRad);
+		}
 
-		/// <summary> Uniform scaling factor </summary>
-		float mScale;
+		void rotate_by(float r)noexcept { set_radian(mRad + r); }
+
+		constexpr float get_radian()const noexcept { return mRad; }
+		constexpr float get_sin() const noexcept   { return mSin; }
+		constexpr float get_cos() const noexcept   { return mCos; }
+
+		constexpr Mat3 to_matrix()const noexcept
+		{
+			return Mat3::rotate(mSin, mCos);
+		}
 
 	private:
-		/// <summary> Rotation angle in radians </summary>
-		float mRadians;
-
-		/// <summary> Cached sine value of rotation </summary>
+		float mRad;
 		float mSin;
-
-		/// <summary> Cached cosine value of rotation </summary>
 		float mCos;
 	};
 
-	class Translation
+
+	class Scale final
 	{
 	public:
-		Translation() :t(0, 0) {}
-		Translation(float x, float y) :t(x, y) {}
-		Translation(const bad::Point& p) :t(p) {}
+		Scale() :mScaleX(1.0f), mScaleY(1.0f) {}
+		explicit Scale(float sx, float sy) :mScaleX(sx), mScaleY(sy) {}
+		explicit Scale(float scale) :Scale(scale, scale) {}
+		explicit Scale(const bad::float2& scale) :Scale(scale.x, scale.y) {}
 
-		constexpr const bad::Point& get_pos()const noexcept { return t; }
+		constexpr void set_scale(float sx, float sy)noexcept { mScaleX = sx; mScaleY = sy; }
+		constexpr void set_scale(float factor)noexcept { set_scale(factor, factor); }
+		constexpr void set_scale(const bad::float2& scale)noexcept { set_scale(scale.x, scale.y); }
 
-		constexpr void set_pos(float x, float y)noexcept { t = { x,y }; }
+		constexpr void scale_by(float fx, float fy)noexcept { mScaleX *= fx; mScaleY *= fy; }
+		constexpr void scale_by(float fx)noexcept { scale_by(fx, fx); }
+		constexpr void scale_by(const bad::float2& scale)noexcept { scale_by(scale.x, scale.y); }
 
-		constexpr void set_pos(const bad::Point& p)noexcept { t = p; }
+		constexpr float get_sx()const noexcept { return mScaleX; }
+		constexpr float get_sy()const noexcept { return mScaleY; }
+		constexpr const bad::float2& get_scale()const noexcept { return { mScaleX,mScaleY }; }
 
-		constexpr void offset_pos(float x, float y)noexcept { t.x += x; t.y += y; }
-
-		constexpr void offset_pos(const bad::Point& p)noexcept { t += p; }
-
-		constexpr Mat3 transformed()const noexcept
+		constexpr Mat3 to_matrix()const noexcept
 		{
-			return Mat3::translate(t);
+			return Mat3::scale(mScaleX, mScaleY);
 		}
 
 	private:
-		bad::Point t;
+		float mScaleX;
+		float mScaleY;
 	};
-
-	class Rotation
-	{
-	public:
-		Rotation() :radians(0), sin(0), cos(1) {}
-		Rotation(float radians) :radians(radians), sin(std::sin(radians)), cos(std::cos(radians)) {}
-
-	private:
-		float radians;
-		float sin;
-		float cos;
-	};
-
 }

@@ -108,6 +108,11 @@ namespace bad
 			return Mat3::scale(factor, factor);
 		}
 
+		constexpr static Mat3 scale(const bad::float2& scale) noexcept
+		{
+			return Mat3::scale(scale.x, scale.y);
+		}
+
 		/**
 		* \brief Creates a rotation transformation.
 		*

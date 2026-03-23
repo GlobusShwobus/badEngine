@@ -35,13 +35,13 @@
     <ClInclude Include="Geometric.h">
       <Filter>files</Filter>
     </ClInclude>
+    <ClInclude Include="MathConstants.h">
+      <Filter>files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>files</Filter>
     </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>files</Filter>

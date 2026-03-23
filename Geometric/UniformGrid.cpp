@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UniformGrid.h"
 #include "CoreUtils.h"
+#include "MathConstants.h"
 
 bad::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHeight)
 	:mBounds(bounds), mCellWidth(cellWidth), mCellHeight(cellHeight)
