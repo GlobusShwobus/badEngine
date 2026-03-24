@@ -6,7 +6,7 @@
 
 namespace bad
 {
-	void intersection_reflection_resolve(const IntersectionInfo& result, bad::Position& pos, bad::Vector& velocity) noexcept;
+	void intersection_reflection_resolve(const IntersectionInfo& result, bad::Translation& pos, bad::Vector& velocity) noexcept;
 
 	constexpr bool overlap_test(const Rect& a, const Rect& b, float& overlapWidth, float& overlapHeight)noexcept
 	{

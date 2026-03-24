@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cmath>
 #include "Float2.h"
 
 namespace bad
@@ -137,6 +137,11 @@ namespace bad
 			m.Ax = cos;  m.Ay = sin;
 			m.Bx = -sin; m.By = cos;
 			return m;
+		}
+
+		constexpr static Mat3 rotate(float radians) noexcept
+		{
+			return rotate(std::sin(radians), std::cos(radians));
 		}
 
 		/**
