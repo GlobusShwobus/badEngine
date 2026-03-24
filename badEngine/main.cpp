@@ -41,6 +41,11 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         bad::RandomNum rng;
+
+        auto dist = rng.get_normal_distribution(16, 2);
+
+        auto ye = dist(rng);
+
         struct Plank
         {
             bad::Transform trans{ {0,0},1,0 };

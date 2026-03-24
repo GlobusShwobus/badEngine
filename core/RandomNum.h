@@ -6,9 +6,21 @@
 namespace bad
 {
 	/// <summary> Wrapper around std::mt19937 </summary>
-	struct RandomNum final
+	class RandomNum final
 	{
 	public:
+		/// <summary> This tells that I produce the same type as mt19937 does internally. Making it legal to work with distributions. </summary>
+		using result_type = std::mt19937::result_type;
+
+		/// <summary> Overloads for min/max that just call std::mt19937 min/max using the local type def for result_type which is the same result type. </summary>
+		static constexpr result_type min() { return std::mt19937::min(); }
+		static constexpr result_type max() { return std::mt19937::max(); }
+
+		/// <summary> Because of local typedef of result_type and overloading min/max, distributions are able to accept RandomNum class itself instead of requiring to call randomnum.engine </summary>
+		result_type operator()()
+		{
+			return engine();
+		}
 
 		/// <summary> Initializes std::mt19937 with random device </summary>
 		RandomNum()
@@ -74,6 +86,8 @@ namespace bad
 		{
 			return std::normal_distribution<float>(mean, standard_deviation);
 		}
+
+	private:
 
 		std::mt19937 engine;
 	};
