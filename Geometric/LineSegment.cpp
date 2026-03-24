@@ -1,12 +1,25 @@
 #include "pch.h"
-#include "Ray.h"
+#include "LineSegment.h"
+#include "CoreUtils.h"
 
-bad::Ray::Ray(const Point& origin, const Vector& vector) noexcept
-	:mOrigin(origin), mLength(length(vector)), mDir(normal_optimized(vector, mLength))
+bad::LineSegment::LineSegment(const Point& begin, const Point& end) noexcept
+	:mOrigin(begin)
 {
+	bad::Vector vectorized = end - begin;
+	mLength = bad::length(vectorized);
+	mDir = bad::get_normalized(vectorized, mLength);
 }
 
-bad::SweepInfo bad::Ray::sweep_test(const Rect& target)const noexcept
+bad::Point bad::LineSegment::closest_point(const bad::Point& point)const noexcept
+{
+	bad::Vector vector_between_objects = point - mOrigin;
+	float t = dot_product(vector_between_objects, mDir);
+	// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
+	t = bad::core_clamp(t, 0.0f, mLength);
+	return mOrigin + mDir * t;
+}
+
+bad::SweepInfo bad::LineSegment::sweep_test(const Rect& target)const noexcept
 {
 	float2 invdir(
 		(mDir.x == 0.0f) ? INFINITY : 1.0f / mDir.x,
@@ -37,11 +50,11 @@ bad::SweepInfo bad::Ray::sweep_test(const Rect& target)const noexcept
 	return info;
 }
 
-bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radius)const noexcept
+bad::IntersectionInfo bad::LineSegment::intersection_test(const bad::Point& point, float radius)const noexcept
 {
-	float2 closest_point = closest_point_on_ray(point);
+	float2 cp = closest_point(point);
 
-	float2 vec_between_ray_and_point = point - closest_point;
+	float2 vec_between_ray_and_point = point - cp;
 	float distance = length(vec_between_ray_and_point);
 
 	IntersectionInfo info({}, 0, false);
@@ -50,7 +63,7 @@ bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radi
 	{
 		info.is_hit = true;
 		info.normal = (distance > 0.0f) ?
-			normal_optimized(vec_between_ray_and_point, distance) :
+			bad::get_normalized(vec_between_ray_and_point, distance) :
 			perpendicular(mDir);
 
 		info.penetration = radius - distance;
@@ -59,7 +72,7 @@ bad::IntersectionInfo bad::Ray::intersection_test(const Point& point, float radi
 	return info;
 }
 
-void bad::reflection_routine_resolved(const Ray& target_surface, float2& point, float2& velocity, float radius) noexcept
+void bad::reflection_routine_resolved(const bad::LineSegment& target_surface, bad::Point& point, bad::Vector& velocity, float radius) noexcept
 {
 	auto result = target_surface.intersection_test(point, radius);
 

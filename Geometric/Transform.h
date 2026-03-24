@@ -32,6 +32,8 @@ namespace bad
 		bad::Point mPos;
 	};
 
+	using Position = Translation;
+
 	class Rotation final
 	{
 	public:

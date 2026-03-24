@@ -15,6 +15,9 @@
 #include "EngineUtils.h"
 #include "FreeDraw.h"
 
+
+// TODO:: test uniform grid again
+
 int main() {
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -48,17 +51,19 @@ int main() {
 
         struct Plank
         {
-            bad::Transform trans{ {0,0},1,0 };
-            bad::Point dynamic{ 300,0 };
+            bad::Position pos{0,200};
+            bad::Point dynamic{ 450,200 };
         }plank;
 
         struct Ball
         {
-            Ball(bad::Transform&& t) :transform(std::move(t)) {}
+            Ball(bad::Position&& p) :pos(std::move(p)) {}
             bad::Sequence<bad::Point> ball_model;
-            bad::Transform transform;
+            bad::Position pos;
             bad::Point velocity;
             float radius = 32;
+
+            double age = 0.0f;
         };
 
         class BallSpawner
@@ -67,6 +72,8 @@ int main() {
 
             BallSpawner()
             {
+                xDist = rng.get_real_distribution(-50.f, 50.f);
+                velDist = rng.get_normal_distribution(-111, 22);
             }
 
             auto& get_balls() {
@@ -80,30 +87,37 @@ int main() {
                 {
                     time -= period;
 
-                    Ball ent(bad::Transform( bad::Point{ 100, 200 }, 1, 0));
+                    Ball ent(bad::Position(250,500));
                     ent.ball_model = bad::make_poly(16, 16, 8);
                     ent.radius = 16;
-                    ent.velocity = { rng.get(-50.f,50.f), -100 };
+                    ent.velocity = { xDist(rng), velDist(rng)};
 
                     mBalls.push_back(std::move(ent));
                 }
             }
 
+            void cleanse() {
+                mBalls.erase(std::remove_if(mBalls.begin(), mBalls.end(), [](Ball& b) {return b.age >= 7.f; }),mBalls.end());
+            }
+            
+            std::size_t size()const noexcept
+            {
+                return mBalls.size();
+            }
+
         private:
             bad::RandomNum rng;
-
             bad::Sequence<Ball> mBalls;
+
+            std::uniform_real_distribution<float> xDist;
+            std::normal_distribution<float> velDist;
 
             bad::Point spawn_source{ 200,400 };
             float period = 0.5f;
             float time = 0;
             float vy = -5;
-        };
+        }spawner;
 
-        BallSpawner spawner;
-
-        bad::Transform camt(bad::Point{ 0,0 }, 1, 0);
-        bad::MouseCameraController camera{ camt };
 
         bad::AsyncLogger logger;
 
@@ -135,19 +149,42 @@ int main() {
                     GAME_RUNNING = false;
                     break;
 
+                case SDL_EVENT_KEY_DOWN:
+                    
+                    if (EVENT.key.key == SDLK_S) {
+                        plank.dynamic.y += 10.f;
+                    }
+
+                    if (EVENT.key.key == SDLK_W) {
+                        plank.dynamic.y -= 10.f;
+                    }
+
+                    break;
+
                 default:
                     break;
                 }
             }
 
-            float sin = std::sin(45);
-            float cos = std::cos(45);
-            bad::Mat3 translate = bad::Mat3::translate(480,270);
-            bad::Mat3 scale = bad::Mat3::scale(2);
-            bad::Mat3 rotate = bad::Mat3::rotate(sin, cos);
-           // auto final = translate;
+            spawner.update(dt);
 
-            bad::draw_closed_model_transformed(renderer.get(), star, translate * scale * rotate, bad::Colors::Green);
+            auto no_transformation = bad::Mat3::identity();
+            for (auto& b : spawner.get_balls())
+            {
+                b.pos.translate_by(b.velocity* dt);
+                b.age += dt;
+            }
+
+            for (auto& b : spawner.get_balls())
+            {
+                bad::draw_closed_model_transformed(renderer.get(), b.ball_model, b.pos.to_matrix(), bad::Colors::Cyan);
+            }
+
+            bad::draw_line_transformed(renderer.get(), plank.pos.get_pos(), plank.dynamic, no_transformation, bad::Colors::Red);
+
+            logger.log("balls count: "+std::to_string(spawner.size()));
+
+            spawner.cleanse();
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

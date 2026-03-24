@@ -20,7 +20,7 @@
     <ClInclude Include="Rect.h">
       <Filter>files</Filter>
     </ClInclude>
-    <ClInclude Include="Ray.h">
+    <ClInclude Include="LineSegment.h">
       <Filter>files</Filter>
     </ClInclude>
     <ClInclude Include="Mat3.h">
@@ -43,7 +43,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
     </ClCompile>
-    <ClCompile Include="Ray.cpp">
+    <ClCompile Include="LineSegment.cpp">
       <Filter>files</Filter>
     </ClCompile>
     <ClCompile Include="UniformGrid.cpp">

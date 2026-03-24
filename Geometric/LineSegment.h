@@ -25,7 +25,7 @@ namespace bad
 	//##############################################################################################################
 
 	/**
-	* Ray represents a finite 2D ray (line segment) defined by:
+	* LineSegment represents a finite 2D line segment defined by:
 	*
 	*     origin + dir * t
 	*
@@ -44,40 +44,39 @@ namespace bad
 	*     dir     -> normalized direction
 	*     length  -> length of the ray
 	*
-	* The constructor computes both the length and normalized direction
-	* using a single square root operation for efficiency.
+	* The constructor computes both the length and normalized direction.
+	* 
 	*/
-	class Ray final
+	class LineSegment final
 	{
 	public:
 
 		/**
-		* Constructs a ray from an origin and a vector.
+		* Constructs a LineSegment from an begin and end points.
 		*
-		* The vector defines both the direction and the length of the ray.
-		*
-		* Internally:
-		*
-		*     length = |vector|
-		*     dir    = normalized(vector)
-		*
-		* Only one square root operation is performed during construction.
+		* Internally finds the vecor of the line segment doing end - begin;
+		* derives the lenght and normalized from the result
 		*
 		* \param origin starting point of the ray
 		* \param vector vector defining ray direction and length
+		* 
 		*/
-		Ray(const Point& origin, const Vector& vector) noexcept;
+		LineSegment(const Point& begin, const Point& end) noexcept;
 
-		//NOTE: ORDER MATTERS FOR CONSTRUCTOR!
+		const bad::Point& get_origin()const noexcept { return mOrigin; }
+		const bad::Point& get_dir()const noexcept { return mDir; }
+		float get_length()const noexcept { return mLength; }
 
-		/// <summary> Lenght of the ray. </summary>
-		const float mLength;
-
-		/// <summary> Origin point of the ray. </summary>
-		const Point mOrigin;
-
-		/// <summary> Normalized direction vector of the ray. </summary>
-		const Vector mDir;
+		/**
+		* Computes the closest point on the ray to a given point.
+		*
+		* The result is clamped to the ray segment.
+		*
+		* \param point target point
+		*
+		* \returns closest point on the ray segment
+		*/
+		bad::Point closest_point(const Point& point)const noexcept;
 
 		/**
 		* Performs a sweep test against an axis-aligned rectangle.
@@ -95,39 +94,6 @@ namespace bad
 		* NOTE: If is_hit is false then contact_point default constructed and time is INFINITY.
 		*/
 		SweepInfo sweep_test(const Rect& target)const noexcept;
-
-		/**
-		* Convenience function to validate a sweep time value.
-		*
-		* A valid hit must satisfy:
-		*
-		*     0 <= time < length
-		*
-		* \param time distance along the ray
-		* \returns true if the time represents a valid hit
-		*/
-		constexpr bool is_hit(float time)const noexcept
-		{
-			return time >= 0.0f && time < mLength;
-		}
-
-		/**
-		* Computes the closest point on the ray to a given point.
-		*
-		* The result is clamped to the ray segment.
-		*
-		* \param point target point
-		*
-		* \returns closest point on the ray segment
-		*/
-		constexpr auto closest_point_on_ray(const Point& point)const noexcept
-		{
-			Vector vector_between_objects = point - mOrigin;
-			float t = dot_product(vector_between_objects, mDir);
-			// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
-			t = core_clamp(t, 0.0f, mLength);
-			return mOrigin + mDir * t;
-		}
 
 		/**
 		* Performs an intersection test between the ray and a circle.
@@ -157,6 +123,12 @@ namespace bad
 				mDir.y * mLength
 			};
 		}
+
+	private:
+
+		Point mOrigin; 		/// <summary> Origin point of the ray. </summary>
+		Vector mDir; 		/// <summary> Normalized direction vector of the ray. </summary>
+		float mLength; 		/// <summary> Lenght of the ray. </summary>
 	};
 
 	/**
@@ -176,5 +148,23 @@ namespace bad
 	 * \param velocity Velocity of the object. Reflected if a collision occurs.
 	 * \param radius Radius of the object used for the intersection test.
 	 */
-	void reflection_routine_resolved(const Ray& target_surface, float2& point, float2& velocity, float radius) noexcept;
+	void reflection_routine_resolved(const LineSegment& target_surface, Point& point, Vector& velocity, float radius) noexcept;
 }
+
+
+/*
+		
+		Convenience function to validate a sweep time value.
+		
+		A valid hit must satisfy:
+		
+		    0 <= time < length
+		
+		\param time distance along the ray
+		\returns true if the time represents a valid hit
+		
+constexpr bool is_hit(float time)const noexcept
+{
+	return time >= 0.0f && time < mLength;
+}
+*/

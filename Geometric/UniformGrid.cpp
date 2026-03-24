@@ -128,26 +128,29 @@ void bad::UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)c
 	}
 }
 
-void bad::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const
+void bad::UniformGrid::query_ray(const LineSegment& line, Sequence<int>& cell_indices)const
 {
 	//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
-	const float& segmentLength = ray.mLength;
+	const float& segmentLength = line.get_length();
+	const auto& lineOrigin = line.get_origin();
+	const auto& lineDir = line.get_dir();
+
 	if (segmentLength == 0.0f)
 		return;
 
 	//2) create a ray and check if the origin is inside grid bounds
 	const bool originInside =
-		ray.mOrigin.x >= mBounds.min.x &&
-		ray.mOrigin.x < mBounds.max.x &&
-		ray.mOrigin.y >= mBounds.min.y &&
-		ray.mOrigin.y < mBounds.max.y;
+		lineOrigin.x >= mBounds.min.x &&
+		lineOrigin.x < mBounds.max.x &&
+		lineOrigin.y >= mBounds.min.y &&
+		lineOrigin.y < mBounds.max.y;
 
 	//3) the point origin can be in the grid or out. if it is inside, by default entry MUST be 0. Doing a sweep blindly will result in not quering inner cells. 
 	//otherwise do a sweep test if the origin is outside the grid and find entry that way
 	float entryT = 0.0f;
 	if (!originInside) {
 
-		auto sweep = ray.sweep_test(mBounds);
+		auto sweep = line.sweep_test(mBounds);
 		if (sweep.is_hit)
 			entryT = sweep.time;
 	}
@@ -161,22 +164,22 @@ void bad::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)con
 	//5) unlike sweep, query_ray is about where to start traversing the grid thus sweeps hit.pos does not apply. logical traversal must be respected
 	//calculate the starting points of traversal in cell indices format clamping twice. once implicitly from float to int but secondly making sure it stays in the grid
 	//the second clamp forces traversal to begin in the grid, not some value outside. not a crash but fails to query
-	float2 entryPos = ray.mOrigin + ray.mDir * currentT;
+	float2 entryPos = lineOrigin + lineDir * currentT;
 	int cellX = static_cast<int>((entryPos.x - mBounds.min.x) * invCellW);
 	int cellY = static_cast<int>((entryPos.y - mBounds.min.y) * invCellH);
 	cellX = core_clamp(cellX, 0, mColumns - 1);
 	cellY = core_clamp(cellY, 0, mRows - 1);
 
 	//6) get the sign of a step, which way to traverse
-	const auto rayDirSign = sign(ray.mDir);
+	const auto rayDirSign = sign(lineDir);
 	const int step_x = static_cast<int>(rayDirSign.x);
 	const int step_y = static_cast<int>(rayDirSign.y);
 
 	//7) get the distance difference per step. per 1 x axis step how much y length changes; per 1 y axis step how much x length changes (basic graph stuff)
 	//if step.x or step.y is 0 it means it's axis aligned and should never choose the other step, thus give it infinity value
 	const float2 delta = float2(
-		(step_x == 0) ? INFINITY : std::fabs(mCellWidth / ray.mDir.x),
-		(step_y == 0) ? INFINITY : std::fabs(mCellHeight / ray.mDir.y)
+		(step_x == 0) ? INFINITY : std::fabs(mCellWidth / lineDir.x),
+		(step_y == 0) ? INFINITY : std::fabs(mCellHeight / lineDir.y)
 	);
 
 	//8) initalize the time along the ray when each axis crosses its next cell boundary
@@ -187,10 +190,10 @@ void bad::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)con
 
 	//9) since the origin can be anywhere in the grid, set up initially as the length that is "already traversed"
 	float traversedX = (step_x == 0.0f) ? INFINITY :
-		(nextBoundaryX - entryPos.x) / ray.mDir.x + currentT;
+		(nextBoundaryX - entryPos.x) / lineDir.x + currentT;
 
 	float traversedY = (step_y == 0.0f) ? INFINITY :
-		(nextBoundaryY - entryPos.y) / ray.mDir.y + currentT;
+		(nextBoundaryY - entryPos.y) / lineDir.y + currentT;
 
 	//10) Traverse grid as long as cell indecies are within range and currentT is within segment length
 	while (
