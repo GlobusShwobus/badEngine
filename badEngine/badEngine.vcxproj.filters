@@ -45,6 +45,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>Window</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionRoutines.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="validate_data.cpp">
@@ -73,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="GFX_INIT.cpp">
       <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionRoutines.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

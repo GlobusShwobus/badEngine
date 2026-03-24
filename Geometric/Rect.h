@@ -225,24 +225,6 @@ namespace bad
 	};
 
 	/**
-	* Computes the distances between to rectangles and returns bool if they overlap or not.
-	*
-	* \param a as rectangle one
-	* \param b as rectangle two
-	* \param overlapWidth reference output for overlap on the x axis
-	* \param overlapHeight reference output for overlap on the y axis
-	*
-	* \returns true if overlapWidth and overlapHeight are both more than 0.
-	*/
-	constexpr bool overlap_test(const Rect& a, const Rect& b, float& overlapWidth, float& overlapHeight)noexcept
-	{
-		overlapWidth = core_min(a.max.x, b.max.x) - core_max(a.min.x, b.min.x);
-		overlapHeight = core_min(a.max.y, b.max.y) - core_max(a.min.y, b.min.y);
-
-		return overlapWidth > 0.0f && overlapHeight > 0.0f;
-	}
-
-	/**
 	* Makes a rectangle from the given center point and dimensions.
 	* 
 	* NOTE: width and height NOT half width and half height!!!

@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionRoutines.h" />
     <ClInclude Include="FreeDraw.h" />
     <ClInclude Include="EngineUtils.h" />
     <ClInclude Include="load_data.h" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="badEngine.cpp" />
+    <ClCompile Include="CollisionRoutines.cpp" />
     <ClCompile Include="FreeDraw.cpp" />
     <ClCompile Include="EngineUtils.cpp" />
     <ClCompile Include="load_data.cpp" />

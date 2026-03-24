@@ -130,41 +130,4 @@ namespace bad
 		Vector mDir; 		/// <summary> Normalized direction vector of the ray. </summary>
 		float mLength; 		/// <summary> Lenght of the ray. </summary>
 	};
-
-	/**
-	 * Performs a collision test against a surface and resolves the collision
-	 * by correcting the position and reflecting the velocity.
-	 *
-	 * If the object intersects the target surface:
-	 * - The velocity is reflected using the collision normal.
-	 * - The position is moved out of the surface along the normal by the
-	 *   reported penetration depth.
-	 *
-	 * The function also ensures the normal is oriented against the incoming
-	 * velocity before applying the reflection.
-	 *
-	 * \param target_surface Surface (ray/segment) used for the collision test.
-	 * \param point Position of the object. Modified if penetration occurs.
-	 * \param velocity Velocity of the object. Reflected if a collision occurs.
-	 * \param radius Radius of the object used for the intersection test.
-	 */
-	void reflection_routine_resolved(const LineSegment& target_surface, Point& point, Vector& velocity, float radius) noexcept;
 }
-
-
-/*
-		
-		Convenience function to validate a sweep time value.
-		
-		A valid hit must satisfy:
-		
-		    0 <= time < length
-		
-		\param time distance along the ray
-		\returns true if the time represents a valid hit
-		
-constexpr bool is_hit(float time)const noexcept
-{
-	return time >= 0.0f && time < mLength;
-}
-*/

@@ -14,6 +14,7 @@
 #include "MouseCameraController.h"
 #include "EngineUtils.h"
 #include "FreeDraw.h"
+#include "CollisionRoutines.h"
 
 
 // TODO:: test uniform grid again
@@ -173,6 +174,13 @@ int main() {
             {
                 b.pos.translate_by(b.velocity* dt);
                 b.age += dt;
+            }
+
+            bad::LineSegment line(plank.pos.get_pos(), plank.dynamic);
+
+            for (auto& b : spawner.get_balls())
+            {
+                bad::reflection_routine_resolved(line, b.pos, b.velocity, b.radius);
             }
 
             for (auto& b : spawner.get_balls())

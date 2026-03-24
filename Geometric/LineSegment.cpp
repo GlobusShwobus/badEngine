@@ -12,11 +12,11 @@ bad::LineSegment::LineSegment(const Point& begin, const Point& end) noexcept
 
 bad::Point bad::LineSegment::closest_point(const bad::Point& point)const noexcept
 {
-	bad::Vector vector_between_objects = point - mOrigin;
-	float t = dot_product(vector_between_objects, mDir);
-	// handle cases where point would be on the same infinite line, but not the line segment. clamp it to the line segment
-	t = bad::core_clamp(t, 0.0f, mLength);
-	return mOrigin + mDir * t;
+	bad::Vector toPoint = point - mOrigin;
+	float projection = dot_product(toPoint, mDir);
+	// if the closest point on an infinite line, clamp to line segment
+	projection = bad::core_clamp(projection, 0.0f, mLength);
+	return mOrigin + mDir * projection;
 }
 
 bad::SweepInfo bad::LineSegment::sweep_test(const Rect& target)const noexcept
@@ -52,10 +52,10 @@ bad::SweepInfo bad::LineSegment::sweep_test(const Rect& target)const noexcept
 
 bad::IntersectionInfo bad::LineSegment::intersection_test(const bad::Point& point, float radius)const noexcept
 {
-	float2 cp = closest_point(point);
+	float2 closestPoint = closest_point(point);
 
-	float2 vec_between_ray_and_point = point - cp;
-	float distance = length(vec_between_ray_and_point);
+	float2 pointToSegment = point - closestPoint;
+	float distance = length(pointToSegment);
 
 	IntersectionInfo info({}, 0, false);
 
@@ -63,7 +63,7 @@ bad::IntersectionInfo bad::LineSegment::intersection_test(const bad::Point& poin
 	{
 		info.is_hit = true;
 		info.normal = (distance > 0.0f) ?
-			bad::get_normalized(vec_between_ray_and_point, distance) :
+			bad::get_normalized(pointToSegment, distance) :
 			perpendicular(mDir);
 
 		info.penetration = radius - distance;
@@ -72,17 +72,3 @@ bad::IntersectionInfo bad::LineSegment::intersection_test(const bad::Point& poin
 	return info;
 }
 
-void bad::reflection_routine_resolved(const bad::LineSegment& target_surface, bad::Point& point, bad::Vector& velocity, float radius) noexcept
-{
-	auto result = target_surface.intersection_test(point, radius);
-
-	if (result.is_hit) {
-		float dot = dot_product(velocity, result.normal);
-
-		if (dot > 0.0f) 
-			result.normal = -result.normal;
-
-		velocity = reflection(velocity, result.normal);
-		point += result.normal * result.penetration;
-	}
-}
