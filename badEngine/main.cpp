@@ -31,7 +31,6 @@ int main() {
     {
         bad::GFX_INIT sdl_sys(SDL_INIT_VIDEO);
 
-
         //using namespace badEngine;
         bad::validate_json_file("../badEngine/Configs/system_config.json", bad::expected_file_type::WINDOW_JSON);
         nlohmann::json window_conf = bad::load_json("../badEngine/Configs/system_config.json");
@@ -44,87 +43,37 @@ int main() {
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
-        bad::RandomNum rng;
 
-        auto dist = rng.get_normal_distribution(16, 2);
+        bad::UniformGrid grid(bad::Rect{ 0, 0, 960, 540 }, 10, 10);
 
-        auto ye = dist(rng);
 
-        struct Plank
+        const auto& grid_bounds = grid.get_grid_bounds();
+        const auto cell_width = grid.get_cell_width();
+        const auto cell_height = grid.get_cell_height();
+
+        const auto cell_count_width = grid_bounds.get_width() / cell_width;
+        const auto cell_count_heigth = grid_bounds.get_height() / cell_height;
+
+        bad::Sequence<bad::Rect> cells(cell_count_width * cell_count_heigth);
+
+        int index = 0;
+        for (int row = 0; row < cell_count_heigth; ++row)
         {
-            bad::Position pos{0,200};
-            bad::Point dynamic{ 450,200 };
-        }plank;
+            for (int col = 0; col < cell_count_width; ++col)
+            {
+                int x = grid_bounds.min.x + col * cell_width;
+                int y = grid_bounds.min.y + row * cell_height;
 
-        struct Ball
+                cells[index++] = bad::Rect{ (float)x, (float)y, cell_width, cell_height };
+            }
+        }
+
+
+        struct something
         {
-            Ball(bad::Position&& p) :pos(std::move(p)) {}
-            bad::Sequence<bad::Point> ball_model;
-            bad::Position pos;
-            bad::Point velocity;
-            float radius = 32;
-
-            double age = 0.0f;
-        };
-
-        class BallSpawner
-        {
-        public:
-
-            BallSpawner()
-            {
-                xDist = rng.get_real_distribution(-50.f, 50.f);
-                velDist = rng.get_normal_distribution(-111, 22);
-            }
-
-            auto& get_balls() {
-                return mBalls;
-            }
-
-            void update(float dt)
-            {
-                time += dt;
-                if (time >= period)
-                {
-                    time -= period;
-
-                    Ball ent(bad::Position(250,500));
-                    ent.ball_model = bad::make_poly(16, 16, 8);
-                    ent.radius = 16;
-                    ent.velocity = { xDist(rng), velDist(rng)};
-
-                    mBalls.push_back(std::move(ent));
-                }
-            }
-
-            void cleanse() {
-                mBalls.erase(std::remove_if(mBalls.begin(), mBalls.end(), [](Ball& b) {return b.age >= 7.f; }),mBalls.end());
-            }
-            
-            std::size_t size()const noexcept
-            {
-                return mBalls.size();
-            }
-
-        private:
-            bad::RandomNum rng;
-            bad::Sequence<Ball> mBalls;
-
-            std::uniform_real_distribution<float> xDist;
-            std::normal_distribution<float> velDist;
-
-            bad::Point spawn_source{ 200,400 };
-            float period = 0.5f;
-            float time = 0;
-            float vy = -5;
-        }spawner;
-
-
-        bad::AsyncLogger logger;
-
-
-
-        bad::Sequence<bad::Point> star = bad::make_poly(64, 32, 5);
+            bad::Point p0{ 0,0 };
+            bad::Point p1{ 200,200 };
+        } line;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -151,15 +100,19 @@ int main() {
                     break;
 
                 case SDL_EVENT_KEY_DOWN:
-                    
-                    if (EVENT.key.key == SDLK_S) {
-                        plank.dynamic.y += 10.f;
-                    }
 
                     if (EVENT.key.key == SDLK_W) {
-                        plank.dynamic.y -= 10.f;
+                        line.p0.y -= 10;
                     }
-
+                    if (EVENT.key.key == SDLK_S) {
+                        line.p0.y += 10;
+                    }
+                    if (EVENT.key.key == SDLK_A) {
+                        line.p0.x -= 10;
+                    }
+                    if (EVENT.key.key == SDLK_D) {
+                        line.p0.x += 10;
+                    }
                     break;
 
                 default:
@@ -167,32 +120,36 @@ int main() {
                 }
             }
 
-            spawner.update(dt);
+            float mx, my;
+            SDL_GetMouseState(&mx, &my);
+            line.p1 = { mx,my };
 
-            auto no_transformation = bad::Mat3::identity();
-            for (auto& b : spawner.get_balls())
+
+            bad::Sequence<int> colliding_cells;
+            colliding_cells.reserve(cells.size());
+            const bad::LineSegment line_segment(line.p0, line.p1);
+            grid.query_ray(line_segment, colliding_cells);
+
+            auto* pr = renderer.get();
+            auto default_transform = bad::Mat3::identity();
+            //first draw grid
+            for (auto cell : cells)
             {
-                b.pos.translate_by(b.velocity* dt);
-                b.age += dt;
+                bad::draw_rect_lines_transformed(pr, cell, default_transform, bad::Colors::Red);
             }
 
-            bad::LineSegment line(plank.pos.get_pos(), plank.dynamic);
+            //then do basic fill rect
 
-            for (auto& b : spawner.get_balls())
+            SDL_SetRenderDrawColor(pr, 255,255,0,255);
+
+            for (int index : colliding_cells)
             {
-                bad::reflection_routine_resolved(line, b.pos, b.velocity, b.radius);
+                const auto& rect = cells[index];
+                SDL_FRect to_sdl_rect{rect.min.x, rect.min.y, rect.get_width(), rect.get_height()};
+                SDL_RenderRect(pr, &to_sdl_rect);
             }
 
-            for (auto& b : spawner.get_balls())
-            {
-                bad::draw_closed_model_transformed(renderer.get(), b.ball_model, b.pos.to_matrix(), bad::Colors::Cyan);
-            }
-
-            bad::draw_line_transformed(renderer.get(), plank.pos.get_pos(), plank.dynamic, no_transformation, bad::Colors::Red);
-
-            logger.log("balls count: "+std::to_string(spawner.size()));
-
-            spawner.cleanse();
+            bad::draw_line_transformed(pr, line.p0, line.p1, default_transform, bad::Colors::Magenta);
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

@@ -33,17 +33,17 @@ namespace bad
 	public:
 
 		/**
-		* Builds the uniform grid with given bounds and sizes for cells
+		* Builds the uniform grid with given bounds.
 		*
 		* Each cells gets an initial boost to their allocation power but does not reserve memory.
 		*
 		* \param bounds the world bounds to be divided with cell dimension
-		* \param cellwidth width of each cell in the grid
-		* \param cellheight height of each cell in the grid
+		* \param column_count for column count.
+		* \param row_count for row count.
 		*
 		* \throw in DEBUG asserts logical values for some fields.
 		*/
-		UniformGrid(const Rect& bounds, float cellWidth, float cellHeight);
+		UniformGrid(const Rect& bounds, uint32_t column_count, uint32_t row_count);
 
 		/// <summary> empties out all cells, leaves capacity intact </summary>
 		void clear()noexcept;

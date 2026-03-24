@@ -3,21 +3,18 @@
 #include "CoreUtils.h"
 #include "MathConstants.h"
 
-bad::UniformGrid::UniformGrid(const Rect& bounds, float cellWidth, float cellHeight)
-	:mBounds(bounds), mCellWidth(cellWidth), mCellHeight(cellHeight)
+bad::UniformGrid::UniformGrid(const Rect& bounds, uint32_t column_count, uint32_t row_count)
+	:mBounds(bounds), mColumns(column_count), mRows(row_count)
 {
 	const auto bWidth = bounds.get_width();
 	const auto bHeight = bounds.get_height();
 
-	//assign column and row counts
-	mColumns = static_cast<int>(bWidth / cellWidth);
-	mRows = static_cast<int>(bHeight / cellHeight);
+	mCellWidth = bWidth / mColumns;
+	mCellHeight = bHeight / mRows;
 
-	//assert bare minimum valid grid, if mcolumns are 0 or negative it should cover all bad cases
+	//assert bare minimum valid grid
 	assert(mColumns >= 1);
 	assert(mRows >= 1);
-	assert(bWidth * cellWidth == static_cast<float>(mColumns));
-	assert(bHeight * cellHeight == static_cast<float>(mRows));
 
 	//cache division to instead do * operator later
 	invCellW = 1.0f / mCellWidth;

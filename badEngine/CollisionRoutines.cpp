@@ -1,16 +1,17 @@
 #include "CollisionRoutines.h"
 
-void bad::reflection_routine_resolved(const bad::LineSegment& target_surface, bad::Position& pos, bad::Vector& velocity, float radius) noexcept
+void bad::intersection_reflection_resolve(const IntersectionInfo& result, bad::Position& pos, bad::Vector& velocity) noexcept
 {
-	auto result = target_surface.intersection_test(pos.get_pos(), radius);
-
 	if (result.is_hit) {
-		float dot = dot_product(velocity, result.normal);
+		auto reflection_dir = result.normal;
+
+		float dot = dot_product(velocity, reflection_dir);
+
 
 		if (dot > 0.0f)
-			result.normal = -result.normal;
+			reflection_dir = -reflection_dir;
 
-		velocity = reflection(velocity, result.normal);
-		pos.translate_by(result.normal * result.penetration);
+		velocity = reflection(velocity, reflection_dir);
+		pos.translate_by(reflection_dir * result.penetration);
 	}
 }

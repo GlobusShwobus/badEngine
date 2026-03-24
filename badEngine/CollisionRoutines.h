@@ -6,7 +6,7 @@
 
 namespace bad
 {
-	void reflection_routine_resolved(const bad::LineSegment& target_surface, bad::Position& pos, bad::Vector& velocity, float radius) noexcept;
+	void intersection_reflection_resolve(const IntersectionInfo& result, bad::Position& pos, bad::Vector& velocity) noexcept;
 
 	constexpr bool overlap_test(const Rect& a, const Rect& b, float& overlapWidth, float& overlapHeight)noexcept
 	{
