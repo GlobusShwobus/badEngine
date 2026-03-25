@@ -1,6 +1,6 @@
 #include "CollisionRoutines.h"
 
-void bad::intersection_reflection_resolve(const IntersectionInfo& result, bad::Translation& pos, bad::Vector& velocity) noexcept
+void bad::collision::intersection_reflection_resolve(const bad::collision::HitInfo& result, bad::Point& pos, bad::Vector& velocity) noexcept
 {
 	if (result.is_hit) {
 		auto reflection_dir = result.normal;
@@ -12,6 +12,6 @@ void bad::intersection_reflection_resolve(const IntersectionInfo& result, bad::T
 			reflection_dir = -reflection_dir;
 
 		velocity = reflection(velocity, reflection_dir);
-		pos.translate_by(reflection_dir * result.penetration);
+		pos += reflection_dir * result.penetration;
 	}
 }

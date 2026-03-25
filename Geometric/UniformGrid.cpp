@@ -125,12 +125,12 @@ void bad::UniformGrid::query_neighbors(int cellIndex, Sequence<int>& neighbors)c
 	}
 }
 
-void bad::UniformGrid::query_ray(const LineSegment& line, Sequence<int>& cell_indices)const
+void bad::UniformGrid::query_ray(const Ray& ray, Sequence<int>& cell_indices)const
 {
 	//1) if segmentLength legth is 0 then there is no ray, could still mean a point intersection though...
-	const float& segmentLength = line.get_length();
-	const auto& lineOrigin = line.get_origin();
-	const auto& lineDir = line.get_dir();
+	const float& segmentLength = ray.get_length();
+	const auto& lineOrigin = ray.get_origin();
+	const auto& lineDir = ray.get_dir();
 
 	if (segmentLength == 0.0f)
 		return;
@@ -147,7 +147,7 @@ void bad::UniformGrid::query_ray(const LineSegment& line, Sequence<int>& cell_in
 	float entryT = 0.0f;
 	if (!originInside) {
 
-		auto sweep = line.sweep_test(mBounds);
+		auto sweep = bad::collision::sweep(ray, mBounds);
 		if (sweep.is_hit)
 			entryT = sweep.time;
 	}
@@ -223,6 +223,12 @@ void bad::UniformGrid::query_ray(const LineSegment& line, Sequence<int>& cell_in
 			cellY += step_y;
 		}
 	}
+}
+
+void bad::UniformGrid::query_linesegment(const LineSegment& line, Sequence<int>& cell_indices)const
+{
+	bad::Ray ray(line);
+	query_ray(ray, cell_indices);
 }
 
 void bad::UniformGrid::maintain_uniform_memory(std::size_t capacity)

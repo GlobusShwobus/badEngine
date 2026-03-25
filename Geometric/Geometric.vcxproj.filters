@@ -20,7 +20,7 @@
     <ClInclude Include="Rect.h">
       <Filter>files</Filter>
     </ClInclude>
-    <ClInclude Include="LineSegment.h">
+    <ClInclude Include="Line.h">
       <Filter>files</Filter>
     </ClInclude>
     <ClInclude Include="Mat3.h">
@@ -38,12 +38,15 @@
     <ClInclude Include="MathConstants.h">
       <Filter>files</Filter>
     </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
     </ClCompile>
-    <ClCompile Include="LineSegment.cpp">
+    <ClCompile Include="Line.cpp">
       <Filter>files</Filter>
     </ClCompile>
     <ClCompile Include="UniformGrid.cpp">

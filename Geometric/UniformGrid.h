@@ -3,7 +3,7 @@
 #include "Sequence.h"
 #include "Float2.h"
 #include "Rect.h"
-#include "LineSegment.h"
+#include "Line.h"
 
 namespace bad
 {
@@ -118,7 +118,8 @@ namespace bad
 		* \param ray the line segment to query against
 		* \param cell_indices reference array that is filled with indices of cells
 		*/
-		void query_ray(const bad::LineSegment& line, Sequence<int>& cell_indices)const;
+		void query_ray(const bad::Ray& ray, Sequence<int>& cell_indices)const;
+		void query_linesegment(const bad::LineSegment& line, Sequence<int>& cell_indices)const;
 
 		// sets the capacity of each cell to specified number
 		// intended use: on a cleared grid (otherwise would delete elements unknown to user)

@@ -69,7 +69,7 @@ namespace bad
 	* \note Behavior is undefined if low > high.
 	*/
 	template<std::totally_ordered T>
-	constexpr const T& core_clamp(const T& val, const T& low, const T& high) 
+	constexpr const T& core_clamp(const T& val, const T& low, const T& high) noexcept
 	{
 		if (val < low) return low;
 		if (high < val)return high;

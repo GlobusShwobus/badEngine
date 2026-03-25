@@ -220,4 +220,20 @@ namespace bad
 			static_cast<float>((f2.y > 0.0f) - (f2.y < 0.0f))
 		};
 	}
+
+	constexpr bad::Point closest_point(const bad::Point& surface_origin, const bad::Vector& surface_normal, float surface_length, const bad::Point& target) noexcept
+	{
+		bad::Vector toPoint = target - surface_origin;
+		float projection = dot_product(toPoint, surface_normal);
+
+		//clamp
+		if (projection < 0.0f) {
+			projection = 0.0f;
+		}
+		else if (projection > surface_length) {
+			projection = surface_length;
+		}
+
+		return surface_origin + surface_normal * projection;
+	}
 }

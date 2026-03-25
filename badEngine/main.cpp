@@ -68,12 +68,7 @@ int main() {
             }
         }
 
-
-        struct something
-        {
-            bad::Point p0{ 0,0 };
-            bad::Point p1{ 200,200 };
-        } line;
+        bad::LineSegment line;
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -128,7 +123,7 @@ int main() {
             bad::Sequence<int> colliding_cells;
             colliding_cells.reserve(cells.size());
             const bad::LineSegment line_segment(line.p0, line.p1);
-            grid.query_ray(line_segment, colliding_cells);
+            grid.query_linesegment(line, colliding_cells);
 
             auto* pr = renderer.get();
             auto default_transform = bad::Mat3::identity();
