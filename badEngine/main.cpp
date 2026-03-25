@@ -15,6 +15,7 @@
 #include "EngineUtils.h"
 #include "FreeDraw.h"
 #include "CollisionRoutines.h"
+#include "Circle.h"
 
 
 // TODO:: test uniform grid again
@@ -44,31 +45,79 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
-        bad::UniformGrid grid(bad::Rect{ 0, 0, 960, 540 }, 10, 10);
-
-
-        const auto& grid_bounds = grid.get_grid_bounds();
-        const auto cell_width = grid.get_cell_width();
-        const auto cell_height = grid.get_cell_height();
-
-        const auto cell_count_width = grid_bounds.get_width() / cell_width;
-        const auto cell_count_heigth = grid_bounds.get_height() / cell_height;
-
-        bad::Sequence<bad::Rect> cells(cell_count_width * cell_count_heigth);
-
-        int index = 0;
-        for (int row = 0; row < cell_count_heigth; ++row)
-        {
-            for (int col = 0; col < cell_count_width; ++col)
-            {
-                int x = grid_bounds.min.x + col * cell_width;
-                int y = grid_bounds.min.y + row * cell_height;
-
-                cells[index++] = bad::Rect{ (float)x, (float)y, cell_width, cell_height };
-            }
-        }
 
         bad::LineSegment line;
+
+        struct CircleEntity
+        {
+            bad::Sequence<bad::Point> model;
+            bad::Circle circle;
+            bad::Vector velocity;
+            float age;
+        };
+
+
+        class Spawner
+        {
+        public:
+            Spawner()
+            {
+                velDistX = rnd.get_real_distribution(-25,25);
+                velDistY = rnd.get_normal_distribution(-123, 33);
+            }
+
+            void spawn(float dt)
+            {
+                timer += dt;
+                if (timer >= timer_target) {
+                    CircleEntity ent;
+                    ent.model = bad::make_poly(16,16,8);
+                    ent.circle.mCenter = { 250,400 };
+                    ent.circle.mRadius = 16;
+                    ent.velocity = { velDistX(rnd), velDistY(rnd) };
+                    ent.age = 0.0f;
+
+                    circles.push_back(std::move(ent));
+                    timer -= timer_target;
+                }
+            }
+
+            void age(float dt)
+            {
+                for (auto& c : circles)
+                {
+                    c.age += dt;
+                }
+            }
+
+            void move(float dt)
+            {
+                for (auto& c : circles)
+                {
+                    c.circle.mCenter += c.velocity * dt;
+                }
+            }
+
+            void die()
+            {
+                circles.erase(std::remove_if(circles.begin(), circles.end(), [](const CircleEntity& c) {return c.age >= 7.0f; }), circles.end());
+            }
+
+            auto& get() { return circles; }
+
+        private:
+            bad::RandomNum rnd;
+            
+            std::uniform_real_distribution<float> velDistX;
+            std::normal_distribution<float> velDistY;
+
+
+            bad::Sequence<CircleEntity> circles;
+
+            const float timer_target = 0.66f;
+            float timer = 0.f;
+        }spawner;
+
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
@@ -108,43 +157,36 @@ int main() {
                     if (EVENT.key.key == SDLK_D) {
                         line.p0.x += 10;
                     }
+
                     break;
 
                 default:
                     break;
                 }
             }
+            SDL_GetMouseState(&line.p1.x, &line.p1.y);
 
-            float mx, my;
-            SDL_GetMouseState(&mx, &my);
-            line.p1 = { mx,my };
+            spawner.age(dt);
+            spawner.spawn(dt);
+            spawner.die();
+            spawner.move(dt);
 
+            for (auto& c : spawner.get())
+            {
+                auto result = bad::collision::intersect(line, c.circle);
+                bad::collision::intersection_reflection_resolve(result, c.circle.mCenter, c.velocity);
+            }
 
-            bad::Sequence<int> colliding_cells;
-            colliding_cells.reserve(cells.size());
-            const bad::LineSegment line_segment(line.p0, line.p1);
-            grid.query_linesegment(line, colliding_cells);
-
+            auto no_transform = bad::Mat3::identity();
             auto* pr = renderer.get();
-            auto default_transform = bad::Mat3::identity();
-            //first draw grid
-            for (auto cell : cells)
+
+            for (const auto& c : spawner.get()) 
             {
-                bad::draw_rect_lines_transformed(pr, cell, default_transform, bad::Colors::Red);
+                bad::draw_closed_model_transformed(pr, c.model, bad::Mat3::translate(c.circle.mCenter), bad::Colors::Cyan);
             }
 
-            //then do basic fill rect
+            draw_line_transformed(pr, line.p0, line.p1, no_transform, bad::Colors::Red);
 
-            SDL_SetRenderDrawColor(pr, 255,255,0,255);
-
-            for (int index : colliding_cells)
-            {
-                const auto& rect = cells[index];
-                SDL_FRect to_sdl_rect{rect.min.x, rect.min.y, rect.get_width(), rect.get_height()};
-                SDL_RenderRect(pr, &to_sdl_rect);
-            }
-
-            bad::draw_line_transformed(pr, line.p0, line.p1, default_transform, bad::Colors::Magenta);
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

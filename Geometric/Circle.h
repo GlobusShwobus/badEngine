@@ -10,6 +10,6 @@ namespace bad
 		float get_radius()const noexcept { return mRadius; }
 
 		bad::Point mCenter;
-		float mRadius;
+		float mRadius = 0;
 	};
 }
