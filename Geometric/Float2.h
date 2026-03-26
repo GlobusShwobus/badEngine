@@ -152,7 +152,7 @@ namespace bad
 	*/
 	constexpr Vector perpendicular(const Vector& v) noexcept
 	{
-		return { -v.y, v.x };
+		return { v.y, -v.x };
 	}
 
 	/**
@@ -235,5 +235,16 @@ namespace bad
 		}
 
 		return surface_origin + surface_normal * projection;
+	}
+
+	inline bad::Vector rotate(const bad::Vector& v, float radian)noexcept
+	{
+		float sinTheta = std::sin(radian);
+		float cosTheta = std::cos(radian);
+
+		float rx = v.x * cosTheta - v.y * sinTheta;
+		float ry = v.x * sinTheta + v.y * cosTheta;
+
+		return { rx,ry };
 	}
 }

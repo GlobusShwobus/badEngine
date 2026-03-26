@@ -26,12 +26,12 @@ namespace bad
 	*/
 	struct Mat3
 	{
-		// | Ax  Bx  Tx |
-		// | Ay  By  Ty |
-		// |  0   0   1 |
+		// | m00  m01  m02 |	   | m00  m01  m02 |
+		// | m10  m11  m12 |	   | m10  m11  m12 |
+		// |  0    0    1  |       |  0    0    1  |
 
-		float Ax = 1, Bx = 0, Tx = 0;
-		float Ay = 0, By = 1, Ty = 0;
+		float m00 = 1, m01 = 0, m02 = 0;
+		float m10 = 0, m11 = 1, m12 = 0;
 
 
 		constexpr bad::Point operator*(const bad::Point& v)const noexcept
@@ -40,8 +40,8 @@ namespace bad
 			// To address this the third row is implied, and is always 1 which means just add +Tx/Ty at the end.
 			// IMPORTANT: when upgrading to 3D graphics this is no longer correct implementation. It should become Mat4 and real 3D vector gets a 4 (W) implied value
 			return bad::Point{ 
-				Ax * v.x + Bx * v.y + Tx,  //Tx * 1 since the third row is implied
-				Ay * v.x + By * v.y + Ty   //Ty * 1 since the third row is implied
+				m00 * v.x + m01 * v.y + m02,
+				m10 * v.x + m11 * v.y + m12 
 			};
 		}
 
@@ -49,13 +49,13 @@ namespace bad
 		{
 			Mat3 m;
 
-			m.Ax = Ax * rhs.Ax + Bx * rhs.Ay      /* Tx * m31 */; // third row is implied and always 0
-			m.Bx = Ax * rhs.Bx + Bx * rhs.By      /* Tx * m32 */; // third row is implied and always 0
-			m.Tx = Ax * rhs.Tx + Bx * rhs.Ty + Tx /* Tx * m33 */; // third row is implied and always 1
+			m.m00 = m00 * rhs.m00 + m01 * rhs.m10       /* m02 * 0 */; // third row is implied and always 0
+			m.m01 = m00 * rhs.m01 + m01 * rhs.m11       /* m02 * 0 */; // third row is implied and always 0
+			m.m02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 /* m02 * 1 */; // third row is implied and always 1
 
-			m.Ay = Ay * rhs.Ax + By * rhs.Ay      /* Ty * m31 */; // third row is implied and always 0
-			m.By = Ay * rhs.Bx + By * rhs.By      /* Ty * m32 */; // third row is implied and always 0
-			m.Ty = Ay * rhs.Tx + By * rhs.Ty + Ty /* Ty * m33 */; // third row is implied and always 1
+			m.m10 = m10 * rhs.m00 + m11 * rhs.m10        /* m12 * 0 */; // third row is implied and always 0
+			m.m11 = m10 * rhs.m01 + m11 * rhs.m11        /* m12 * 0 */; // third row is implied and always 0
+			m.m12 = m10 * rhs.m02 + m11 * rhs.m12 + m12  /* m12 * 1 */; // third row is implied and always 1
 
 			return m;
 		}
@@ -98,8 +98,8 @@ namespace bad
 		constexpr static Mat3 scale(float sx, float sy) noexcept
 		{
 			Mat3 m;
-			m.Ax = sx;
-			m.By = sy;
+			m.m00 = sx;
+			m.m11 = sy;
 			return m;
 		}
 
@@ -134,14 +134,14 @@ namespace bad
 		constexpr static Mat3 rotate(float sin, float cos) noexcept
 		{
 			Mat3 m;
-			m.Ax = cos;  m.Ay = sin;
-			m.Bx = -sin; m.By = cos;
+			m.m00 = cos;  m.m01 = -sin;
+			m.m10 = sin;  m.m11 = cos;
 			return m;
 		}
 
-		constexpr static Mat3 rotate(float radians) noexcept
+		constexpr static Mat3 rotate(float radian) noexcept
 		{
-			return rotate(std::sin(radians), std::cos(radians));
+			return rotate(std::sin(radian), std::cos(radian));
 		}
 
 		/**
@@ -162,11 +162,11 @@ namespace bad
 		*
 		* \return A matrix that translates points by (tx, ty)
 		*/
-		constexpr static Mat3 translate(float x, float y) noexcept
+		constexpr static Mat3 translate(float tx, float ty) noexcept
 		{
 			Mat3 m;
-			m.Tx = x;
-			m.Ty = y;
+			m.m02 = tx;
+			m.m12 = ty;
 			return m;
 		}
 
@@ -188,7 +188,7 @@ namespace bad
 		constexpr static Mat3 flip_y() noexcept
 		{
 			Mat3 m;
-			m.By = -1;
+			m.m11 = -1;
 			return m;
 		}
 	};
