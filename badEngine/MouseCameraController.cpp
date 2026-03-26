@@ -34,7 +34,7 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 	case SDL_EVENT_MOUSE_WHEEL:
 
 	{
-		float factor = (events.wheel.y > 0) ? ZOOM_FACTOR : (1.0f / ZOOM_FACTOR);
+		float factor = (events.wheel.y > 0) ? (1.0f / ZOOM_FACTOR) : ZOOM_FACTOR;
 		mTransform.scale_by({ factor, factor });
 	}
 		break;
@@ -58,7 +58,10 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 
 		if (mDragging)
 		{
-			mTransform.move_by(bad::Vector{ events.motion.xrel, events.motion.yrel });
+			bad::Vector delta{ events.motion.xrel, events.motion.yrel };
+			// rotate delta by -camera_angle so pan follows screen axes
+			delta = bad::rotate(delta, -mTransform.get_sin(), mTransform.get_cos());
+			mTransform.move_by(delta);
 		}
 
 		break;

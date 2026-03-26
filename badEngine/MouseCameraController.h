@@ -40,7 +40,7 @@ namespace bad
 		bad::Transform mTransform;
 		bool mDragging = false;
 		
-		static constexpr float rotational_vel = 0.66f;
+		static constexpr float rotational_vel = 2.f;
 	};
 }
 

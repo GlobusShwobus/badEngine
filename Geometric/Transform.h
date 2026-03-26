@@ -76,9 +76,12 @@ namespace bad
 			mScale.y *= scale.y;
 		}
 
-		float get_radian()const noexcept { return mRadians; }
 		const bad::Point& get_pos()const noexcept { return mPos; }
 		const bad::float2& get_scale()const noexcept { return mScale; }
+		float get_radian()const noexcept { return mRadians; }
+		float get_sin()const noexcept { return mSin; }
+		float get_cos()const noexcept { return mCos; }
+
 
 	private:
 		bad::Point mPos; 		/// <summary> Position (translation) </summary>
