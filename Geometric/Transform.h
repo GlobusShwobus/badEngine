@@ -30,9 +30,21 @@ namespace bad
 			return Mat3::translate(mPos) * Mat3::rotate(mSin, mCos) * Mat3::scale(mScale);
 		}
 
-		void set_position(const bad::Vector& v)noexcept
+		inline Mat3 to_inverse_matrix()const noexcept
 		{
-			mPos = v;
+			return Mat3::scale(1 / mScale.x, 1 / mScale.y) * Mat3::rotate(-mSin, mCos) * Mat3::translate(-mPos);
+		}
+
+
+		void set_position(const bad::Vector& pos)noexcept
+		{
+			mPos = pos;
+		}
+
+		//does += pos internally
+		void move_by(const bad::Vector& vel)noexcept
+		{
+			mPos += vel;
 		}
 
 		void set_radian(float radian)noexcept
@@ -46,9 +58,22 @@ namespace bad
 			mCos = std::cos(mRadians);
 		}
 
+		//does += radians internally
+		void rotate_by(float radian)noexcept
+		{
+			set_radian(mRadians + radian);
+		}
+
 		void set_scale(const bad::float2& scale)noexcept
 		{
 			mScale = scale;
+		}
+
+		//unlike others, this function does *= internally
+		void scale_by(const bad::float2& scale)noexcept
+		{
+			mScale.x *= scale.x;
+			mScale.y *= scale.y;
 		}
 
 		float get_radian()const noexcept { return mRadians; }

@@ -45,80 +45,68 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
-
-        bad::LineSegment line;
-
-        struct CircleEntity
+        struct Entity
         {
-            bad::Sequence<bad::Point> model;
-            bad::Circle circle;
-            bad::Vector velocity;
-            float age;
+            bad::Sequence<bad::Point> base_model;
+            bad::Transform transform;
+            bad::Color col;
+
+            float rotational_velocity;
+            float scale_dir = 0.66f;
+
+            //meme
+            void pulse(float dt)
+            {
+                auto scale = transform.get_scale();
+
+                scale.x += scale_dir * dt;
+                scale.y += scale_dir * dt;
+
+                if (scale.x > 3.0f) {
+                    scale.x = 3.0f;
+                    scale.y = 3.0f;
+                    scale_dir = -scale_dir;
+                }
+                else if(scale.x < 0.1) {
+                    scale.x = 0.1f;
+                    scale.y = 0.1f;
+                    scale_dir = -scale_dir;
+                }
+
+                transform.set_scale(scale);
+            }
         };
 
+        bad::RandomNum rnd;
 
-        class Spawner
+        bad::Sequence<Entity> entities;
+        static constexpr int five_hundred_cigarettes = 500;
+        entities.reserve(five_hundred_cigarettes);
+
+        auto max_radius = rnd.get_real_distribution(32.f, 64.f);
+        auto min_radius = rnd.get_real_distribution(8.f, 32.f);
+        auto flares = rnd.get_int_distribution(3, 12);
+
+        auto col = rnd.get_int_distribution(0, 255);
+
+        auto windowpos = rnd.get_real_distribution(-5000.f, 5000.f);
+        auto scale = rnd.get_real_distribution(0.1f, 3.f);
+        auto rvel = rnd.get_normal_distribution(bad::PI / 2, bad::PI/2);
+
+        for (int i = 0; i < five_hundred_cigarettes; ++i)
         {
-        public:
-            Spawner()
-            {
-                velDistX = rnd.get_real_distribution(-25,25);
-                velDistY = rnd.get_normal_distribution(-123, 33);
-            }
-
-            void spawn(float dt)
-            {
-                timer += dt;
-                if (timer >= timer_target) {
-                    CircleEntity ent;
-                    ent.model = bad::make_poly(16,16,8);
-                    ent.circle.mCenter = { 250,400 };
-                    ent.circle.mRadius = 16;
-                    ent.velocity = { velDistX(rnd), velDistY(rnd) };
-                    ent.age = 0.0f;
-
-                    circles.push_back(std::move(ent));
-                    timer -= timer_target;
-                }
-            }
-
-            void age(float dt)
-            {
-                for (auto& c : circles)
-                {
-                    c.age += dt;
-                }
-            }
-
-            void move(float dt)
-            {
-                for (auto& c : circles)
-                {
-                    c.circle.mCenter += c.velocity * dt;
-                }
-            }
-
-            void die()
-            {
-                circles.erase(std::remove_if(circles.begin(), circles.end(), [](const CircleEntity& c) {return c.age >= 7.0f; }), circles.end());
-            }
-
-            auto& get() { return circles; }
-
-        private:
-            bad::RandomNum rnd;
+            Entity ent;
             
-            std::uniform_real_distribution<float> velDistX;
-            std::normal_distribution<float> velDistY;
+            ent.base_model = bad::make_poly(max_radius(rnd), min_radius(rnd), flares(rnd));
+            ent.col = bad::Color(col(rnd), col(rnd), col(rnd), 255);
+            float ss = scale(rnd);
+            ent.transform = bad::Transform(bad::Point{ windowpos(rnd), windowpos(rnd) }, bad::float2{ss,ss}, 0.f);
+            ent.rotational_velocity = rvel(rnd);
 
+            entities.push_back(std::move(ent));
+        }
 
-            bad::Sequence<CircleEntity> circles;
-
-            const float timer_target = 0.66f;
-            float timer = 0.f;
-        }spawner;
-
-
+        bad::MouseCameraController camera;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -142,51 +130,24 @@ int main() {
                 case SDL_EVENT_QUIT:
                     GAME_RUNNING = false;
                     break;
-
-                case SDL_EVENT_KEY_DOWN:
-
-                    if (EVENT.key.key == SDLK_W) {
-                        line.p0.y -= 10;
-                    }
-                    if (EVENT.key.key == SDLK_S) {
-                        line.p0.y += 10;
-                    }
-                    if (EVENT.key.key == SDLK_A) {
-                        line.p0.x -= 10;
-                    }
-                    if (EVENT.key.key == SDLK_D) {
-                        line.p0.x += 10;
-                    }
-
-                    break;
- 
                 default:
                     break;
                 }
+                camera.read_input(dt, EVENT);
             }
-            SDL_GetMouseState(&line.p1.x, &line.p1.y);
-
-            spawner.age(dt);
-            spawner.spawn(dt);
-            spawner.die();
-            spawner.move(dt);
-
-            for (auto& c : spawner.get())
+           
+            for (auto& e : entities)
             {
-                auto result = bad::collision::intersect(line, c.circle);
-                bad::collision::intersection_reflection_resolve(result, c.circle.mCenter, c.velocity);
+                const auto& radian = e.transform.get_radian();
+                e.transform.set_radian(radian + e.rotational_velocity * dt);
+                e.pulse(dt);
             }
 
-            auto no_transform = bad::Mat3::identity();
-            auto* pr = renderer.get();
-
-            for (const auto& c : spawner.get()) 
+            auto cam_matrix = camera.to_matrix_with_screen_offset(window.get());
+            for (auto& e : entities)
             {
-                bad::draw_closed_model_transformed(pr, c.model, bad::Mat3::translate(c.circle.mCenter), bad::Colors::Cyan);
+                bad::draw_closed_model_transformed(renderer.get(), e.base_model, cam_matrix * e.transform.to_matrix(), e.col);
             }
-
-            draw_line_transformed(pr, line.p0, line.p1, no_transform, bad::Colors::Red);
-
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

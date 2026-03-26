@@ -2,8 +2,20 @@
 #include "MouseCameraController.h"
 
 bad::MouseCameraController::MouseCameraController() noexcept
+	:mTransform{}
 {
 }
+
+bad::MouseCameraController::MouseCameraController(const bad::Transform& transform) noexcept
+	:mTransform(transform)
+{
+}
+
+bad::MouseCameraController::MouseCameraController(const bad::Point& pos, const bad::float2& scale, float angle_radian) noexcept
+	:mTransform(pos, scale, angle_radian)
+{
+}
+
 
 void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)noexcept
 {
@@ -11,13 +23,22 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 	{
 	case SDL_EVENT_KEY_DOWN:
 
+		if (events.key.key == SDLK_Q)
+			mTransform.rotate_by(-rotational_vel * dt);//because computer y axis is not mathmatical y axis
+
+		if (events.key.key == SDLK_E)
+			mTransform.rotate_by(rotational_vel * dt);//because computer y axis is not mathmatical y axis
 
 		break;
 
 	case SDL_EVENT_MOUSE_WHEEL:
 
-
+	{
+		float factor = (events.wheel.y > 0) ? ZOOM_FACTOR : (1.0f / ZOOM_FACTOR);
+		mTransform.scale_by({ factor, factor });
+	}
 		break;
+
 
 	case SDL_EVENT_MOUSE_BUTTON_DOWN:
 
@@ -34,7 +55,11 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 		break;
 
 	case SDL_EVENT_MOUSE_MOTION:
-		//BECAUSE INVERSE TRS VIEW
+
+		if (mDragging)
+		{
+			mTransform.move_by(bad::Vector{ events.motion.xrel, events.motion.yrel });
+		}
 
 		break;
 

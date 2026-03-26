@@ -12,8 +12,8 @@ namespace bad
 	{
 		return
 		{
-		t.Ax * point.x + t.Bx * point.y + t.Tx,
-		t.Ay * point.x + t.By * point.y + t.Ty
+		t.m00 * point.x + t.m01 * point.y + t.m02,
+		t.m10 * point.x + t.m11 * point.y + t.m12
 		};
 	}
 
