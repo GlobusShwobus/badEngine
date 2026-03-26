@@ -237,14 +237,15 @@ namespace bad
 		return surface_origin + surface_normal * projection;
 	}
 
-	inline bad::Vector rotate(const bad::Vector& v, float radian)noexcept
+	constexpr bad::Vector rotate(const Vector& v, float sinTheta, float cosTheta)noexcept
 	{
-		float sinTheta = std::sin(radian);
-		float cosTheta = std::cos(radian);
-
 		float rx = v.x * cosTheta - v.y * sinTheta;
 		float ry = v.x * sinTheta + v.y * cosTheta;
-
 		return { rx,ry };
+	}
+
+	inline bad::Vector rotate(const bad::Vector& v, float radian)noexcept
+	{
+		return bad::rotate(v, std::sin(radian), std::cos(radian));
 	}
 }

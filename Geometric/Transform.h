@@ -18,11 +18,11 @@ namespace bad
 		{
 		}
 
-		Transform(const bad::Point& pos, const bad::float2& scale, float radians)
+		Transform(const bad::Point& pos, const bad::float2& scale, float radian)
 			:mPos(pos)
 			, mScale(scale)
 		{
-			rotate_by(radians);
+			set_radian(radian);
 		}
 
 		inline Mat3 to_matrix()const noexcept
@@ -30,15 +30,14 @@ namespace bad
 			return Mat3::translate(mPos) * Mat3::rotate(mSin, mCos) * Mat3::scale(mScale);
 		}
 
-		void translate_by(const bad::Vector& vector) noexcept
+		void set_position(const bad::Vector& v)noexcept
 		{
-			mPos += vector;
+			mPos = v;
 		}
 
-		void rotate_by(float radians)noexcept
+		void set_radian(float radian)noexcept
 		{
-
-			mRadians = std::fmod(mRadians + radians, bad::TAU);
+			mRadians = std::fmod(radian, bad::TAU);
 
 			if (mRadians < 0)
 				mRadians += bad::TAU;
@@ -47,13 +46,12 @@ namespace bad
 			mCos = std::cos(mRadians);
 		}
 
-		void scale_by(const bad::float2& scale)noexcept
+		void set_scale(const bad::float2& scale)noexcept
 		{
-			mScale.x *= scale.x;
-			mScale.y *= scale.y;
+			mScale = scale;
 		}
 
-		float get_radians()const noexcept { return mRadians; }
+		float get_radian()const noexcept { return mRadians; }
 		const bad::Point& get_pos()const noexcept { return mPos; }
 		const bad::float2& get_scale()const noexcept { return mScale; }
 
