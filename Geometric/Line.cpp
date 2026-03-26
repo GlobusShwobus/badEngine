@@ -71,10 +71,10 @@ bad::collision::HitInfo bad::collision::intersect(const bad::Ray& ray, const bad
 	const auto& circle_center = circle.get_center();
 	const auto circle_radius = circle.get_radius();
 
-	float2 closestPoint = ray.closest_point(circle_center);
+	bad::Point closest_point_on_ray = ray.closest_point(circle_center);
 
-	float2 pointToSegment = circle_center - closestPoint;
-	float distance = length(pointToSegment);
+	bad::Vector vector_from_point_to_circle = circle_center - closest_point_on_ray;
+	float distance = length(vector_from_point_to_circle);
 
 	HitInfo info({}, 0, false);
 
@@ -82,7 +82,7 @@ bad::collision::HitInfo bad::collision::intersect(const bad::Ray& ray, const bad
 	{
 		info.is_hit = true;
 		info.normal = (distance > 0.0f) ?
-			bad::get_normalized(pointToSegment, distance) :
+			bad::get_normalized(vector_from_point_to_circle, distance) :
 			perpendicular(ray.get_dir());
 
 		info.penetration = circle_radius - distance;
