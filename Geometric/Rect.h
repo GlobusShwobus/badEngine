@@ -153,48 +153,6 @@ namespace bad
 		}
 
 		/**
-		* \brief Checks whether the rectangle contains a point.
-		*
-		* Uses the half-open interval rule [min, max).
-		*
-		* \returns true if contains, false if not
-		*/
-		constexpr bool contains(const Point& point)const noexcept
-		{
-			return
-				point.x >= min.x && point.x < max.x &&
-				point.y >= min.y && point.y < max.y;
-		}
-
-		/**
-		* \brief Checks whether the rectangle completely contains another rectangle.
-		*
-		* Uses the half-open interval rule [min, max).
-		*
-		* \returns true if contains, false if not
-		*/
-		constexpr bool contains(const Rect& other)const noexcept
-		{
-			return
-				other.min.x >= min.x &&
-				other.min.y >= min.y &&
-				other.max.x <= max.x &&
-				other.max.y <= max.y;
-		}
-
-		/**
-		* \brief Tests whether two rectangles overlap.
-		*
-		* \returns true if any area intersects.
-		*/
-		constexpr bool intersects(const Rect& other)const noexcept
-		{
-			return
-				!(other.max.x <= min.x || other.min.x >= max.x ||
-					other.max.y <= min.y || other.min.y >= max.y);
-		}
-
-		/**
 		* Computes the area of the rectangle.
 		*
 		* \returns area = width * height
@@ -239,5 +197,50 @@ namespace bad
 		return Rect{
 			center.x - (w * 0.5f), center.y - (h * 0.5f), w, h
 		};
+	}
+
+	namespace collision
+	{
+		/**
+		* \brief Checks whether the rectangle contains a point.
+		*
+		* Uses the half-open interval rule [min, max).
+		*
+		* \returns true if contains, false if not
+		*/
+		constexpr bool contains(const bad::Rect& r, const Point& p) noexcept
+		{
+			return
+				p.x >= r.min.x && p.x < r.max.x &&
+				p.y >= r.min.y && p.y < r.max.y;
+		}
+
+		/**
+		* \brief Checks whether the rectangle completely contains another rectangle.
+		*
+		* Uses the half-open interval rule [min, max).
+		*
+		* \returns true if contains, false if not
+		*/
+		constexpr bool contains(const Rect& this_, const Rect& other) noexcept
+		{
+			return
+				other.min.x >= this_.min.x &&
+				other.min.y >= this_.min.y &&
+				other.max.x <= this_.max.x &&
+				other.max.y <= this_.max.y;
+		}
+
+		/**
+		* \brief Tests whether two rectangles overlap.
+		*
+		* \returns true if any area intersects.
+		*/
+		constexpr bool intersects(const Rect& this_, const Rect& other) noexcept
+		{
+			return
+				!(other.max.x <= this_.min.x || other.min.x >= this_.max.x ||
+					other.max.y <= this_.min.y || other.min.y >= this_.max.y);
+		}
 	}
 }
