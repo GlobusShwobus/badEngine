@@ -11,14 +11,14 @@ namespace bad
 	public:
 		Transform()
 			: mPos(0.f, 0.f)
-			, mScale(1.f, 1.f)
+			, mScale(1.f)
 			, mRadians(0.f)
 			, mSin(0.f)
 			, mCos(1.f)
 		{
 		}
 
-		Transform(const bad::Point& pos, const bad::float2& scale, float radian)
+		Transform(const bad::Point& pos, float scale, float radian)
 			:mPos(pos)
 			, mScale(scale)
 		{
@@ -32,7 +32,7 @@ namespace bad
 
 		inline Mat3 to_inverse_matrix()const noexcept
 		{
-			return Mat3::scale(1 / mScale.x, 1 / mScale.y) * Mat3::rotate(-mSin, mCos) * Mat3::translate(-mPos);
+			return Mat3::scale(1 / mScale, 1 / mScale) * Mat3::rotate(-mSin, mCos) * Mat3::translate(-mPos);
 		}
 
 
@@ -64,20 +64,19 @@ namespace bad
 			set_radian(mRadians + radian);
 		}
 
-		void set_scale(const bad::float2& scale)noexcept
+		void set_scale(float scale)noexcept
 		{
 			mScale = scale;
 		}
 
 		//unlike others, this function does *= internally
-		void scale_by(const bad::float2& scale)noexcept
+		void scale_by(float scale)noexcept
 		{
-			mScale.x *= scale.x;
-			mScale.y *= scale.y;
+			mScale *= scale;
 		}
 
 		const bad::Point& get_pos()const noexcept { return mPos; }
-		const bad::float2& get_scale()const noexcept { return mScale; }
+		float get_scale()const noexcept { return mScale; }
 		float get_radian()const noexcept { return mRadians; }
 		float get_sin()const noexcept { return mSin; }
 		float get_cos()const noexcept { return mCos; }
@@ -86,7 +85,7 @@ namespace bad
 	private:
 		bad::Point mPos; 		/// <summary> Position (translation) </summary>
 
-		bad::float2 mScale; 	/// <summary> Scaling factors </summary>
+		float mScale;			/// <summary> Scaling factors </summary>
 
 		float mRadians; 		/// <summary> Rotation angle in radians </summary>
 

@@ -15,7 +15,7 @@ namespace bad
 
 		MouseCameraController() noexcept;
 		explicit MouseCameraController(const bad::Transform& transform)noexcept;
-		MouseCameraController(const bad::Point& pos, const bad::float2& scale, float angle_radian)noexcept;
+		MouseCameraController(const bad::Point& pos, float scale, float angle_radian)noexcept;
 
 		void read_input(float dt, const SDL_Event& events)noexcept;
 

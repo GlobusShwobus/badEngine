@@ -59,17 +59,14 @@ int main() {
             {
                 auto scale = transform.get_scale();
 
-                scale.x += scale_dir * dt;
-                scale.y += scale_dir * dt;
+                scale += scale_dir * dt;
 
-                if (scale.x > 3.0f) {
-                    scale.x = 3.0f;
-                    scale.y = 3.0f;
+                if (scale > 3.0f) {
+                    scale = 3.0f;
                     scale_dir = -scale_dir;
                 }
-                else if(scale.x < 0.1) {
-                    scale.x = 0.1f;
-                    scale.y = 0.1f;
+                else if(scale < 0.1) {
+                    scale = 0.1f;
                     scale_dir = -scale_dir;
                 }
 
@@ -99,8 +96,8 @@ int main() {
             
             ent.base_model = bad::make_poly(max_radius(rnd), min_radius(rnd), flares(rnd));
             ent.col = bad::Color(col(rnd), col(rnd), col(rnd), 255);
-            float ss = scale(rnd);
-            ent.transform = bad::Transform(bad::Point{ windowpos(rnd), windowpos(rnd) }, bad::float2{ss,ss}, 0.f);
+
+            ent.transform = bad::Transform(bad::Point{ windowpos(rnd), windowpos(rnd) }, scale(rnd), 0.f);
             ent.rotational_velocity = rvel(rnd);
 
             entities.push_back(std::move(ent));
