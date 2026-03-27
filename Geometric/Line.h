@@ -62,8 +62,8 @@ namespace bad
 
 		SweepInfo sweep(const bad::Ray& ray, const bad::Rect& target) noexcept;
 
-		HitInfo intersect(const bad::Ray& ray, const bad::Circle& circle) noexcept;
+		HitInfo intersects(const bad::Ray& ray, const bad::Circle& circle) noexcept;
 
-		HitInfo intersect(const bad::LineSegment& line, const bad::Circle& circle) noexcept;
+		HitInfo intersects(const bad::LineSegment& line, const bad::Circle& circle) noexcept;
 	}
 }
