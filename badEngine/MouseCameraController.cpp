@@ -59,7 +59,6 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 		if (mDragging)
 		{
 			bad::Vector delta{ events.motion.xrel, events.motion.yrel };
-			// rotate delta by -camera_angle so pan follows screen axes
 			delta = bad::rotate(delta, -mTransform.get_sin(), -mTransform.get_cos());
 			mTransform.move_by(delta);
 		}
@@ -69,4 +68,34 @@ void bad::MouseCameraController::read_input(float dt, const SDL_Event& events)no
 	default:
 		break;
 	}
+}
+
+bad::Mat3 bad::MouseCameraController::to_matrix()const noexcept
+{
+	return mTransform.to_inverse_matrix();
+}
+
+bad::Mat3 bad::MouseCameraController::to_matrix_with_screen_offset(SDL_Window* const window)noexcept
+{
+	int w = 0, h = 0;
+	SDL_GetWindowSize(window, &w, &h);
+
+	float offset_x = w / 2.f;
+	float offset_y = h / 2.f;
+
+	return bad::Mat3::translate(offset_x, offset_y) * mTransform.to_inverse_matrix();
+}
+
+bad::Rect bad::MouseCameraController::get_viewport(SDL_Window* const window)const
+{
+	assert(window != nullptr);
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	//do large radius to ignore rotation (not 100% correct but fine for braod phase intersection)
+	int viewport_large_radius = w < h ? h : w;
+
+	viewport_large_radius *= mTransform.get_scale();
+
+	return bad::make_rect_from_center(mTransform.get_pos(), viewport_large_radius, viewport_large_radius);
 }

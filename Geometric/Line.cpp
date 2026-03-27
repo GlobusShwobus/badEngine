@@ -66,7 +66,7 @@ bad::collision::SweepInfo bad::collision::sweep(const bad::Ray& ray, const bad::
 	return info;
 }
 
-bad::collision::HitInfo bad::collision::intersect(const bad::Ray& ray, const bad::Circle& circle) noexcept
+bad::collision::HitInfo bad::collision::intersects(const bad::Ray& ray, const bad::Circle& circle) noexcept
 {
 	const auto& circle_center = circle.get_center();
 	const auto circle_radius = circle.get_radius();
@@ -91,8 +91,8 @@ bad::collision::HitInfo bad::collision::intersect(const bad::Ray& ray, const bad
 	return info;
 }
 
-bad::collision::HitInfo bad::collision::intersect(const bad::LineSegment& line, const bad::Circle& circle) noexcept
+bad::collision::HitInfo bad::collision::intersects(const bad::LineSegment& line, const bad::Circle& circle) noexcept
 {
 	bad::Ray ray(line);
-	return bad::collision::intersect(ray, circle);
+	return bad::collision::intersects(ray, circle);
 }

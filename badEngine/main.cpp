@@ -53,6 +53,7 @@ int main() {
 
             float rotational_velocity;
             float scale_dir = 0.66f;
+            float radius;
 
             //meme
             void pulse(float dt)
@@ -71,6 +72,13 @@ int main() {
                 }
 
                 transform.set_scale(scale);
+            }
+
+
+            bad::Rect make_boundingbox()const noexcept
+            {
+                float width_height = (2 * radius) * transform.get_scale();
+                return bad::make_rect_from_center(transform.get_pos(), width_height, width_height);
             }
         };
 
@@ -93,8 +101,8 @@ int main() {
         for (int i = 0; i < five_hundred_cigarettes; ++i)
         {
             Entity ent;
-            
-            ent.base_model = bad::make_poly(max_radius(rnd), min_radius(rnd), flares(rnd));
+            ent.radius = max_radius(rnd);
+            ent.base_model = bad::make_poly(ent.radius, min_radius(rnd), flares(rnd));
             ent.col = bad::Color(col(rnd), col(rnd), col(rnd), 255);
 
             ent.transform = bad::Transform(bad::Point{ windowpos(rnd), windowpos(rnd) }, scale(rnd), 0.f);
@@ -137,13 +145,20 @@ int main() {
             {
                 const auto& radian = e.transform.get_radian();
                 e.transform.set_radian(radian + e.rotational_velocity * dt);
-                e.pulse(dt);
+             //   e.pulse(dt);
             }
 
             auto cam_matrix = camera.to_matrix_with_screen_offset(window.get());
             for (auto& e : entities)
             {
-                bad::draw_closed_model_transformed(renderer.get(), e.base_model, cam_matrix * e.transform.to_matrix(), e.col);
+                auto bb = e.make_boundingbox();
+                auto viewport = camera.get_viewport(window.get());
+
+                if (bad::collision::intersects(bb, viewport)) {
+                    bad::draw_closed_model_transformed(renderer.get(), e.base_model, cam_matrix* e.transform.to_matrix(), e.col);
+
+                    bad::draw_rect_lines_transformed(renderer.get(), bb, cam_matrix, e.col);
+                }
             }
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
