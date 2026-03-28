@@ -2,6 +2,7 @@
 #include "Float2.h"
 #include "Line.h"
 #include "Rect.h"
+#include "CoreUtils.h"
 
 namespace bad
 {

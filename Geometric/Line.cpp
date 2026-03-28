@@ -13,24 +13,13 @@ bad::Point bad::LineSegment::closest_point(const bad::Point& target)const noexce
 
 bad::Ray::Ray(const bad::Point& from, const bad::Point& to) noexcept
 {
-	update_ray(from, to);
-}
-
-bad::Ray::Ray(const bad::LineSegment& line) :Ray{ line.p0, line.p1 } {}
-
-void bad::Ray::update_ray(const bad::Point& from, const bad::Point& to)noexcept
-{
 	mOrigin = from;
 	auto vec = to - from;
 	mLength = bad::length(vec);
 	mDir = bad::get_normalized(vec, mLength);
 }
 
-void bad::Ray::update_ray(const bad::LineSegment& line)noexcept
-{
-	update_ray(line.p0, line.p1);
-}
-
+bad::Ray::Ray(const bad::LineSegment& line) :Ray{ line.p0, line.p1 } {}
 
 bad::collision::SweepInfo bad::collision::sweep(const bad::Ray& ray, const bad::Rect& target) noexcept
 {

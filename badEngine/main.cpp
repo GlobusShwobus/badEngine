@@ -18,8 +18,6 @@
 #include "Circle.h"
 
 
-// TODO:: test uniform grid again
-
 int main() {
 
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -45,73 +43,6 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
-        struct Entity
-        {
-            bad::Sequence<bad::Point> base_model;
-            bad::Transform transform;
-            bad::Color col;
-
-            float rotational_velocity;
-            float scale_dir = 0.66f;
-            float radius;
-
-            //meme
-            void pulse(float dt)
-            {
-                auto scale = transform.get_scale();
-
-                scale += scale_dir * dt;
-
-                if (scale > 3.0f) {
-                    scale = 3.0f;
-                    scale_dir = -scale_dir;
-                }
-                else if(scale < 0.1) {
-                    scale = 0.1f;
-                    scale_dir = -scale_dir;
-                }
-
-                transform.set_scale(scale);
-            }
-
-
-            bad::Rect make_boundingbox()const noexcept
-            {
-                float width_height = (2 * radius) * transform.get_scale();
-                return bad::make_rect_from_center(transform.get_pos(), width_height, width_height);
-            }
-        };
-
-        bad::RandomNum rnd;
-
-        bad::Sequence<Entity> entities;
-        static constexpr int five_hundred_cigarettes = 500;
-        entities.reserve(five_hundred_cigarettes);
-
-        auto max_radius = rnd.get_real_distribution(32.f, 64.f);
-        auto min_radius = rnd.get_real_distribution(8.f, 32.f);
-        auto flares = rnd.get_int_distribution(3, 12);
-
-        auto col = rnd.get_int_distribution(0, 255);
-
-        auto windowpos = rnd.get_real_distribution(-5000.f, 5000.f);
-        auto scale = rnd.get_real_distribution(0.1f, 3.f);
-        auto rvel = rnd.get_normal_distribution(bad::PI / 2, bad::PI/2);
-
-        for (int i = 0; i < five_hundred_cigarettes; ++i)
-        {
-            Entity ent;
-            ent.radius = max_radius(rnd);
-            ent.base_model = bad::make_poly(ent.radius, min_radius(rnd), flares(rnd));
-            ent.col = bad::Color(col(rnd), col(rnd), col(rnd), 255);
-
-            ent.transform = bad::Transform(bad::Point{ windowpos(rnd), windowpos(rnd) }, scale(rnd), 0.f);
-            ent.rotational_velocity = rvel(rnd);
-
-            entities.push_back(std::move(ent));
-        }
-
-        bad::MouseCameraController camera;
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
@@ -138,28 +69,8 @@ int main() {
                 default:
                     break;
                 }
-                camera.read_input(dt, EVENT);
             }
            
-            for (auto& e : entities)
-            {
-                const auto& radian = e.transform.get_radian();
-                e.transform.set_radian(radian + e.rotational_velocity * dt);
-             //   e.pulse(dt);
-            }
-
-            auto cam_matrix = camera.to_matrix_with_screen_offset(window.get());
-            for (auto& e : entities)
-            {
-                auto bb = e.make_boundingbox();
-                auto viewport = camera.get_viewport(window.get());
-
-                if (bad::collision::intersects(bb, viewport)) {
-                    bad::draw_closed_model_transformed(renderer.get(), e.base_model, cam_matrix* e.transform.to_matrix(), e.col);
-
-                    bad::draw_rect_lines_transformed(renderer.get(), bb, cam_matrix, e.col);
-                }
-            }
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end

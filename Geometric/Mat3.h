@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include <cmath>
 #include "Float2.h"
 
@@ -6,23 +6,11 @@ namespace bad
 {
 	/**
 	* \brief
-	* Represents a 2D affine transformation using a compact 3x3 matrix where the third row is implied (0, 0, 1) but not stored.
+	* Represents a 2D affine transformation using a compact 3x3 matrix.
+	*
+	* To make translation operation fit into the matrix, the third row is implied  0 0 1.
 	* 
-	* The full matrix layout is:
-	* 
-	* | Ax  Bx  Tx |
-	* 
-	* | Ay  By  Ty |
-	* 
-	* |  0   0   1 |
-	* 
-	* - First column  (Ax, Ay) -> transformed X axis
-	* 
-	* - Second column (Bx, By) -> transformed Y axis
-	* 
-	* - Third column  (Tx, Ty) -> translation
-	* 
-	* NOTE:: This is a mathmatical operation NOT a screen operation. For example rotation clounter clockwise is the same as clockwise on the screen.
+	* To follow matrix multiplication rules a 2D vector is implied to have a third element, always 1.
 	*/
 	struct Mat3
 	{
@@ -36,9 +24,7 @@ namespace bad
 
 		constexpr bad::Point operator*(const bad::Point& v)const noexcept
 		{
-			// Point is 2X but for correct matrix math it is required for the Vector to be 3 rows long
-			// To address this the third row is implied, and is always 1 which means just add +Tx/Ty at the end.
-			// IMPORTANT: when upgrading to 3D graphics this is no longer correct implementation. It should become Mat4 and real 3D vector gets a 4 (W) implied value
+			// third element if the 2D vector is implied  = 1
 			return bad::Point{ 
 				m00 * v.x + m01 * v.y + m02,
 				m10 * v.x + m11 * v.y + m12 
@@ -66,34 +52,32 @@ namespace bad
 		}
 
 		/**
-		 * \brief Returns the identity matrix.
-		 *
-		 * The identity matrix leaves vectors unchanged:
-		 * 
-		 * x' = x, y' = y
-		 */
+		*\returns
+		* returns the identity matrix:
+		*
+		* |__1__0__0__|
+		* 
+		* |__0__1__0__|
+		* 
+		* |__0__0__1__|
+		*/
 		constexpr static Mat3 identity() noexcept
 		{
 			return Mat3{};
 		}
 
 		/**
-		 * \brief Creates a scaling transformation.
-		 *
-		 * Scaling modifies the basis vectors X and Y or column 1 and column 2 where values in identity were 1.
-		 * 
-		 * This results in a matrix:
-		 * 
-		 * | sx   0   0 |
-		 * 
-		 * |  0  sy   0 |
-		 * 
-		 * |  0   0   1 |
-		 *
 		 * \param sx Scale factor along the X axis
 		 * \param sy Scale factor along the Y axis
 		 *
-		 * \return A matrix that scales points by (sx, sy)
+		 * \returns 
+		 * retruns a matrix with scaling info
+		 * 
+		 * |__sx__0__0__|
+		 * 
+		 * |__0__sy__0__|
+		 * 
+		 * |__0__0__1___|
 		 */
 		constexpr static Mat3 scale(float sx, float sy) noexcept
 		{
@@ -114,22 +98,17 @@ namespace bad
 		}
 
 		/**
-		* \brief Creates a rotation transformation.
-		*
-		* Rotates points around the origin by the given precalculated sin and cos from a radian.
-		*
-		* This results in a matrix:
-		* 
-		* |  cos  -sin   0 |
-		* 
-		* |  sin   cos   0 |
-		* 
-		* |   0    0     1 |
-		*
 		* \param sin precalculated sin from radians
 		* \param cos precalculated cos from radians
 		*
-		* \return A matrix that rotates points around the origin
+		* \returns
+		* returns a matrix with rotation info
+		* 
+		* |__cos__-sin___0__|
+		* 
+		* |__sin___cos___0__|
+		* 
+		* |___0_____0____1__|
 		*/
 		constexpr static Mat3 rotate(float sin, float cos) noexcept
 		{
@@ -145,22 +124,17 @@ namespace bad
 		}
 
 		/**
-		* \brief Creates a translation transformation.
-		*
-		* Translation offsets all points by (tx, ty) without affecting rotation or scale.
-		*
-		* This results in a matrix:
-		* 
-		* | 1   0   tx |
-		* 
-		* | 0   1   ty |
-		* 
-		* | 0   0   1  |
-		*
 		* \param tx Translation along the X axis
 		* \param ty Translation along the Y axis
 		*
-		* \return A matrix that translates points by (tx, ty)
+		* \returns
+		* retruns a matrix with translation info
+		* 
+		* |__1__0__tx__|
+		* 
+		* |__0__1__ty__|
+		* 
+		* |__0__0__1___|
 		*/
 		constexpr static Mat3 translate(float tx, float ty) noexcept
 		{
@@ -176,14 +150,14 @@ namespace bad
 		}
 
 		/**
-		* \brief
-		* Flips the Y-axis basis y resulting in literally fliping something upside down.
-		* \returns 
-		* | 1   0   0 |
+		* \returns
+		* returns a matrix that flips the y
 		* 
-		* | 0  -1   0 |
+		* |__1___0__0__|
 		* 
-		* | 0   0   1 |
+		* |__0__-1__0__|
+		* 
+		* |__0___0__1__|
 		*/
 		constexpr static Mat3 flip_y() noexcept
 		{

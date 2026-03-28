@@ -19,9 +19,9 @@ void bad::draw_rect_lines_transformed(SDL_Renderer* const renderer, const bad::R
 	SDL_FPoint pts[RECT_POINTS_COUNT + 1]
 	{
 		transform_point_to_sdl_fpoint(rect.min, transformer), // top-left
-		transform_point_to_sdl_fpoint({rect.max.x, rect.min.y}, transformer), // top-right
+		transform_point_to_sdl_fpoint(bad::Point{rect.max.x, rect.min.y}, transformer), // top-right
 		transform_point_to_sdl_fpoint(rect.max, transformer), // bottom-right
-		transform_point_to_sdl_fpoint({rect.min.x, rect.max.y}, transformer)  // bottom-left
+		transform_point_to_sdl_fpoint(bad::Point{rect.min.x, rect.max.y}, transformer)  // bottom-left
 	};
 	pts[RECT_POINTS_COUNT] = pts[0];
 

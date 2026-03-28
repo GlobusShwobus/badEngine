@@ -6,9 +6,19 @@
 
 namespace bad
 {
+	/**
+	* \brief
+	* Transform is basically just a more human readable version of bad::Mat3.
+	* 
+	* Transform manages the position, rotation and scale of the object providing concrete getters.
+	* 
+	* A Transform should be used for managing screen position, but it should not be used as a parameter for modification of points.
+	* That is Mat3's job.
+	*/
 	class Transform
 	{
 	public:
+		/// <summary> Default initalizes transform. </summary>
 		Transform()
 			: mPos(0.f, 0.f)
 			, mScale(1.f)
@@ -17,7 +27,9 @@ namespace bad
 			, mCos(1.f)
 		{
 		}
-
+		/// <summary>
+		/// Initializes Transform with the given pos, scale and radian.
+		/// </summary>
 		Transform(const bad::Point& pos, float scale, float radian)
 			:mPos(pos)
 			, mScale(scale)
@@ -25,31 +37,43 @@ namespace bad
 			set_radian(radian);
 		}
 
+		/// <returns> Returns transformation to Mat3 with T * R * S </returns>
 		inline Mat3 to_matrix()const noexcept
 		{
 			return Mat3::translate(mPos) * Mat3::rotate(mSin, mCos) * Mat3::scale(mScale);
 		}
 
+		/// <returns> Returns inverse transformation to Mat3 with T * R * S</returns>
 		inline Mat3 to_inverse_matrix()const noexcept
 		{
 			return Mat3::scale(1 / mScale, 1 / mScale) * Mat3::rotate(-mSin, mCos) * Mat3::translate(-mPos);
 		}
 
-
-		void set_position(const bad::Vector& pos)noexcept
+		/// <summary>
+		/// Pos = new pos;
+		/// </summary>
+		/// <param name="pos"> new pos </param>
+		void set_position(const bad::Vector& new_pos)noexcept
 		{
-			mPos = pos;
+			mPos = new_pos;
 		}
 
-		//does += pos internally
-		void move_by(const bad::Vector& vel)noexcept
+		/// <summary>
+		/// Pos += offset;
+		/// </summary>
+		/// <param name="offset"> offset </param>
+		void move_by(const bad::Vector& offset)noexcept
 		{
-			mPos += vel;
+			mPos += offset;
 		}
 
-		void set_radian(float radian)noexcept
+		/// <summary>
+		/// Radian = new radian;
+		/// </summary>
+		/// <param name="ranew_radiandian"> new_radian </param>
+		void set_radian(float new_radian)noexcept
 		{
-			mRadians = std::fmod(radian, bad::TAU);
+			mRadians = std::fmod(new_radian, bad::TAU);
 
 			if (mRadians < 0)
 				mRadians += bad::TAU;
@@ -58,21 +82,31 @@ namespace bad
 			mCos = std::cos(mRadians);
 		}
 
-		//does += radians internally
-		void rotate_by(float radian)noexcept
+		/// <summary>
+		/// Radian += offset;
+		/// </summary>
+		/// <param name="offset"> offset </param>
+		void rotate_by(float offset)noexcept
 		{
-			set_radian(mRadians + radian);
+			set_radian(mRadians + offset);
 		}
 
-		void set_scale(float scale)noexcept
+		/// <summary>
+		/// Scale = new_scale;
+		/// </summary>
+		/// <param name="new_scale"> new_scale </param>
+		void set_scale(float new_scale)noexcept
 		{
-			mScale = scale;
+			mScale = new_scale;
 		}
 
-		//unlike others, this function does *= internally
-		void scale_by(float scale)noexcept
+		/// <summary>
+		/// Scale *= factor;
+		/// </summary>
+		/// <param name="factor"> factor </param>
+		void scale_by(float factor)noexcept
 		{
-			mScale *= scale;
+			mScale *= factor;
 		}
 
 		const bad::Point& get_pos()const noexcept { return mPos; }

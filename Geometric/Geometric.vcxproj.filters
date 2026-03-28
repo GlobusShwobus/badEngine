@@ -14,9 +14,6 @@
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>files</Filter>
-    </ClInclude>
     <ClInclude Include="Rect.h">
       <Filter>files</Filter>
     </ClInclude>
@@ -39,6 +36,9 @@
       <Filter>files</Filter>
     </ClInclude>
     <ClInclude Include="Circle.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
       <Filter>files</Filter>
     </ClInclude>
   </ItemGroup>

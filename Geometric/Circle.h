@@ -4,6 +4,10 @@
 
 namespace bad
 {
+	/**
+	* \brief
+	* not much to say about the circle currently.
+	*/
 	struct Circle
 	{
 		const bad::Point& get_center()const noexcept { return mCenter; }

@@ -1,56 +1,23 @@
 #pragma once
 
 #include "Float2.h"
-#include "CoreUtils.h"
 #include <assert.h>
 
 namespace bad
 {
 	/**
-	* \brief Rect represents an axis-aligned rectangle using two points:
-	*
-	*     min  -> lower-left corner
-	*     max  -> upper-right corner
-	*
-	* The rectangle uses the half-open interval convention:
-	*
-	*     [min, max)
-	*
-	* Meaning:
-	* - min is inclusive
-	* - max is exclusive
-	*
-	* This convention is commonly used in geometry and spatial data structures
-	* because it avoids ambiguity when rectangles share edges.
-	*
-	* Example:
-	*
-	*     point.x == max.x  -> outside
-	*     point.x == min.x  -> inside
-	*
-	* The rectangle assumes:
-	*
-	*     max.x >= min.x
-	*     max.y >= min.y
-	*
-	* In DEBUG builds constructors assert these conditions. In release builds
-	* the behavior is undefined if violated.
-	*
-	* Rect is intended for lightweight geometric operations such as:
-	*
-	*  - spatial queries
-	*  - collision tests
-	*  - UI layout
-	*  - bounding volumes
+	* \brief
+	* Rectangle represented by bad::float2 min and max points making it axis aligned.
+	* 
+	* Min is the corner where x and y is less than max x and y.
+	* 
+	* It is always assumed max > min. If not, the invarants are not respected and the rect is broken.
 	*/
 	class Rect
 	{
 	public:
 
-		/// <summary> Lower-left corner of the rectangle. </summary>
 		Point min;
-
-		/// <summary> Upper-right corner of the rectangle. </summary>
 		Point max;
 
 		/// <summary> Default initalizes rect with all 0s. </summary>
@@ -65,9 +32,9 @@ namespace bad
 		* \param min lower-left corner
 		* \param max upper-right corner
 		*
-		* \throws In DEBUG builds asserts that max >= min.
+		* \throws In DEBUG asserts that max >= min.
 		*/
-		constexpr Rect(const Point& min, const Point& max) noexcept
+		constexpr explicit Rect(const Point& min, const Point& max) noexcept
 			:min(min), max(max)
 		{
 			assert(max.x >= min.x);
@@ -82,7 +49,7 @@ namespace bad
 		* \param w width
 		* \param h height
 		*
-		* \throws In DEBUG builds asserts width and height are non-negative.
+		* \throws In DEBUG asserts width and height are non-negative.
 		*/
 		constexpr Rect(float x, float y, float w, float h) noexcept
 			:min(x, y), max(x + w, y + h)
@@ -101,14 +68,9 @@ namespace bad
 		* \throws In DEBUG builds asserts width and height are non-negative.
 		*/
 		constexpr Rect(const Point& pos, float w, float h)noexcept
-			:min(pos), max(pos.x + w, pos.y + h)
+			:Rect(pos.x, pos.y, w,h)
 		{
-			assert(max.x >= min.x);
-			assert(max.y >= min.y);
 		}
-
-		/// <returns> returns the rectangle position ( min point ) </returns>
-		constexpr float2 get_pos()const noexcept { return min; }
 
 		/// <returns> returns the width of the rectangle </returns>
 		constexpr float  get_width()const noexcept { return max.x - min.x; }
@@ -117,18 +79,17 @@ namespace bad
 		constexpr float  get_height()const noexcept { return max.y - min.y; }
 
 		/// <returns> retruns half width of the rectangle </returns>
-		constexpr float  get_half_width()const noexcept { return (max.x - min.x) * 0.5f; }
+		constexpr float  get_half_width()const noexcept { return get_width() * 0.5f; }
 
 		/// <returns> retruns half height of the rectangle </returns>
-		constexpr float  get_half_height()const noexcept { return (max.y - min.y) * 0.5f; }
+		constexpr float  get_half_height()const noexcept { return get_height() * 0.5f; }
 
 		/**
-		* Sets the rectangle width.
+		* \brief
+		* Sets the rectangles max.x varaible with: 
 		*
-		* max.x is recomputed as:
-		*
-		*     max.x = min.x + width
-		*
+		* min.x + w = max.x
+		* \param w for width
 		* \throws In DEBUG builds asserts width >= 0.
 		*/
 		constexpr void set_width(float w)noexcept
@@ -138,12 +99,12 @@ namespace bad
 		}
 
 		/**
-		* Sets the rectangle height.
+		* \brief
+		* Sets the rectangles max.y variable with:
+		* 
+		* min.y + h = max.y
 		*
-		* max.y is recomputed as:
-		*
-		*     max.y = min.y + height
-		*
+		* \param h for height
 		* \throws In DEBUG builds asserts height >= 0.
 		*/
 		constexpr void set_height(float h)noexcept
@@ -152,30 +113,22 @@ namespace bad
 			max.y = min.y + h;
 		}
 
-		/**
-		* Computes the area of the rectangle.
-		*
-		* \returns area = width * height
-		*/
+		/// <returns> width * height </returns>
 		constexpr float get_area() const noexcept
 		{
 			return get_width() * get_height();
 		}
 
-		/**
-		* Computes the perimiter of the rectangle
-		*
-		* \returns perimiter = 2 * (width + height)
-		*/
+		/// <returns> 2 * (width + height) </returns>
 		constexpr float get_perimeter()const noexcept
 		{
 			return 2.0f * (get_width() + get_height());
 		}
 
 		/// <returns> retruns the center point of the rectangle </returns>
-		constexpr float2 get_center() const noexcept
+		constexpr Point get_center() const noexcept
 		{
-			return {
+			return Point{
 				min.x + (get_width() * 0.5f),
 				min.y + (get_height() * 0.5f)
 			};
@@ -183,15 +136,17 @@ namespace bad
 	};
 
 	/**
-	* Makes a rectangle from the given center point and dimensions.
+	* Makes a rectangle from a given center point and width/height params.
 	* 
-	* NOTE: width and height NOT half width and half height!!!
+	* Sets min = center - dimensions / 2
+	* 
+	* Sets max = min + dimensions
 	* 
 	* \param center as the center point
 	* \param w as width
 	* \param h as height
 	* 
-	* \returns returns rect
+	* \returns rect
 	*/
 	constexpr Rect make_rect_from_center(const Point& center, float w, float h) noexcept {
 		return Rect{
@@ -202,7 +157,8 @@ namespace bad
 	namespace collision
 	{
 		/**
-		* \brief Checks whether the rectangle contains a point.
+		* \brief 
+		* Checks if point p is in rectangle r.
 		*
 		* Uses the half-open interval rule [min, max).
 		*
@@ -216,31 +172,33 @@ namespace bad
 		}
 
 		/**
-		* \brief Checks whether the rectangle completely contains another rectangle.
+		* \brief
+		* Checks if left hand rectangle contains right hand rectangle.
 		*
 		* Uses the half-open interval rule [min, max).
 		*
 		* \returns true if contains, false if not
 		*/
-		constexpr bool contains(const Rect& this_, const Rect& other) noexcept
+		constexpr bool contains(const Rect& lhs, const Rect& rhs) noexcept
 		{
 			return
-				other.min.x >= this_.min.x &&
-				other.min.y >= this_.min.y &&
-				other.max.x <= this_.max.x &&
-				other.max.y <= this_.max.y;
+				rhs.min.x >= lhs.min.x &&
+				rhs.min.y >= lhs.min.y &&
+				rhs.max.x <= lhs.max.x &&
+				rhs.max.y <= lhs.max.y;
 		}
 
 		/**
-		* \brief Tests whether two rectangles overlap.
+		* \brief
+		* Checks if lhs and rhs rectangle overlap on any side.
 		*
-		* \returns true if any area intersects.
+		* \returns true if intersect, false if not
 		*/
-		constexpr bool intersects(const Rect& this_, const Rect& other) noexcept
+		constexpr bool intersects(const Rect& lhs, const Rect& rhs) noexcept
 		{
 			return
-				!(other.max.x <= this_.min.x || other.min.x >= this_.max.x ||
-					other.max.y <= this_.min.y || other.min.y >= this_.max.y);
+				!(rhs.max.x <= lhs.min.x || rhs.min.x >= lhs.max.x ||
+					rhs.max.y <= lhs.min.y || rhs.min.y >= lhs.max.y);
 		}
 	}
 }
