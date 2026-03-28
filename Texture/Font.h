@@ -32,20 +32,15 @@ namespace bad
 		* \throws in DEBUG the constructor asserts dimensions
 		* \throws if texture is nullptr the Sprite member will throw.
 		*/
-		Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count);
+		Font(SDL_Texture& texture, uint32_t columns_count, uint32_t rows_count);
 
-		/// <summary> The move constructor is default as internally all members handle their moves. And there is no special cases. </summary>
+		Font(const Font&) = default;
 		Font(Font&&)noexcept = default;
-
-		/// <summary> The move assignment is default as internally all members handle their moves. And there is no special cases. </summary>
-		Font& operator=(Font&& rhs)noexcept = default;
-
-		/// <summary> Default destructor. </summary>
 		~Font()noexcept = default;
 
 		Font() = delete;
-		Font(const Font&) = delete;
 		Font& operator=(const Font&) = delete;
+		Font& operator=(Font&& rhs)noexcept = delete;
 
 		/**
 		* Sets the text to be drawn by setting the source glyph and then rebuilding the layout for relative destinations.

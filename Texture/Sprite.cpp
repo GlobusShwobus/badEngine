@@ -1,15 +1,11 @@
 #include "pch.h"
 #include "Sprite.h"
 #include <assert.h>
-#include <stdexcept>
 
-bad::Sprite::Sprite(SDL_Texture* const texture)
+bad::Sprite::Sprite(SDL_Texture& texture)
 	:mTexture(texture)
 {
-	if (!mTexture)
-		throw std::runtime_error("Sprite initalized with nullptr");
-
-	SDL_GetTextureSize(mTexture, &mTextureW, &mTextureH);
+	SDL_GetTextureSize(&mTexture, &mTextureW, &mTextureH);
 	mSource = SDL_FRect(0, 0, mTextureW, mTextureH);
 }
 

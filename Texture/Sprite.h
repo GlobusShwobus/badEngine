@@ -13,58 +13,16 @@ namespace bad
 		/**
 		* Caches texture, texture width and height and initalized the initial source region to size of the texture
 		* \param texture as texture
-		* \throws std::runtime_error if texture is nullptr
 		*/
-		explicit Sprite(SDL_Texture* const texture);
+		explicit Sprite(SDL_Texture& texture);
 
-		/**
-		* Move constructs another Sprite class.
-		*
-		* Swaps rhs.mTexture and *this.mTexture and sets rhs.mTexture as nullptr
-		*
-		* Swaps other members as well.
-		*
-		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
-		*
-		* \param Sprite&&
-		* \throws noexcept
-		*/
-		Sprite(Sprite&& rhs)noexcept
-			:mTexture(rhs.mTexture), mSource(rhs.mSource), mTextureW(rhs.mTextureW), mTextureH(rhs.mTextureH)
-		{
-			rhs.mTexture = nullptr;
-		}
-
-		/**
-		* Move assigns rhs Sprite to lhs Sprite
-		*
-		* Swaps rhs.mTexture and lhs.mTexture and sets rhs.mTexture as nullptr
-		*
-		* Swaps other members as well.
-		*
-		* Leaves rhs Sprite in valid but unspecified state. Use of it for all intents and purposes is UB.
-		*
-		* \param Sprite&&
-		* \throws noexcept
-		*/
-		Sprite& operator=(Sprite&& rhs)noexcept
-		{
-			if (this != &rhs) {
-				mTexture = rhs.mTexture;
-				rhs.mTexture = nullptr;
-				mSource = rhs.mSource;
-				mTextureW = rhs.mTextureW;
-				mTextureH = rhs.mTextureH;
-			}
-			return *this;
-		}
-
-		/// mTexture member is non owning so the destructor does nothing special
+		Sprite(const Sprite&) = default;
+		Sprite(Sprite&& rhs) noexcept = default;
 		~Sprite()noexcept = default;
 
 		Sprite() = delete;
-		Sprite(const Sprite&) = delete;
 		Sprite& operator=(const Sprite&) = delete;
+		Sprite& operator=(Sprite&&)noexcept = delete;
 
 		/**
 		* Sets the x and y members of mSource
@@ -96,7 +54,7 @@ namespace bad
 		* \brief this method should never be used to modify the texture (delete or otherwise)
 		* \return retruns SDL_Texture pointer
 		*/
-		SDL_Texture* const get_texture()const noexcept { return mTexture; }
+		SDL_Texture& get_texture()const noexcept { return mTexture; }
 
 		/// <returns>mSource rectangle</returns>
 		inline const SDL_FRect& get_source()const noexcept { return mSource; }
@@ -110,7 +68,7 @@ namespace bad
 	private:
 
 		/// <summary> Non owning pointer of a SDL_Texture. It is expected the lifetime of texture is handled externally. </summary>
-		SDL_Texture* mTexture = nullptr;
+		SDL_Texture& mTexture;
 
 		/// <summary> A rectangle representing the area of the texture that is used for drawing. </summary>
 		SDL_FRect mSource;

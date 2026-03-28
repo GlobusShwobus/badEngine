@@ -2,7 +2,7 @@
 #include "Font.h"
 #include <assert.h>
 
-bad::Font::Font(SDL_Texture* const texture, uint32_t columns_count, uint32_t rows_count)
+bad::Font::Font(SDL_Texture& texture, uint32_t columns_count, uint32_t rows_count)
 	:mSprite(texture), mColumnsCount(columns_count), mPosX(0), mPosY(0), mScale(1.0f)
 {
 	//NOTE:: sprite will throw is texture is nullptr
@@ -84,12 +84,12 @@ void bad::Font::set_scale(float scale) noexcept
 
 bool bad::Font::draw(SDL_Renderer* const renderer) const noexcept
 {
-	auto txtr = mSprite.get_texture();
+	auto& txtr = mSprite.get_texture();
 	for (const auto& g : mGlyphs) {
 		if (g.src.w == 0.f)//spacebar
 			continue;
 
-		SDL_RenderTexture(renderer, txtr, &g.src, &g.dst);
+		SDL_RenderTexture(renderer, &txtr, &g.src, &g.dst);
 	}
 
 	return true;

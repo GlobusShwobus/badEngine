@@ -55,7 +55,7 @@ namespace bad
 		* \param texture pointer.
 		* \throws AnimationPlayer does no checks but Sprite can internally throw std::runtime_error if given texture is nullptr.
 		*/
-		explicit AnimationPlayer(SDL_Texture* const texture)
+		explicit AnimationPlayer(SDL_Texture& texture)
 			:mSprite(texture), mTimer(0), mCurrentFrame(0)
 		{
 		}
@@ -77,36 +77,17 @@ namespace bad
 			rhs.mCurrentClip = nullptr;
 		}
 
-		/**
-		* Uses move operator to move values from rhs to *this or does nothing if this = &rhs.
-		*
-		* Moves over all data except mTimer and mCurrentFrame which are set to 0.
-		*
-		* Sets rhs.mCurrentClip to nullptr.
-		*
-		* Leaves rhs in valid but unspecified state. Any use of it is for all intents and purposes UB.
-		*
-		* \throws noexcept
-		*/
-		AnimationPlayer& operator=(AnimationPlayer&& rhs)noexcept
+		AnimationPlayer(const AnimationPlayer& rhs) 
+			:mClips(rhs.mClips), mSprite(rhs.mSprite), mTimer(0.0f), mCurrentFrame(0), mCurrentClip(nullptr)
 		{
-			if (this != &rhs) {
-				mClips = std::move(rhs.mClips);
-				mCurrentClip = rhs.mCurrentClip;
-				rhs.mCurrentClip = nullptr;
-				mSprite = std::move(rhs.mSprite);
-				mTimer = 0.0f;
-				mCurrentFrame = 0;
-			}
-			return *this;
 		}
 
-		AnimationPlayer() = delete;
-		AnimationPlayer(const AnimationPlayer&) = delete;
-		AnimationPlayer& operator=(const AnimationPlayer&) = delete;
-
-		/// <summary> The destructor does nothing special. </summary>
 		~AnimationPlayer()noexcept = default;
+
+		AnimationPlayer() = delete;
+		AnimationPlayer& operator=(const AnimationPlayer&) = delete;
+		AnimationPlayer& operator=(AnimationPlayer&&) = delete;
+
 
 		/**
 		* Updates the current clips frame index to the next frame.

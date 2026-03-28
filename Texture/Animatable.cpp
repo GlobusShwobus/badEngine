@@ -112,5 +112,5 @@ void bad::AnimationPlayer::play(AnimID id)
 
 bool bad::AnimationPlayer::draw(SDL_Renderer* const renderer, const SDL_FRect& dest)const noexcept
 {
-	return SDL_RenderTexture(renderer, mSprite.get_texture(), &mSprite.get_source(), &dest);
+	return SDL_RenderTexture(renderer, &mSprite.get_texture(), &mSprite.get_source(), &dest);
 }
