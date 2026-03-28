@@ -441,7 +441,7 @@ namespace bad
 			size_type destroy_size = static_cast<size_type>(dest_end - dest_begin);
 
 			//destroy the objects first enabling move construction
-			std::destroy(dst, src);
+			std::destroy(dest_begin, dest_end);
 
 			//move objects
 			for (; dest_end != curr_end; ++dest_begin, ++dest_end) {
