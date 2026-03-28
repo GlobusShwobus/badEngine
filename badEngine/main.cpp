@@ -16,7 +16,7 @@
 #include "FreeDraw.h"
 #include "CollisionRoutines.h"
 #include "Circle.h"
-
+#include "Sprite.h"
 
 int main() {
 
@@ -42,6 +42,24 @@ int main() {
         //#####################################################################################################################################################################
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
+
+
+        bad::Texture texture = bad::make_texture(renderer.get(), "C:/Users/ADMIN/Desktop/badEngine/Texture/Textures/enemy.png");
+
+        struct Entity
+        {
+            int index;
+            bad::Sprite sprite;
+        };
+
+        bad::Sequence<Entity> ents;
+        ents.reserve(10);
+
+        for (int i = 0; i < 10; i++) {
+            ents.emplace_back(i, bad::Sprite(*texture.get()));
+        }
+
+        ents.erase(ents.begin(), ents.begin() + 2);
 
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
         //#####################################################################################################################################################################
