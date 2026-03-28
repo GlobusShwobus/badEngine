@@ -420,7 +420,6 @@ namespace bad
 
 		//UB if pos is not in the range of [begin -> end) and if container is empty (probably terminate)
 		iterator erase(const_iterator pos) noexcept
-			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			assert(!isEmpty() && pos >= begin() && pos < end());
 			return erase(pos, pos + 1);
@@ -428,28 +427,29 @@ namespace bad
 
 		//UB if given range is not in the range of [begin -> end) and if container is empty (probably terminate)
 		iterator erase(const_iterator first, const_iterator last) noexcept
-			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)
 				return const_cast<iterator>(first);
 
-			iterator targetBegin = const_cast<iterator>(first);
-			iterator targetEnd = const_cast<iterator>(last);
-			iterator thisBegin = begin();
-			iterator thisEnd = end();
+			iterator dest_begin = const_cast<iterator>(first);
+			iterator dest_end  = const_cast<iterator>(last);
+			iterator curr_end = end();
+
 			assert(!isEmpty());
-			assert(thisBegin <= targetBegin && thisEnd >= targetEnd && targetBegin <= targetEnd);
+			assert(begin() <= dest_begin && curr_end >= dest_end && dest_begin <= dest_end);
 			//get distance
-			size_type destroy_size = static_cast<size_type>(targetEnd - targetBegin);
+			size_type destroy_size = static_cast<size_type>(dest_end - dest_begin);
+
+			//destroy the objects first enabling move construction
+			std::destroy(dst, src);
 
 			//move objects
-			for (; targetEnd != thisEnd; ++targetBegin, ++targetEnd) {
-				*targetBegin = std::move(*targetEnd);
+			for (; dest_end != curr_end; ++dest_begin, ++dest_end) {
+				::new (static_cast<void*>(dest_begin)) value_type(std::move(*dest_end));
+				std::destroy_at(dest_end);
 			}
 
 			mSize -= destroy_size;
-			std::destroy(end(), thisEnd);
-
 			return const_cast<iterator>(first);
 		}
 
@@ -462,24 +462,28 @@ namespace bad
 
 		//swaps given range with last one by one and pops range. UB if given range is not in the range of [begin -> end)
 		void swap_with_last_erase(const_iterator first, const_iterator last) noexcept
-			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (first == last)return;
-			iterator destination = const_cast<iterator>(first);
-			iterator targetEnd = const_cast<iterator>(last);
-			iterator thisEnd = end();
+
+			iterator dest_begin = const_cast<iterator>(first);
+			iterator dest_end = const_cast<iterator>(last);
+			iterator curr_end = end();
+
 			assert(!isEmpty());
-			assert(begin() <= destination && thisEnd >= targetEnd && destination <= targetEnd);
+			assert(begin() <= dest_begin && curr_end >= dest_end && dest_begin <= dest_end);
 			//get distance
-			size_type destroy_size = static_cast<size_type>(targetEnd - destination);
+			size_type destroy_size = static_cast<size_type>(dest_end - dest_begin);
 
-			iterator src = thisEnd - 1;
+			//destroy first to enable move construction
+			std::destroy(dest_begin, dest_end);
 
-			for (size_type i = 0; i < destroy_size; ++i) {
-				*destination++ = std::move(*src--);
+			iterator src = curr_end - destroy_size;
+			for (; src != curr_end && dest_begin != dest_end; ++src, ++dest_begin) {
+				::new (static_cast<void*>(dest_begin)) value_type(std::move(*src));
+				std::destroy_at(src);
 			}
+
 			mSize -= destroy_size;
-			std::destroy(end(), thisEnd);
 		}
 
 		// if new capacity is more than old capacity, reallocates, otherwise does nothing
