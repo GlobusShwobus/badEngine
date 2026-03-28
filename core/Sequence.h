@@ -411,7 +411,6 @@ namespace bad
 				emplace_back(*first);
 		}
 
-
 		//UB if the container is empty, otherwise erases the last element
 		void pop_back()noexcept
 		{
@@ -485,12 +484,12 @@ namespace bad
 
 		// if new capacity is more than old capacity, reallocates, otherwise does nothing
 		void reserve(size_type new_capacity)
-			requires std::is_nothrow_move_assignable_v<value_type>
 		{
 			if (new_capacity > mCapacity) {
 				seq_realloc(new_capacity);
 			}
 		}
+
 		// default constructs or erases elements by the difference amount of current size and given count
 		void resize(size_type count)
 			requires std::default_initializable<value_type>
