@@ -43,7 +43,7 @@ namespace bad
 			return Mat3::translate(mPos) * Mat3::rotate(mSin, mCos) * Mat3::scale(mScale);
 		}
 
-		/// <returns> Returns inverse transformation to Mat3 with T * R * S</returns>
+		/// <returns> Returns inverse transformation to Mat3 with S * R * T</returns>
 		inline Mat3 to_inverse_matrix()const noexcept
 		{
 			return Mat3::scale(1 / mScale, 1 / mScale) * Mat3::rotate(-mSin, mCos) * Mat3::translate(-mPos);
