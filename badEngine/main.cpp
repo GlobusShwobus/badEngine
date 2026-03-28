@@ -43,12 +43,15 @@ int main() {
         //#####################################################################################################################################################################
         //TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE TEST CODE 
 
-
         bad::Texture texture = bad::make_texture(renderer.get(), "C:/Users/ADMIN/Desktop/badEngine/Texture/Textures/enemy.png");
+       
+        bad::RandomNum rnd;
+        auto xDist = rnd.get_int_distribution(0, 800);
+        auto yDist = rnd.get_int_distribution(0, 400);
 
         struct Entity
         {
-            int index;
+            bad::Point pos;
             bad::Sprite sprite;
         };
 
@@ -56,7 +59,10 @@ int main() {
         ents.reserve(10);
 
         for (int i = 0; i < 10; i++) {
-            ents.emplace_back(i, bad::Sprite(*texture.get()));
+            int x = xDist(rnd);
+            int y = yDist(rnd);
+
+            ents.emplace_back(bad::Point(x,y), bad::Sprite(*texture.get()));
         }
 
         ents.erase(ents.begin(), ents.begin() + 2);
@@ -89,6 +95,13 @@ int main() {
                 }
             }
            
+
+            for (auto& e : ents)
+            {
+                SDL_FRect dest(e.pos.x, e.pos.y, e.sprite.get_width(), e.sprite.get_height());
+                SDL_RenderTexture(renderer.get(), &e.sprite.get_texture(), &e.sprite.get_source(), &dest);
+            }
+
 
             SDL_SetRenderTarget(renderer.get(), nullptr);//reminder
             SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 0);//reset to black ONCE before the end
